@@ -7,7 +7,7 @@
 <style>body{margin:0}img{max-width:100%}</style>
 <title>Yellowmanの書斎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Yellowtail&family=Yuji+Boku&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Tinos&family=Yuji+Boku&display=swap">
 <style id="page-style">
 /* Layout: 縦書きの名を掲げた藍の扉から、作品・写真・映像の三つの間へ降りていく一枚の書斎 */
 :root{
@@ -32,7 +32,7 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:700
 .name small{display:block;font-family:var(--f-body);font-size:.4em;font-weight:400;letter-spacing:.3em;color:var(--muted);margin-top:.9em}
 .name{letter-spacing:0;font-size:clamp(1.45rem,1.1rem + 1vw,1.95rem);overflow-wrap:normal}
 .name .tail{white-space:nowrap}
-.name .yman{font-family:"Calamity Jane NF","CalamityJaneNF","Yellowtail",cursive;font-weight:400;font-size:1.25em;letter-spacing:.01em}
+.name .yman{font-family:"Times New Roman",Times,"Tinos",serif;font-style:normal;font-weight:400;font-size:1.12em;letter-spacing:.02em}
 .name .no{font-family:var(--f-display);font-weight:500;font-size:.62em;margin:0 .12em}
 .name .shosai{font-family:"衡山毛筆フォント草書","KouzanSousho","青柳草書","AoyagiSosho","Yuji Boku",var(--f-display);font-weight:400;font-size:1.05em;letter-spacing:.04em}
 .side .lead{margin:-18px 0 0;font-size:.78rem;color:var(--muted);line-height:2;max-width:15em}
@@ -189,8 +189,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
 <body>
 <template id="tpl"><header class="wrap top" id="top">
   <div class="side">
-    <h1 class="name"><span class="yman">Yellowman</span><span class="tail"><span class="no">の</span><span class="shosai">書斎</span></span><small>廣居隆史</small></h1>
-    <p class="lead">歴史の行間に生きた人びとを、物語と写真と映像で書きとめています。</p>
+    <h1 class="name"><span class="yman">Yellowman</span><span class="tail"><span class="no">の</span><span class="shosai">書斎</span></span></h1>
     <nav class="rooms" aria-label="カテゴリー">
       <a href="#works">小説</a>
       <a href="#songs">作曲</a>
@@ -571,7 +570,7 @@ function buildDoc(){
   return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'
    +'<title>Yellowmanの書斎</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
    +'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
-   +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Yellowtail&family=Yuji+Boku&display=swap">\n'
+   +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Tinos&family=Yuji+Boku&display=swap">\n'
    +'<style id="page-style">'+style+'</style>\n'
    +'<template id="tpl">'+TPL.innerHTML+'</template>\n<div id="root"></div>\n'
    +'<script type="application/json" id="site-state">'+json+'</scr'+'ipt>\n'
