@@ -147,6 +147,17 @@ textarea{font:inherit;font-size:.95rem;padding:.55em .7em;border:1px solid var(-
 .vids li{display:flex;gap:10px;align-items:baseline;min-width:0;border-bottom:1px solid var(--rule);padding-bottom:8px}
 .vids li a{overflow-wrap:anywhere}
 
+/* 戻る */
+.room-head{position:relative}
+.backrow{order:-1;flex:0 0 100%;margin-bottom:6px}
+.back{display:inline-flex;align-items:center;gap:.35em;font-size:var(--step-1);letter-spacing:.08em;text-decoration:none;color:var(--ai);padding:.3em .9em .3em .6em;border:1px solid var(--rule);border-radius:999px;background:var(--paper)}
+.back span{font-size:1.4em;line-height:1;margin-top:-.12em}
+.back:hover{background:var(--ai-soft)}
+.totop{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:6;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-size:1.25rem;background:var(--ai);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.totop:hover{opacity:.88}
+body.owner-on .totop{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
 footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--muted);font-size:var(--step-1)}
 
 /* 拡大表示 */
@@ -176,7 +187,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
 
 </head>
 <body>
-<template id="tpl"><header class="wrap top">
+<template id="tpl"><header class="wrap top" id="top">
   <div class="side">
     <h1 class="name"><span class="yman">Yellowman</span><span class="tail"><span class="no">の</span><span class="shosai">書斎</span></span><small>廣居隆史</small></h1>
     <p class="lead">歴史の行間に生きた人びとを、物語と写真と映像で書きとめています。</p>
@@ -199,6 +210,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>小説<span class="kana">WORKS</span></h2>
         <p>十五作。いずれも縦書きの小説として書き下ろし、ドラマ脚本も用意しています。</p>
+        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <ul class="works" id="works-list"></ul>
     </div>
@@ -209,6 +221,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>作曲<span class="kana">SONGS</span></h2>
         <p>SUNOで作った曲です。曲名を押すと、その場で聴けます。気に入った曲はダウンロードもできます。</p>
+        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div id="songs-area"></div>
       <div id="song-owner" hidden></div>
@@ -220,6 +233,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>写真集<span class="kana">PHOTOGRAPHS</span></h2>
         <p>自分の目で見て、自分で撮った風景です。写真を押すと大きく見られます。</p>
+        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div id="gallery-area"></div>
       <div id="photo-owner" hidden></div>
@@ -231,6 +245,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>YouTube<span class="kana">CHANNEL</span></h2>
         <p>映像で綴っているチャンネルです。</p>
+        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div class="yt" id="yt-area"></div>
       <div id="yt-owner" hidden></div>
@@ -241,6 +256,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>コメント<span class="kana">LETTERS</span></h2>
         <p>小説や曲、写真へのご感想をお寄せください。いただいたコメントは、すべてこの欄で公開します。</p>
+        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div class="cm-grid">
         <div id="cm-list"></div>
@@ -273,6 +289,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
 <div class="lb" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="写真の拡大表示">
   <figure><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption><button type="button" id="lb-close">閉じる</button></figure>
 </div>
+<a class="totop" id="totop" href="#top" aria-label="トップへ戻る" hidden>↑</a>
 <div class="ownerbar" id="owner-bar" hidden></div>
 </template>
 <div id="root"></div>
@@ -311,6 +328,10 @@ const wl=$("#works-list");
 WORKS.forEach(w=>wl.append(el("li",{class:"work"},[(w.cover?el("a",{class:"cover",href:w.pdf||w.cover,target:"_blank",rel:"noopener","aria-label":w.t+"をPDFで読む"},el("img",{src:w.cover,alt:"『"+w.t+"』表紙",loading:"lazy",width:"424",height:"600"})):null),el("h3",{class:"wt",text:w.t}),el("div",{class:"who",text:w.who}),el("div",{class:"era",text:w.era}),el("p",{text:w.d}),w.pdf?el("div",{class:"read"},[el("a",{href:w.pdf,target:"_blank",rel:"noopener",text:"PDFで読む"}),el("a",{href:w.pdf,download:w.t+".pdf",class:"dl",text:"ダウンロード"})]):null])));
 
 wl.addEventListener("click",async e=>{const a=e.target.closest("a.dl");if(!a||!downloads)return;e.preventDefault();const t=a.textContent;a.textContent="準備中…";try{const r=await fetch(a.getAttribute("href"));if(!r.ok)throw 0;await downloads.save({filename:a.getAttribute("download"),data:await r.blob()})}catch(err){if(!(err&&err.code==="declined"))window.open(a.getAttribute("href"),"_blank","noopener")}a.textContent=t});
+
+/* トップへ戻るボタン */
+const totop=$("#totop");const topEl=$("#top");
+if("IntersectionObserver" in window){new IntersectionObserver(es=>{totop.hidden=es[0].isIntersecting}).observe(topEl)}else{totop.hidden=false}
 
 /* 拡大表示 */
 const lb=$("#lightbox");
@@ -538,7 +559,7 @@ function renderOwner(){
   drawList();
   const add=el("button",{class:"btn ghost",type:"button",text:"動画を加える",onclick:()=>{if(!safeUrl(vu.value.trim())){vu.focus();return}state.youtube.videos.push({title:vt.value.trim(),url:vu.value.trim()});vt.value="";vu.value="";drawList();markDirty();renderYt()}});
   yo.append(el("div",{class:"owner"},[el("h3",{text:"チャンネルの設定（あなただけに表示）"}),el("div",{class:"row"},[nm,ur]),el("h3",{text:"おすすめの動画"}),el("div",{class:"row"},[vt,vu,add]),list]));
-  const bar=$("#owner-bar");bar.hidden=false;bar.replaceChildren(el("div",{class:"wrap row"},[el("span",{class:"status",text:"編集モード（あなただけに表示）"}),saveBtn,saveStatus]));
+  const bar=$("#owner-bar");bar.hidden=false;document.body.classList.add("owner-on");bar.replaceChildren(el("div",{class:"wrap row"},[el("span",{class:"status",text:"編集モード（あなただけに表示）"}),saveBtn,saveStatus]));
 }
 
 /* 自分自身を書き直して公開 */
