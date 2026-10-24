@@ -36,6 +36,8 @@
 - 方針：その朝の日本のトレンドから、事実で書ける話題を1つ選ぶ。事件・事故・災害・訃報・選挙や政治・特定の個人の私生活・病気の治療法は避ける。調べた出典を sources に必ず書く。廣居さん本人の体験談をでっち上げない。
 - アフィリエイトのリンクは blog/affiliate.json に登録されたものだけを使い、使った記事は `pr: true`（記事の先頭に「PR」表記が出る）。
 
+- `google6642eb6d4ee4a7ad.html` は Google Search Console の所有権確認ファイル。消さないこと。
+
 ## 下書き版
 Claude 上のアーティファクト https://claude.ai/artifact/DkeozbbydYfNz8M4ZQ7v8b は1ファイル版の下書き（#works などのハッシュでページ切替）。
 公開の本番はこのリポジトリ。
