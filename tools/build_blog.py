@@ -31,6 +31,22 @@ NAV = [('novels.html', '小説', ''), ('songs.html', '作曲', ''), ('photos.htm
 
 def esc(t): return html.escape(t, quote=True)
 
+def slides():
+    # トップページ（index.html）のスライドショーと同じ写真を使う
+    try: src = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+    except OSError: return []
+    return re.findall(r'<figure class="slide[^"]*"><img src="([^"]+)" alt="([^"]*)"', src)
+
+def hero(prefix, kind, label, pick=None):
+    ph = slides()
+    if not ph: return ''
+    if pick is not None: ph = [ph[pick % len(ph)]]
+    figs = ''.join(f'<figure class="slide{" on" if i == 0 else ""}"><img src="{prefix}{esc(u)}" alt="{esc(a)}"{" fetchpriority=" + chr(34) + "high" + chr(34) if i == 0 else " loading=" + chr(34) + "lazy" + chr(34)}></figure>' for i, (u, a) in enumerate(ph))
+    title = f'<div class="hero-title"><p class="name deco">Yellowman&rsquo;s Room</p><span class="hero-sub">{label}</span></div>' if label else ''
+    js = '' if len(ph) < 2 else '''<script>(function(){var s=document.querySelectorAll(".hero .slide"),i=0;if(s.length<2||matchMedia("(prefers-reduced-motion: reduce)").matches)return;setInterval(function(){if(document.hidden)return;s[i].classList.remove("on");i=(i+1)%s.length;s[i].classList.add("on")},6000)})();</script>'''
+    return f'<div class="hero {kind}">{figs}{title}</div>{js}'
+
+
 def inline(t):
     t = esc(t)
     t = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', t)
@@ -88,7 +104,7 @@ def parse(path):
     meta['body'] = m.group(2).strip()
     return meta
 
-def page(title, desc, body, prefix, canonical, current='blog', og_type='website'):
+def page(title, desc, body, prefix, canonical, current='blog', og_type='website', banner=''):
     nav = ''.join(f'<a href="{prefix}{h}" data-p="{h[:-5]}"{" class=" + chr(34) + c + chr(34) if c else ""}{" aria-current=" + chr(34) + "page" + chr(34) if h == current + ".html" else ""}>{t}</a>' for h, t, c in NAV)
     return f'''<!doctype html>
 <html lang="ja" data-page="blog">
@@ -112,6 +128,7 @@ def page(title, desc, body, prefix, canonical, current='blog', og_type='website'
     <nav class="subnav" aria-label="カテゴリー">{nav}</nav>
   </div>
 </div>
+{banner}
 <main class="blog-wrap">
 {body}
 </main>
@@ -148,7 +165,7 @@ def build():
 </article>
 {nav}'''
         fn = os.path.join(ROOT, 'blog', p['slug'] + '.html'); keep.add(fn)
-        open(fn, 'w', encoding='utf-8').write(page(f'{p["title"]} | Yellowman\'s Room', p.get('description', ''), body, '../', f'{SITE}/blog/{p["slug"]}.html', og_type='article'))
+        open(fn, 'w', encoding='utf-8').write(page(f'{p["title"]} | Yellowman\'s Room', p.get('description', ''), body, '../', f'{SITE}/blog/{p["slug"]}.html', og_type='article', banner=hero('../', 'thin', '', pick=sum(map(ord, p['slug'])))))
     # 消した記事のページを片付ける
     for fn in glob.glob(os.path.join(ROOT, 'blog', '*.html')):
         if fn not in keep: os.remove(fn)
@@ -156,7 +173,7 @@ def build():
     body = f'''<div class="backrow"><a class="back" href="index.html"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
 <div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。</p></div>
 <ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>'''
-    open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html'))
+    open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG')))
     urls = ['', 'novels.html', 'songs.html', 'photos.html', 'youtube.html', 'comments.html', 'blog.html'] + [f'blog/{p["slug"]}.html' for p in posts]
     today = datetime.date.today().isoformat()
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{SITE}/{u}</loc><lastmod>{(posts[[f"blog/{x["slug"]}.html" for x in posts].index(u)]["date"] if u.startswith("blog/") else today)}</lastmod></url>\n' for u in urls) + '</urlset>\n'
