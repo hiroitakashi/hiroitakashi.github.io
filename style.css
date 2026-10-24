@@ -154,6 +154,8 @@ body.owner-on .totop{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 
 /* ページ構成 */
+.counter{display:flex;justify-content:center;margin-top:-8px}
+.counter img{height:20px;width:auto;opacity:.9}
 .home{display:inline-flex;align-items:center;gap:.3em;text-decoration:none;color:#fff;background:var(--ai);font-size:.9rem;letter-spacing:.08em;padding:.35em .9em .35em .7em;border-radius:999px;white-space:nowrap}
 .home span{font-size:1.3em;line-height:1;margin-top:-.1em}
 .home:hover{opacity:.88}
@@ -200,6 +202,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
   .stage{order:2;padding:24px 0}
   .hero{width:100%}
   nav.rooms{order:3;margin:0;border-top:1px solid var(--rule)}
+  .counter{order:4;margin-top:18px}
   nav.rooms a{text-align:center;border-bottom:1px solid var(--rule);padding:1em}
   nav.rooms a:hover,nav.rooms a:focus-visible{border-bottom-color:var(--rule);background:var(--surface)}
 }

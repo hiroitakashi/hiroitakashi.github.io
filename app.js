@@ -53,6 +53,14 @@ function route(){
 }
 addEventListener("hashchange",route);route();
 
+/* 訪問者カウンター（公開中のホームページのトップだけ） */
+if(window.FILE_PAGE==="top"){
+  const c=$("#counter");
+  const img=el("img",{src:"https://hits.sh/hiroitakashi.github.io.svg?style=flat-square&label=%E3%81%94%E8%A8%AA%E5%95%8F&color=24476b&labelColor=8a949b",alt:"訪問者数",height:"20",decoding:"async"});
+  img.addEventListener("error",()=>{c.hidden=true});
+  c.append(img);c.hidden=false;
+}
+
 /* 拡大表示 */
 const lb=$("#lightbox");
 function openLb(p){$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=p.caption||"";lb.hidden=false;$("#lb-close").focus()}
