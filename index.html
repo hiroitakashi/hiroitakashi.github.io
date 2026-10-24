@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<script>window.FILE_PAGE="top";document.documentElement.dataset.page="top"</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Yellowman（廣居隆史）の書斎 — 歴史小説、SUNOで作った曲、写真、YouTube。">
 <style>body{margin:0}img{max-width:100%}</style>
@@ -164,6 +165,26 @@ textarea{font:inherit;font-size:.95rem;padding:.55em .7em;border:1px solid var(-
 body.owner-on .totop{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 
+/* ページ構成 */
+html[data-page] main>section.room{display:none}
+html[data-page="works"] #works,html[data-page="songs"] #songs,html[data-page="photos"] #photos,html[data-page="youtube"] #youtube,html[data-page="comments"] #comments{display:block;border-top:0}
+html[data-page]:not([data-page="top"]) header.top{display:none}
+.subbar{display:none}
+html[data-page]:not([data-page="top"]) .subbar{display:block;border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:0;z-index:7}
+.subbar-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 24px;padding-block:14px}
+.brand{text-decoration:none;color:var(--ink);font-family:var(--f-display);font-size:1.35rem;white-space:nowrap;line-height:1.2}
+.brand .yman{font-family:"Times New Roman",Times,"Tinos",serif;font-size:1.1em;letter-spacing:.02em}
+.brand .no{font-size:.62em;margin:0 .12em}
+.brand .shosai{font-family:"衡山毛筆フォント草書","KouzanSousho","青柳草書","AoyagiSosho","Yuji Boku",var(--f-display)}
+.subnav{display:flex;flex-wrap:wrap;gap:2px 4px}
+.subnav a{text-decoration:none;color:var(--ink);font-family:var(--f-display);font-size:.92rem;letter-spacing:.14em;padding:.35em .7em;border-bottom:2px solid transparent}
+.subnav a.yt-link{letter-spacing:.02em;font-feature-settings:"palt"}
+.subnav a:hover{color:var(--ai)}
+.subnav a[aria-current]{color:var(--ai);border-bottom-color:var(--ai)}
+@media (max-width:640px){.subbar-in{justify-content:center;padding-block:8px 4px;gap:2px}.brand{font-size:1.15rem}.subnav{justify-content:center;flex-wrap:nowrap;gap:0;max-width:100%;overflow-x:auto;scrollbar-width:none}.subnav a{padding:.35em .42em;letter-spacing:0;font-size:.84rem;white-space:nowrap}}
+button.totop{border:0;cursor:pointer;font:inherit;font-size:1.25rem}
+html[data-page] section.room{padding-top:clamp(28px,4vw,48px)}
+
 footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--muted);font-size:var(--step-1)}
 
 /* 拡大表示 */
@@ -193,15 +214,23 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
 
 </head>
 <body>
-<template id="tpl"><header class="wrap top" id="top">
+<template id="tpl"><div class="subbar" id="subbar">
+  <div class="wrap subbar-in">
+    <a class="brand" href="index.html"><span class="yman">Yellowman</span><span class="no">の</span><span class="shosai">書斎</span></a>
+    <nav class="subnav" aria-label="カテゴリー">
+      <a href="novels.html" data-p="works">小説</a><a href="songs.html" data-p="songs">作曲</a><a href="photos.html" data-p="photos">写真集</a><a href="youtube.html" data-p="youtube" class="yt-link">YouTubeチャンネル</a><a href="comments.html" data-p="comments">コメント</a>
+    </nav>
+  </div>
+</div>
+<header class="wrap top" id="top">
   <div class="side">
     <h1 class="name"><span class="yman">Yellowman</span><span class="tail"><span class="no">の</span><span class="shosai">書斎</span></span></h1>
     <nav class="rooms" aria-label="カテゴリー">
-      <a href="#works">小説</a>
-      <a href="#songs">作曲</a>
-      <a href="#photos">写真集</a>
-      <a href="#youtube" class="yt-link">YouTubeチャンネル</a>
-      <a href="#comments">コメント</a>
+      <a href="novels.html">小説</a>
+      <a href="songs.html">作曲</a>
+      <a href="photos.html">写真集</a>
+      <a href="youtube.html" class="yt-link">YouTubeチャンネル</a>
+      <a href="comments.html">コメント</a>
     </nav>
   </div>
   <div class="stage">
@@ -215,7 +244,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>小説<span class="kana">WORKS</span></h2>
         <p>十九作。いずれも縦書きの小説として書き下ろし、ドラマ脚本も用意しています。</p>
-        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
+        <div class="backrow"><a class="back" href="index.html" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <ul class="works" id="works-list"></ul>
     </div>
@@ -226,7 +255,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>作曲<span class="kana">SONGS</span></h2>
         <p>SUNOで作った曲です。曲名を押すと、その場で聴けます。気に入った曲はダウンロードもできます。</p>
-        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
+        <div class="backrow"><a class="back" href="index.html" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div id="songs-area"></div>
       <div id="song-owner" hidden></div>
@@ -238,7 +267,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>写真集<span class="kana">PHOTOGRAPHS</span></h2>
         <p>自分の目で見て、自分で撮った風景です。写真を押すと大きく見られます。</p>
-        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
+        <div class="backrow"><a class="back" href="index.html" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div id="gallery-area"></div>
       <div id="photo-owner" hidden></div>
@@ -250,7 +279,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>YouTube<span class="kana">CHANNEL</span></h2>
         <p>映像で綴っているチャンネルです。</p>
-        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
+        <div class="backrow"><a class="back" href="index.html" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div class="yt" id="yt-area"></div>
       <div id="yt-owner" hidden></div>
@@ -261,7 +290,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
       <div class="room-head">
         <h2>コメント<span class="kana">LETTERS</span></h2>
         <p>小説や曲、写真へのご感想をお寄せください。いただいたコメントは、すべてこの欄で公開します。</p>
-        <div class="backrow"><a class="back" href="#top" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
+        <div class="backrow"><a class="back" href="index.html" aria-label="トップへ戻る"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
       </div>
       <div class="cm-grid">
         <div id="cm-list"></div>
@@ -294,7 +323,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
 <div class="lb" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="写真の拡大表示">
   <figure><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption><button type="button" id="lb-close">閉じる</button></figure>
 </div>
-<a class="totop" id="totop" href="#top" aria-label="トップへ戻る" hidden>↑</a>
+<button type="button" class="totop" id="totop" aria-label="ページの先頭へ" hidden>↑</button>
 <div class="ownerbar" id="owner-bar" hidden></div>
 </template>
 <div id="root"></div>
@@ -339,8 +368,21 @@ WORKS.forEach(w=>wl.append(el("li",{class:"work"},[(w.cover?el("a",{class:"cover
 wl.addEventListener("click",async e=>{const a=e.target.closest("a.dl");if(!a||!downloads)return;e.preventDefault();const t=a.textContent;a.textContent="準備中…";try{const r=await fetch(a.getAttribute("href"));if(!r.ok)throw 0;await downloads.save({filename:a.getAttribute("download"),data:await r.blob()})}catch(err){if(!(err&&err.code==="declined"))window.open(a.getAttribute("href"),"_blank","noopener")}a.textContent=t});
 
 /* トップへ戻るボタン */
-const totop=$("#totop");const topEl=$("#top");
-if("IntersectionObserver" in window){new IntersectionObserver(es=>{totop.hidden=es[0].isIntersecting}).observe(topEl)}else{totop.hidden=false}
+const totop=$("#totop");
+const syncTop=()=>{totop.hidden=scrollY<360};addEventListener("scroll",syncTop,{passive:true});syncTop();
+totop.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
+
+/* ページの切り替え（トップ／各カテゴリー） */
+const PAGES={works:"小説",songs:"作曲",photos:"写真集",youtube:"YouTubeチャンネル",comments:"コメント"};
+function route(){
+  const h=(location.hash||"").slice(1);
+  const page=window.FILE_PAGE||(PAGES[h]?h:"top");
+  document.documentElement.dataset.page=page;
+  document.title=(PAGES[page]?PAGES[page]+" | ":"")+"Yellowmanの書斎";
+  document.querySelectorAll(".subnav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.p===page));
+  scrollTo(0,0);syncTop();
+}
+addEventListener("hashchange",route);route();
 
 /* 拡大表示 */
 const lb=$("#lightbox");
