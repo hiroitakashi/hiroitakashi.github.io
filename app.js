@@ -71,6 +71,23 @@ if(window.FILE_PAGE==="top"){
   btns[0].setAttribute("aria-current","true");restart();
 })();
 
+/* 公開版：ダウンロードの保存場所を選べるように（Chrome・Edge など対応ブラウザ） */
+if(!window.claude){
+  document.addEventListener("click",async e=>{
+    const a=e.target.closest("a[download]");if(!a)return;
+    if(!("showSaveFilePicker" in window))return; // 未対応のブラウザはふつうにダウンロード
+    e.preventDefault();
+    const name=a.getAttribute("download")||"download";const ext=(name.split(".").pop()||"").toLowerCase();
+    const types={pdf:{"application/pdf":[".pdf"]},mp3:{"audio/mpeg":[".mp3"]},mp4:{"video/mp4":[".mp4"]},zip:{"application/zip":[".zip"]}};
+    let handle;
+    try{handle=await window.showSaveFilePicker({suggestedName:name,types:types[ext]?[{description:ext.toUpperCase(),accept:types[ext]}]:undefined})}
+    catch(err){if(err&&err.name==="AbortError")return;location.href=a.href;return}
+    const label=a.textContent;a.textContent="保存中…";
+    try{const r=await fetch(a.href);if(!r.ok)throw 0;const w=await handle.createWritable();await r.body.pipeTo(w);a.textContent="保存しました";setTimeout(()=>{a.textContent=label},2000)}
+    catch(err){a.textContent="保存できませんでした";setTimeout(()=>{a.textContent=label},2500)}
+  });
+}
+
 /* 拡大表示 */
 const lb=$("#lightbox");
 function openLb(p){$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=p.caption||"";lb.hidden=false;$("#lb-close").focus()}
