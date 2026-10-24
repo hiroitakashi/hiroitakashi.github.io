@@ -6,7 +6,7 @@
 ## ページ構成（2026-10-24 から複数ページ）
 | ファイル | 中身 |
 |---|---|
-| index.html | トップページ（名前・メニュー・写真） |
+| index.html | トップページ（全幅の写真スライドショー＋名前、下にメニューとカウンター） |
 | novels.html | 小説 |
 | songs.html | 作曲（邦楽・洋楽・インストゥルメンタル） |
 | photos.html | 写真集 |
@@ -23,6 +23,7 @@
 | style.css | デザイン |
 | files/ | PDF・表紙・曲（MP3）・トップ写真。名前は `pdf-xxx.pdf`, `covers-xxx.jpg`, `music-<分類>-<番号>.mp3` |
 
+- トップのスライドショーの写真は各HTMLの `<div class="hero">` 内の `<figure class="slide">`（6ファイルとも同じ）。画像は files/img-hero-*.jpg と files/img-top.jpg。6秒ごとにフェードで切り替わる（app.js）。
 - 小説を追加したら、各HTMLの小説欄の見出し「○○作。」の数も直す（6ファイルとも同じ文）。
 - 表紙は PDF の1ページ目を 600px 高で JPEG にしたもの（`pdftoppm -f 1 -l 1 -jpeg -scale-to 600`）。
 - 日本語のファイル名はアップロード時に崩れるので、曲名・題名は本人の指示か PDF の中身から取る。

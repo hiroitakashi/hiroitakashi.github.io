@@ -61,6 +61,16 @@ if(window.FILE_PAGE==="top"){
   c.append(img);c.hidden=false;
 }
 
+/* トップの写真スライドショー */
+(function(){
+  const slides=[...document.querySelectorAll("#hero .slide")];const dots=$("#dots");if(slides.length<2)return;
+  let cur=0,timer=null;
+  const btns=slides.map((_,i)=>{const b=el("button",{type:"button","aria-label":(i+1)+"枚目の写真"});b.addEventListener("click",()=>{show(i);restart()});dots.append(b);return b});
+  function show(i){slides[cur].classList.remove("on");btns[cur].setAttribute("aria-current","false");cur=(i+slides.length)%slides.length;slides[cur].classList.add("on");btns[cur].setAttribute("aria-current","true")}
+  function restart(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&document.documentElement.dataset.page!=="works"&&getComputedStyle($("#top")).display!=="none")show(cur+1)},6000)}
+  btns[0].setAttribute("aria-current","true");restart();
+})();
+
 /* 拡大表示 */
 const lb=$("#lightbox");
 function openLb(p){$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=p.caption||"";lb.hidden=false;$("#lb-close").focus()}
