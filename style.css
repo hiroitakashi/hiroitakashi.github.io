@@ -202,6 +202,8 @@ button.totop{border:0;cursor:pointer;font:inherit;font-size:1.25rem}
 html[data-page] section.room{padding-top:clamp(28px,4vw,48px)}
 
 /* ブログ */
+.blog-counter{justify-content:flex-start;margin:-6px 0 22px}
+.post .blog-counter{margin:1.6em 0 0}
 .hero.short{height:clamp(220px,42svh,420px)}
 .hero.thin{height:clamp(120px,20svh,200px)}
 .hero.short .name.deco{font-size:clamp(1.9rem,1.2rem + 2.8vw,3.4rem);margin:0}

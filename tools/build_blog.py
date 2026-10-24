@@ -31,6 +31,12 @@ NAV = [('novels.html', '小説', ''), ('songs.html', '作曲', ''), ('photos.htm
 
 def esc(t): return html.escape(t, quote=True)
 
+def counter(key, label):
+    # 訪問者カウンター（hits.sh）。読み込めない時は表示しない
+    from urllib.parse import quote
+    src = f'https://hits.sh/hiroitakashi.github.io/{key}.svg?style=flat-square&label={quote(label)}&color=24476b&labelColor=8a949b'
+    return f'<div class="counter blog-counter"><img src="{src}" alt="{esc(label)}の数" height="20" decoding="async" onerror="this.parentNode.remove()"></div>'
+
 def slides():
     # トップページ（index.html）のスライドショーと同じ写真を使う
     try: src = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
@@ -162,6 +168,7 @@ def build():
 {md(p['body'])}
 </div>
 {src}
+{counter('blog/' + p['slug'], 'この記事の閲覧')}
 </article>
 {nav}'''
         fn = os.path.join(ROOT, 'blog', p['slug'] + '.html'); keep.add(fn)
@@ -171,7 +178,7 @@ def build():
         if fn not in keep: os.remove(fn)
     items = ''.join(f'''<li><a href="blog/{p['slug']}.html"><time datetime="{p['date']}">{jdate(p['date'])}</time>{''.join(f'<span class="tag">{esc(t)}</span>' for t in p['tags'])}<h2>{esc(p['title'])}</h2><p>{esc(p.get('description', ''))}</p></a></li>''' for p in posts)
     body = f'''<div class="backrow"><a class="back" href="index.html"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
-<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。</p></div>
+<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。</p>{counter('blog', 'ブログへのご訪問')}</div>
 <ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>'''
     open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG')))
     urls = ['', 'novels.html', 'songs.html', 'photos.html', 'youtube.html', 'comments.html', 'blog.html'] + [f'blog/{p["slug"]}.html' for p in posts]
