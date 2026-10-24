@@ -160,23 +160,39 @@ async function downloadSong(sg,btn,st){
   }finally{btn.disabled=false}
 }
 const CATS=["邦楽","洋楽","インストゥルメンタル"];
+let player=null,pAudio=null,pTitle=null,curLi=null,curSong=null;
+function ensurePlayer(){
+  if(player)return;
+  pAudio=el("audio",{controls:"",preload:"none"});
+  pTitle=el("span",{class:"ptt"});
+  const close=el("button",{class:"pclose",type:"button","aria-label":"再生を止めて閉じる",text:"×"});
+  close.addEventListener("click",()=>{pAudio.pause();player.hidden=true;document.body.classList.remove("playing");if(curLi)curLi.classList.remove("on");curLi=null;curSong=null});
+  player=el("div",{class:"player",role:"region","aria-label":"再生中の曲"},[el("span",{class:"plabel",text:"NOW PLAYING"}),pTitle,pAudio,close]);
+  player.hidden=true;document.body.append(player);
+  pAudio.addEventListener("ended",()=>{ // 同じ分類の次の曲へ
+    if(!curSong)return;const list=state.songs.filter(x=>x.url&&(x.cat||CATS[0])===(curSong.cat||CATS[0]));const j=list.indexOf(curSong);
+    if(j>=0&&j<list.length-1){const nx=list[j+1];const li=document.querySelector('.song[data-id="'+CSS.escape(nx.id||nx.url)+'"]');playSong(nx,li)}
+  });
+}
+function playSong(sg,li){
+  ensurePlayer();
+  if(curSong===sg&&!pAudio.paused){pAudio.pause();return}
+  if(curSong!==sg){pAudio.src=sg.url;curSong=sg}
+  if(curLi)curLi.classList.remove("on");curLi=li;if(li)li.classList.add("on");
+  pTitle.textContent=sg.title||"無題";player.hidden=false;document.body.classList.add("playing");
+  pAudio.play().catch(()=>{});
+}
 function songRow(sg,i,num){
-    const li=el("li",{class:"song"});
-    const audio=el("audio",{controls:"",preload:"none",src:sg.url||""});audio.hidden=true;
-    const play=el(sg.url?"button":"a",sg.url?{class:"play",type:"button","aria-label":(sg.title||"無題")+"を再生"}:{class:"play",href:safeUrl(sg.suno)||"#",target:"_blank",rel:"noopener"},[el("span",{class:"tt"},[el("span",{class:"mark",text:"▶"}),document.createTextNode(sg.title||"無題")]),sg.note?el("span",{class:"nt",text:sg.note}):null]);
-    play.addEventListener("click",()=>{
-      if(!sg.url)return;
-      if(playing&&playing!==audio){playing.pause();playing.hidden=true;playing.closest(".song").classList.remove("on")}
-      audio.hidden=false;li.classList.add("on");playing=audio;audio.play().catch(()=>{});
-    });
+    const li=el("li",{class:"song","data-id":sg.id||sg.url||""});
+    if(curSong===sg)li.classList.add("on");
+    const play=el(sg.url?"button":"a",sg.url?{class:"play",type:"button","aria-label":(sg.title||"無題")+"を再生"}:{class:"play",href:safeUrl(sg.suno)||"#",target:"_blank",rel:"noopener"},[el("span",{class:"pi","aria-hidden":"true"}),el("span",{class:"tt",text:sg.title||"無題",title:sg.title||""})]);
+    if(sg.url)play.addEventListener("click",()=>playSong(sg,li));
     const st=el("span",{class:"status"});
     const acts=el("div",{class:"acts"});
-    if(sg.url&&downloads){const b=el("button",{class:"btn ghost",type:"button",text:"ダウンロード"});b.addEventListener("click",()=>downloadSong(sg,b,st));acts.append(b)}
-    else if(sg.url&&!window.claude){acts.append(el("a",{class:"btn",href:sg.url,download:fileBase(sg.title)+"."+(sg.url.split(".").pop()),text:"ダウンロード"}))}
-    if(safeUrl(sg.suno))acts.append(el("a",{class:"btn",href:safeUrl(sg.suno),target:"_blank",rel:"noopener",text:"SUNOで聴く"}));
-    li.append(el("span",{class:"no",text:String(num)}),play,acts);
-    if(sg.url)li.append(audio);
-    st.style.gridColumn="2 / -1";li.append(st);
+    if(sg.url&&downloads){const b=el("button",{class:"dlbtn",type:"button",text:"ダウンロード"});b.addEventListener("click",()=>downloadSong(sg,b,st));acts.append(b)}
+    else if(sg.url&&!window.claude){acts.append(el("a",{class:"dlbtn",href:sg.url,download:fileBase(sg.title)+"."+(sg.url.split(".").pop()),text:"ダウンロード"}))}
+    if(safeUrl(sg.suno))acts.append(el("a",{class:"dlbtn ghost",href:safeUrl(sg.suno),target:"_blank",rel:"noopener",text:"SUNO"}));
+    li.append(el("span",{class:"no",text:String(num).padStart(2,"0")}),play,acts,st);
     if(owner){
       const ti=el("input",{type:"text",id:"st-"+i,value:sg.title||"",placeholder:"曲名","aria-label":"曲名"});
       const no=el("input",{type:"text",id:"sn-"+i,value:sg.note||"",placeholder:"ひとこと（作った日など）","aria-label":"ひとこと"});
