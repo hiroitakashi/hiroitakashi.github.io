@@ -47,7 +47,7 @@ function route(){
   const h=(location.hash||"").slice(1);
   const page=window.FILE_PAGE||(PAGES[h]?h:"top");
   document.documentElement.dataset.page=page;
-  document.title=(PAGES[page]?PAGES[page]+" | ":"")+"Yellowmanの書斎";
+  document.title=(PAGES[page]?PAGES[page]+" | ":"")+"Yellowman's Room";
   document.querySelectorAll(".subnav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.p===page));
   scrollTo(0,0);syncTop();
 }
@@ -315,9 +315,9 @@ function buildDoc(){
   const style=document.getElementById("page-style").textContent;
   const app=document.getElementById("app").textContent;
   return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'
-   +'<title>Yellowmanの書斎</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
+   +'<title>Yellowman&#39;s Room</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
    +'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
-   +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Tinos&family=Yuji+Boku&display=swap">\n'
+   +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Poiret+One&display=swap">\n'
    +'<style id="page-style">'+style+'</style>\n'
    +'<template id="tpl">'+TPL.innerHTML+'</template>\n<div id="root"></div>\n'
    +'<script type="application/json" id="site-state">'+json+'</scr'+'ipt>\n'

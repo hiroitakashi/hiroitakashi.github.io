@@ -1,4 +1,4 @@
-# Yellowmanの書斎（hiroitakashi.github.io）
+# Yellowman's Room（hiroitakashi.github.io）
 
 廣居隆史さんのホームページ。GitHub Pages で https://hiroitakashi.github.io に公開している。
 返答は日本語で。
@@ -6,7 +6,7 @@
 ## ページ構成（2026-10-24 から複数ページ）
 | ファイル | 中身 |
 |---|---|
-| index.html | トップページ（全幅の写真スライドショー＋名前、下にメニューとカウンター） |
+| index.html | トップページ（全幅の写真スライドショー＋サイト名「Yellowman's Room」、下にメニューとカウンター） |
 | novels.html | 小説 |
 | songs.html | 作曲（邦楽・洋楽・インストゥルメンタル） |
 | photos.html | 写真集 |
