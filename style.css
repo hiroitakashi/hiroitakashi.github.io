@@ -154,6 +154,12 @@ body.owner-on .totop{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 
 /* ページ構成 */
+.home{display:inline-flex;align-items:center;gap:.3em;text-decoration:none;color:#fff;background:var(--ai);font-size:.9rem;letter-spacing:.08em;padding:.35em .9em .35em .7em;border-radius:999px;white-space:nowrap}
+.home span{font-size:1.3em;line-height:1;margin-top:-.1em}
+.home:hover{opacity:.88}
+.subbar-in .brand{margin-right:auto}
+.backrow.bottom{margin:36px 0 0;text-align:center}
+.back{font-size:.95rem}
 html[data-page] main>section.room{display:none}
 html[data-page="works"] #works,html[data-page="songs"] #songs,html[data-page="photos"] #photos,html[data-page="youtube"] #youtube,html[data-page="comments"] #comments{display:block;border-top:0}
 html[data-page]:not([data-page="top"]) header.top{display:none}
@@ -169,7 +175,7 @@ html[data-page]:not([data-page="top"]) .subbar{display:block;border-bottom:1px s
 .subnav a.yt-link{letter-spacing:.02em;font-feature-settings:"palt"}
 .subnav a:hover{color:var(--ai)}
 .subnav a[aria-current]{color:var(--ai);border-bottom-color:var(--ai)}
-@media (max-width:640px){.subbar-in{justify-content:center;padding-block:8px 4px;gap:2px}.brand{font-size:1.15rem}.subnav{justify-content:center;flex-wrap:nowrap;gap:0;max-width:100%;overflow-x:auto;scrollbar-width:none}.subnav a{padding:.35em .42em;letter-spacing:0;font-size:.84rem;white-space:nowrap}}
+@media (max-width:640px){.home{font-size:.8rem;padding:.3em .7em .3em .55em;margin-right:12px}.subbar-in{justify-content:center;padding-block:8px 4px;gap:2px}.brand{font-size:1.15rem}.subnav{justify-content:center;flex-wrap:nowrap;gap:0;max-width:100%;overflow-x:auto;scrollbar-width:none}.subnav a{padding:.35em .42em;letter-spacing:0;font-size:.84rem;white-space:nowrap}}
 button.totop{border:0;cursor:pointer;font:inherit;font-size:1.25rem}
 html[data-page] section.room{padding-top:clamp(28px,4vw,48px)}
 
