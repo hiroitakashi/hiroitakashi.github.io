@@ -1,6 +1,6 @@
 /* Layout: 縦書きの名を掲げた藍の扉から、作品・写真・映像の三つの間へ降りていく一枚の書斎 */
 :root{
-  --paper:#ffffff; --surface:#f7f7f5; --ink:#1d2328; --muted:#5d666d; --rule:#cfd4d2;
+  --paper:#efefed; --surface:#f8f8f6; --ink:#1d2328; --muted:#5d666d; --rule:#cfd4d2;
   --ai:#24476b; --ai-soft:#dfe6ee; --shu:#a8402e;
   --f-display:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
   --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
