@@ -26,6 +26,7 @@
 - トップのスライドショーの写真は各HTMLの `<div class="hero">` 内の `<figure class="slide">`（6ファイルとも同じ）。画像は files/img-hero-*.jpg と files/img-top.jpg。6秒ごとにフェードで切り替わる（app.js）。
 - 小説を追加したら、各HTMLの小説欄の見出し「○○作。」の数も直す（6ファイルとも同じ文）。
 - 表紙は PDF の1ページ目を 600px 高で JPEG にしたもの（`pdftoppm -f 1 -l 1 -jpeg -scale-to 600`）。
+- 小説PDFの目次には各章へのページ内リンクと「しおり」を付けている。新しい小説を追加したら同じ処理をする（スクリプトは tools/toc_links.py：`python3 tools/toc_links.py 入力.pdf 出力.pdf`。PyMuPDF が必要）。
 - 日本語のファイル名はアップロード時に崩れるので、曲名・題名は本人の指示か PDF の中身から取る。
 
 ## 下書き版
