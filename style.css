@@ -32,7 +32,7 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:700
 .dots button{width:9px;height:9px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.9);background:transparent;cursor:pointer}
 .dots button[aria-current="true"]{background:#fff}
 nav.rooms{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 8px;padding-block:22px 10px}
-nav.rooms a{text-decoration:none;color:var(--ink);font-family:var(--f-display);font-weight:500;font-size:1rem;letter-spacing:.22em;padding:.6em 1.1em;border-bottom:1px solid transparent}
+nav.rooms a{text-decoration:none;color:var(--ink);font-family:var(--f-body);font-weight:500;font-size:1rem;letter-spacing:.22em;padding:.6em 1.1em;border-bottom:1px solid transparent}
 nav.rooms a:hover,nav.rooms a:focus-visible{color:var(--ai);border-bottom-color:var(--ai)}
 nav.rooms a.yt-link{letter-spacing:.02em;font-feature-settings:"palt"}
 
@@ -193,7 +193,7 @@ html[data-page]:not([data-page="top"]) .subbar{display:block;border-bottom:1px s
 .brand .no{font-size:.62em;margin:0 .12em}
 .brand .shosai{font-family:"衡山毛筆フォント草書","KouzanSousho","青柳草書","AoyagiSosho","Yuji Boku",var(--f-display)}
 .subnav{display:flex;flex-wrap:wrap;gap:2px 4px}
-.subnav a{text-decoration:none;color:var(--ink);font-family:var(--f-display);font-size:.92rem;letter-spacing:.14em;padding:.35em .7em;border-bottom:2px solid transparent}
+.subnav a{text-decoration:none;color:var(--ink);font-family:var(--f-body);font-weight:500;font-size:.92rem;letter-spacing:.14em;padding:.35em .7em;border-bottom:2px solid transparent}
 .subnav a.yt-link{letter-spacing:.02em;font-feature-settings:"palt"}
 .subnav a:hover{color:var(--ai)}
 .subnav a[aria-current]{color:var(--ai);border-bottom-color:var(--ai)}
