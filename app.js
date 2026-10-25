@@ -90,11 +90,16 @@ if(!window.claude){
 
 /* 拡大表示 */
 const lb=$("#lightbox");
-function openLb(p){$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=(p.caption||"")+(p.camera?"　／　"+p.camera:"");lb.hidden=false;$("#lb-close").focus()}
+let lbIdx=0;
+function showLb(i){const L=state.photos;if(!L.length)return;lbIdx=(i+L.length)%L.length;const p=L[lbIdx];$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=(p.caption||"")+(p.camera?"　／　"+p.camera:"");$("#lb-count").textContent=(lbIdx+1)+" / "+L.length;const one=L.length<2;$("#lb-prev").hidden=one;$("#lb-next").hidden=one;const nx=L[(lbIdx+1)%L.length];if(nx){const im=new Image();im.src=nx.url}}
+function openLb(p){const i=state.photos.indexOf(p);showLb(i<0?0:i);lb.hidden=false;$("#lb-next").focus()}
 function closeLb(){lb.hidden=true;$("#lb-img").removeAttribute("src")}
 $("#lb-close").addEventListener("click",closeLb);
 lb.addEventListener("click",e=>{if(e.target===lb)closeLb()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!lb.hidden)closeLb()});
+document.addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")closeLb();else if(e.key==="ArrowRight")showLb(lbIdx+1);else if(e.key==="ArrowLeft")showLb(lbIdx-1)});
+$("#lb-prev").addEventListener("click",e=>{e.stopPropagation();showLb(lbIdx-1)});
+$("#lb-next").addEventListener("click",e=>{e.stopPropagation();showLb(lbIdx+1)});
+{let sx=null;lb.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});lb.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)showLb(lbIdx+(dx<0?1:-1))})}
 
 let owner=null; // {assets, artifact}
 let dirty=false;
