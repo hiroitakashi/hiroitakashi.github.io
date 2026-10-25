@@ -90,7 +90,7 @@ if(!window.claude){
 
 /* 拡大表示 */
 const lb=$("#lightbox");
-function openLb(p){$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=p.caption||"";lb.hidden=false;$("#lb-close").focus()}
+function openLb(p){$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=(p.caption||"")+(p.camera?"　／　"+p.camera:"");lb.hidden=false;$("#lb-close").focus()}
 function closeLb(){lb.hidden=true;$("#lb-img").removeAttribute("src")}
 $("#lb-close").addEventListener("click",closeLb);
 lb.addEventListener("click",e=>{if(e.target===lb)closeLb()});
@@ -115,7 +115,7 @@ function renderGallery(){
       inp.addEventListener("input",()=>{p.caption=inp.value;markDirty()});
       fig.append(el("div",{class:"edit"},[inp,el("button",{class:"btn warn",type:"button",text:"外す",onclick:()=>{state.photos.splice(i,1);markDirty();renderGallery()}})]));
     }else{
-      fig.append(el("figcaption",{text:p.caption||""}));
+      fig.append(el("figcaption",{},[document.createTextNode(p.caption||""),p.camera?el("span",{class:"cam",text:p.camera}):null]));
     }
     g.append(fig);
   });
