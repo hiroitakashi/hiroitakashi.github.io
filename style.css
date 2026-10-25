@@ -264,3 +264,14 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
   .counter{margin-top:16px}
 }
 @media (prefers-reduced-motion:no-preference){nav.rooms a,.yt-card a.go{transition:background .2s,color .2s,border-color .2s}}
+/* 写真の全面表示 */
+.lb{padding:0;background:#000}
+.lb figure{position:fixed;inset:0;max-width:none;display:block;margin:0}
+.lb img{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;object-fit:contain}
+.lb figcaption{position:fixed;left:0;right:0;bottom:0;margin:0;padding:40px 72px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,0));font-size:.95rem;pointer-events:none}
+.lb-bar{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));z-index:22;gap:12px}
+.lb-bar .lb-count{background:rgba(0,0,0,.45);padding:.35em .7em;border-radius:999px}
+.lb .lb-bar button{background:rgba(0,0,0,.45);border-color:rgba(228,231,230,.7);border-radius:999px;font-size:.85rem;padding:.4em 1em}
+.lb.chrome-off figcaption,.lb.chrome-off .lb-bar,.lb.chrome-off .lb-nav{opacity:0;pointer-events:none}
+.lb figcaption,.lb-bar,.lb .lb-nav{transition:opacity .25s}
+@media (max-width:640px){.lb .lb-nav{top:50%;bottom:auto;transform:translateY(-50%);width:40px;height:40px;font-size:1.5rem;background:rgba(0,0,0,.4)}.lb figcaption{padding:32px 16px calc(14px + env(safe-area-inset-bottom,0px));font-size:.85rem}}
