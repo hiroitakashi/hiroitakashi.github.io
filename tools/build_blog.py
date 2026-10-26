@@ -15,7 +15,7 @@ slug: 2026-10-25-short-english-words
 description: 一覧と検索結果に出る100字ほどの要約
 tags: 季節, 暮らし
 pr: false            # アフィリエイトリンクを含むなら true（記事の先頭に「PR」表記が出る）
-category: 話題        # 「話題」（毎朝のトレンド記事・省略時）か「政治・経済」（意見記事。先頭に「筆者の意見」表記が出る）
+category: 話題        # 「話題」（毎朝のトレンド記事・省略時）、「釣り」（東京湾の釣り情報）、「政治・経済」（意見記事。先頭に「筆者の意見」表記が出る）
 sources:
 - 出典のタイトル | https://example.com/...
 ---
@@ -32,7 +32,7 @@ FONTS = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;70
 NAV = [('novels.html', '小説', ''), ('songs.html', '作曲', ''), ('photos.html', '写真集', ''),
        ('youtube.html', 'YouTubeチャンネル', 'yt-link'), ('comments.html', 'コメント', ''), ('blog.html', 'ブログ', '')]
 
-CATS = ['話題', '政治・経済']
+CATS = ['話題', '釣り', '政治・経済']
 OPINION = '<p class="opinion">この記事は筆者・廣居隆史の個人的な意見です。事実の部分は末尾の「参考にした情報」に出典を載せています。</p>'
 
 def esc(t): return html.escape(t, quote=True)
@@ -163,7 +163,8 @@ def page(title, desc, body, prefix, canonical, current='blog', og_type='website'
 '''
 
 def catlabel(p):
-    return f'<span class="cat{" cat-pol" if p["category"] == "政治・経済" else ""}">{esc(p["category"])}</span>'
+    cls = {'政治・経済': ' cat-pol', '釣り': ' cat-fish'}.get(p['category'], '')
+    return f'<span class="cat{cls}">{esc(p["category"])}</span>'
 
 def tabs(posts):
     have = [c for c in CATS if any(p['category'] == c for p in posts)]
@@ -210,7 +211,7 @@ def build():
     items = ''.join(f'''<li data-cat="{esc(p['category'])}"><a href="blog/{p['slug']}.html"><time datetime="{p['date']}">{jdate(p['date'])}</time>{catlabel(p)}{''.join(f'<span class="tag">{esc(t)}</span>' for t in p['tags'])}<h2>{esc(p['title'])}</h2><p>{esc(p.get('description', ''))}</p></a></li>''' for p in posts)
     tb = tabs(posts)
     body = f'''<div class="backrow"><a class="back" href="index.html"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
-<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。{'政治・経済についての意見も載せています。' if any(p['category'] == '政治・経済' for p in posts) else ''}</p>{counter('blog', 'ブログへのご訪問')}</div>
+<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。{'東京湾の最新の釣り情報も毎日お届けします。' if any(p['category'] == '釣り' for p in posts) else ''}{'政治・経済についての意見も載せています。' if any(p['category'] == '政治・経済' for p in posts) else ''}</p>{counter('blog', 'ブログへのご訪問')}</div>
 {tb[0]}<ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>{tb[1]}'''
     open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG')))
     urls = ['', 'novels.html', 'songs.html', 'photos.html', 'youtube.html', 'comments.html', 'blog.html'] + [f'blog/{p["slug"]}.html' for p in posts]

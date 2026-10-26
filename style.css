@@ -283,3 +283,4 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
 .cat-tabs button[aria-pressed="true"]{background:var(--ai);color:#fff}
 .posts li[hidden]{display:none !important}
 .opinion{font-family:var(--f-body);font-size:var(--step-1);border-left:4px solid #8c2f2f;background:rgba(140,47,47,.07);padding:.6em .9em;margin:12px 0 18px}
+.cat.cat-fish{color:#fff;background:#1f6f8b;border-color:#1f6f8b}
