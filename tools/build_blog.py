@@ -15,9 +15,12 @@ slug: 2026-10-25-short-english-words
 description: 一覧と検索結果に出る100字ほどの要約
 tags: 季節, 暮らし
 pr: false            # アフィリエイトリンクを含むなら true（記事の先頭に「PR」表記が出る）
+category: 話題        # 「話題」（毎朝のトレンド記事・省略時）か「政治・経済」（意見記事。先頭に「筆者の意見」表記が出る）
 sources:
 - 出典のタイトル | https://example.com/...
 ---
+政治・経済の記事は、まず blog/drafts/ に置き（ここは組み立てない＝公開されない）、廣居さんの「OK」が出てから blog/posts/ へ移す。
+
 本文（Markdown の一部：## 見出し / ### 小見出し / 段落 / - 箇条書き / 1. 番号付き / > 引用 / **太字** / [リンク](URL)）
 """
 import html, os, re, sys, glob, datetime
@@ -28,6 +31,9 @@ SITE = 'https://hiroitakashi.github.io'
 FONTS = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Poiret+One&display=swap'
 NAV = [('novels.html', '小説', ''), ('songs.html', '作曲', ''), ('photos.html', '写真集', ''),
        ('youtube.html', 'YouTubeチャンネル', 'yt-link'), ('comments.html', 'コメント', ''), ('blog.html', 'ブログ', '')]
+
+CATS = ['話題', '政治・経済']
+OPINION = '<p class="opinion">この記事は筆者・廣居隆史の個人的な意見です。事実の部分は末尾の「参考にした情報」に出典を載せています。</p>'
 
 def esc(t): return html.escape(t, quote=True)
 
@@ -107,6 +113,8 @@ def parse(path):
     if not re.fullmatch(r'[a-z0-9-]+', meta['slug']): raise SystemExit(f'slug は半角英小文字・数字・ハイフンのみ: {path}')
     meta['tags'] = [x.strip() for x in meta.get('tags', '').split(',') if x.strip()]
     meta['pr'] = meta.get('pr', 'false').lower() == 'true'
+    meta['category'] = meta.get('category') or '話題'
+    if meta['category'] not in CATS: raise SystemExit(f'category は {" / ".join(CATS)} のどれか: {path}')
     meta['body'] = m.group(2).strip()
     return meta
 
@@ -143,6 +151,16 @@ def page(title, desc, body, prefix, canonical, current='blog', og_type='website'
 </html>
 '''
 
+def catlabel(p):
+    return f'<span class="cat{" cat-pol" if p["category"] == "政治・経済" else ""}">{esc(p["category"])}</span>'
+
+def tabs(posts):
+    have = [c for c in CATS if any(p['category'] == c for p in posts)]
+    if len(have) < 2: return '', ''
+    btn = '<button type="button" data-f="" aria-pressed="true">すべて</button>' + ''.join(f'<button type="button" data-f="{esc(c)}" aria-pressed="false">{esc(c)}</button>' for c in have)
+    js = '''<script>(function(){var b=document.querySelectorAll(".cat-tabs button"),li=document.querySelectorAll(".posts li[data-cat]");function go(f){b.forEach(function(x){x.setAttribute("aria-pressed",x.dataset.f===f?"true":"false")});li.forEach(function(x){x.hidden=!!f&&x.dataset.cat!==f})}b.forEach(function(x){x.onclick=function(){go(x.dataset.f);try{history.replaceState(null,"",x.dataset.f?"#"+encodeURIComponent(x.dataset.f):location.pathname)}catch(e){}}});var h=decodeURIComponent(location.hash.slice(1));if(h)go(h)})();</script>'''
+    return f'<div class="cat-tabs" role="group" aria-label="分野で絞り込む">{btn}</div>', js
+
 def jdate(d):
     y, m, dd = d.split('-'); return f'{int(y)}年{int(m)}月{int(dd)}日'
 
@@ -154,8 +172,10 @@ def build():
     for i, p in enumerate(posts):
         newer = posts[i - 1] if i > 0 else None
         older = posts[i + 1] if i + 1 < len(posts) else None
-        tags = ''.join(f'<span class="tag">{esc(t)}</span>' for t in p['tags'])
-        pr = '<p class="pr">PR：この記事にはアフィリエイト広告（商品・サービスへのリンク）が含まれます。リンク先で購入されると、運営者に紹介料が支払われることがあります。</p>' if p['pr'] else ''
+        tags = catlabel(p) + ''.join(f'<span class="tag">{esc(t)}</span>' for t in p['tags'])
+        if p['category'] == '政治・経済': pr = OPINION
+        else: pr = ''
+        pr += '<p class="pr">PR：この記事にはアフィリエイト広告（商品・サービスへのリンク）が含まれます。リンク先で購入されると、運営者に紹介料が支払われることがあります。</p>' if p['pr'] else ''
         src = ''
         if p['sources']:
             src = '<div class="sources">参考にした情報<ul>' + ''.join(f'<li><a href="{esc(u)}" target="_blank" rel="noopener">{esc(n)}</a></li>' for n, u in p['sources'] if re.match(r'https?://', u)) + '</ul></div>'
@@ -176,10 +196,11 @@ def build():
     # 消した記事のページを片付ける
     for fn in glob.glob(os.path.join(ROOT, 'blog', '*.html')):
         if fn not in keep: os.remove(fn)
-    items = ''.join(f'''<li><a href="blog/{p['slug']}.html"><time datetime="{p['date']}">{jdate(p['date'])}</time>{''.join(f'<span class="tag">{esc(t)}</span>' for t in p['tags'])}<h2>{esc(p['title'])}</h2><p>{esc(p.get('description', ''))}</p></a></li>''' for p in posts)
+    items = ''.join(f'''<li data-cat="{esc(p['category'])}"><a href="blog/{p['slug']}.html"><time datetime="{p['date']}">{jdate(p['date'])}</time>{catlabel(p)}{''.join(f'<span class="tag">{esc(t)}</span>' for t in p['tags'])}<h2>{esc(p['title'])}</h2><p>{esc(p.get('description', ''))}</p></a></li>''' for p in posts)
+    tb = tabs(posts)
     body = f'''<div class="backrow"><a class="back" href="index.html"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
-<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。</p>{counter('blog', 'ブログへのご訪問')}</div>
-<ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>'''
+<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。{'政治・経済についての意見も載せています。' if any(p['category'] == '政治・経済' for p in posts) else ''}</p>{counter('blog', 'ブログへのご訪問')}</div>
+{tb[0]}<ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>{tb[1]}'''
     open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG')))
     urls = ['', 'novels.html', 'songs.html', 'photos.html', 'youtube.html', 'comments.html', 'blog.html'] + [f'blog/{p["slug"]}.html' for p in posts]
     today = datetime.date.today().isoformat()
