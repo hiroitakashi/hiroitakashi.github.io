@@ -43,8 +43,19 @@ def counter(key, label):
     src = f'https://hits.sh/hiroitakashi.github.io/{key}.svg?style=flat-square&label={quote(label)}&color=24476b&labelColor=8a949b'
     return f'<div class="counter blog-counter"><img src="{src}" alt="{esc(label)}の数" height="20" decoding="async" onerror="this.parentNode.remove()"></div>'
 
+# ブログの写真（一覧の上のスライドショーと、記事ページの帯）。入れ替えるときはここを直す
+BLOG_PHOTOS = [
+    ('files/img-blog-01.jpg', '岩清水の手水鉢と柄杓'),
+    ('files/img-blog-02.jpg', '杉木立に囲まれた参道の広場'),
+    ('files/img-blog-03.jpg', '海に沈む夕日を眺める人たち'),
+    ('files/img-blog-04.jpg', 'ホタルブクロと紫のカタバミ'),
+    ('files/img-blog-05.jpg', '凍った湖の向こうのダイヤモンド富士'),
+    ('files/img-blog-06.jpg', 'ガラス張りのホールのベンチ'),
+]
+
 def slides():
-    # トップページ（index.html）のスライドショーと同じ写真を使う
+    if BLOG_PHOTOS and all(os.path.exists(os.path.join(ROOT, u)) for u, _ in BLOG_PHOTOS): return BLOG_PHOTOS
+    # 写真がない時は、トップページ（index.html）のスライドショーと同じ写真を使う
     try: src = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
     except OSError: return []
     return re.findall(r'<figure class="slide[^"]*"><img src="([^"]+)" alt="([^"]*)"', src)
