@@ -49,7 +49,7 @@ BLOG_PHOTOS = [
     ('files/img-blog-02.jpg', '杉木立に囲まれた参道の広場'),
     ('files/img-blog-03.jpg', '海に沈む夕日を眺める人たち'),
     ('files/img-blog-04.jpg', 'ホタルブクロと紫のカタバミ'),
-    ('files/img-blog-05.jpg', '凍った湖の向こうのダイヤモンド富士'),
+    ('files/img-blog-05b.jpg', '凍った湖の向こうのダイヤモンド富士'),
     ('files/img-blog-06.jpg', 'ガラス張りのホールのベンチ'),
 ]
 
