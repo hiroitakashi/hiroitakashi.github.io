@@ -37,8 +37,11 @@ const wid=w=>"w-"+((w.cover||w.pdf||"").replace(/^.*?(covers|pdf)-/,"").replace(
 /* 目次：作品の表紙と題名を並べ、押すとその作品へ飛ぶ */
 const toc=el("nav",{class:"works-toc",id:"works-toc","aria-label":"作品の目次"},[el("h3",{class:"toc-h",text:"作品一覧"}),el("ol",{},WORKS.map(w=>el("li",{},el("a",{href:"#"+wid(w)},[w.cover?el("img",{src:w.cover,alt:"",loading:"lazy",width:"424",height:"600"}):null,el("span",{class:"tt",text:w.t}),el("span",{class:"te",text:w.era})]))))]);
 wl.before(toc);
-document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#w-"],a[href="#works-toc"]');if(!a||a.getAttribute("href")!==location.hash)return;e.preventDefault();const t=document.getElementById(a.getAttribute("href").slice(1));if(t)t.scrollIntoView({block:"start"})});
-WORKS.forEach(w=>wl.append(el("li",{class:"work",id:wid(w)},[(w.cover?el("a",{class:"cover",href:w.pdf||w.cover,target:"_blank",rel:"noopener","aria-label":w.t+"をPDFで読む"},el("img",{src:w.cover,alt:"『"+w.t+"』表紙",loading:"lazy",width:"424",height:"600"})):null),el("h3",{class:"wt",text:w.t}),el("div",{class:"who",text:w.who}),el("div",{class:"era",text:w.era}),el("p",{text:w.d}),w.pdf?el("div",{class:"read"},[el("a",{href:w.pdf,target:"_blank",rel:"noopener",text:"PDFで読む"}),el("a",{href:w.pdf,download:w.t+".pdf",class:"dl",text:"ダウンロード"})]):null,el("a",{class:"to-toc",href:"#works-toc",text:"▲ 作品一覧へ"})])));
+wl.before(el("div",{class:"backrow to-list"},el("a",{class:"back",href:"#"},[el("span",{"aria-hidden":"true",text:"‹"})," 作品一覧へ"])));
+function workNav(w){const i=WORKS.indexOf(w),pv=WORKS[i-1],nx=WORKS[i+1];return el("nav",{class:"work-nav","aria-label":"作品の移動"},[el("a",{class:"to-toc",href:"#",text:"‹ 作品一覧へ"}),el("span",{class:"pn"},[pv?el("a",{href:"#"+wid(pv),text:"← "+pv.t}):null,nx?el("a",{href:"#"+wid(nx),text:nx.t+" →"}):null])])}
+/* 一覧と作品を別々のページとして見せる：#w-○○ のときはその作品だけ、それ以外は一覧だけ */
+function worksView(){const h=decodeURIComponent((location.hash||"").slice(1));const cur=h.startsWith("w-")&&document.getElementById(h);document.querySelectorAll(".work").forEach(li=>li.classList.toggle("cur",li===cur));document.documentElement.dataset.view=cur?"work":"toc";if(cur){const w=WORKS.find(x=>wid(x)===h);if(w)document.title=w.t+" | 小説 | Yellowman's Room"}return !!cur}
+WORKS.forEach(w=>wl.append(el("li",{class:"work",id:wid(w)},[(w.cover?el("a",{class:"cover",href:w.pdf||w.cover,target:"_blank",rel:"noopener","aria-label":w.t+"をPDFで読む"},el("img",{src:w.cover,alt:"『"+w.t+"』表紙",loading:"lazy",width:"424",height:"600"})):null),el("h3",{class:"wt",text:w.t}),el("div",{class:"who",text:w.who}),el("div",{class:"era",text:w.era}),el("p",{text:w.d}),w.pdf?el("div",{class:"read"},[el("a",{href:w.pdf,target:"_blank",rel:"noopener",text:"PDFで読む"}),el("a",{href:w.pdf,download:w.t+".pdf",class:"dl",text:"ダウンロード"})]):null,workNav(w)])));
 
 wl.addEventListener("click",async e=>{const a=e.target.closest("a.dl");if(!a||!downloads)return;e.preventDefault();const t=a.textContent;a.textContent="準備中…";try{const r=await fetch(a.getAttribute("href"));if(!r.ok)throw 0;await downloads.save({filename:a.getAttribute("download"),data:await r.blob()})}catch(err){if(!(err&&err.code==="declined"))window.open(a.getAttribute("href"),"_blank","noopener")}a.textContent=t});
 
@@ -55,8 +58,8 @@ function route(){
   document.documentElement.dataset.page=page;
   document.title=(PAGES[page]?PAGES[page]+" | ":"")+"Yellowman's Room";
   document.querySelectorAll(".subnav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.p===page));
-  const tgt=h&&!PAGES[h]&&document.getElementById(h);
-  if(tgt)tgt.scrollIntoView({block:"start"});else scrollTo(0,0);
+  worksView();
+  scrollTo(0,0);
   syncTop();
 }
 addEventListener("hashchange",route);route();

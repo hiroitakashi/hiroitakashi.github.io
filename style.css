@@ -298,3 +298,22 @@ footer{border-top:1px solid var(--rule);padding-block:28px 40px;color:var(--mute
 .work .to-toc:hover{text-decoration:underline}
 #works-toc{scroll-margin-top:84px}
 @media (max-width:520px){.works-toc ol{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 小説：一覧ページと作品ページを分ける */
+html[data-view="toc"] #works .works{display:none}
+html[data-view="work"] #works .works-toc{display:none}
+html[data-view="work"] #works .work:not(.cur){display:none}
+html[data-view="work"] #works .works{grid-template-columns:1fr;border:0}
+html[data-view="work"] #works .work.cur{border:1px solid var(--rule);padding:clamp(20px,4vw,40px);gap:6px clamp(20px,4vw,40px)}
+html[data-view="work"] #works .work.cur .cover{width:clamp(140px,24vw,220px)}
+html[data-view="work"] #works .work.cur .wt{font-size:clamp(1.5rem,3.2vw,2rem)}
+html[data-view="work"] #works .work.cur p{font-size:1rem}
+.work-nav{grid-column:1 / -1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 16px;margin-top:18px;padding-top:14px;border-top:1px solid var(--rule);font-size:.85rem}
+.work-nav a{color:var(--ai);text-decoration:none}
+.work-nav a:hover{text-decoration:underline}
+.work-nav .pn{display:flex;gap:18px;flex-wrap:wrap}
+html[data-view="toc"] .work-nav{display:none}
+.work-nav .to-toc{grid-column:auto;justify-self:auto;margin:0;font-size:inherit;color:var(--ai)}
+html[data-view="work"] #works .work.cur{grid-template-rows:auto auto auto auto 1fr auto;align-items:start}
+html[data-view="work"] #works .work.cur .read{align-items:flex-start}
+.to-list{display:none;margin:0 0 14px}
+html[data-view="work"] #works .to-list{display:flex}
