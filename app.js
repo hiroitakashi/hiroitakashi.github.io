@@ -3,25 +3,25 @@
 const TPL=document.getElementById("tpl");document.getElementById("root").append(TPL.content.cloneNode(true));
 const WORKS=[
  {t:"民の火種",cover:"files/covers-tami.jpg",pdf:"files/pdf-tami.pdf",who:"廣居図書忠起",era:"江戸中期・米沢藩",d:"破産寸前の米沢藩。鷹山の改革と七家騒動のさなか、兄を売らず主を欺かず、ただ帳面を見つめた若き藩士の物語。"},
- {t:"天平の灯",cover:"files/covers-ganjin.jpg",pdf:"files/pdf-ganjin.pdf",who:"鑑真",era:"奈良時代・唐から日本へ",d:"六度目の渡海で、盲いた老僧は薩摩の浜の砂をすくった。栄叡と普照、二人の日本僧との十二年。"},
+ {t:"天平の灯",cover:"files/covers-ganjin.jpg",pdf:"files/pdf-ganjin.pdf",who:"鑑真",era:"奈良時代・唐から日本へ",d:"6度目の渡海で、盲いた老僧は薩摩の浜の砂をすくった。栄叡と普照、2人の日本僧との12年。"},
  {t:"月かげの里",cover:"files/covers-honen.jpg",pdf:"files/pdf-honen.pdf",who:"法然",era:"平安末〜鎌倉",d:"「仇を討つな」と遺した父の言葉から、恨みの連鎖を断つ道としての念仏にたどり着くまで。"},
- {t:"白道",cover:"files/covers-shinran.jpg",pdf:"files/pdf-shinran.pdf",who:"親鸞",era:"鎌倉時代",d:"煩悩を一つも捨てられぬまま、九十年かけて歩みきった一本の白い道。妻・恵信尼の手紙を背骨に。"},
- {t:"花は愛惜に散る",cover:"files/covers-dogen.jpg",pdf:"files/pdf-dogen.pdf",who:"道元",era:"鎌倉時代",d:"八つで母を見送った日、香の煙の行方を追った少年は、人はなぜ消え、消えるものをなぜ愛しく思うのかと問いつづけた。"},
- {t:"紅顔と白骨",cover:"files/covers-rennyo.jpg",pdf:"files/pdf-rennyo.pdf",who:"蓮如",era:"室町時代",d:"五たび妻を娶り二十七人の子をなし、八十を過ぎてなお赤子を抱いた男を、十男・実悟が書き残す。"},
- {t:"三浦按針",cover:"files/covers-anjin.jpg",pdf:"files/pdf-anjin.pdf",who:"ウィリアム・アダムス",era:"江戸初期・全七巻",d:"帰れない男が、江戸の河岸の舟大工の娘・鶴と巣をつくる。海の向こうの妻メアリーとの二十年。"},
+ {t:"白道",cover:"files/covers-shinran.jpg",pdf:"files/pdf-shinran.pdf",who:"親鸞",era:"鎌倉時代",d:"煩悩を一つも捨てられぬまま、90年かけて歩みきった一本の白い道。妻・恵信尼の手紙を背骨に。"},
+ {t:"花は愛惜に散る",cover:"files/covers-dogen.jpg",pdf:"files/pdf-dogen.pdf",who:"道元",era:"鎌倉時代",d:"8歳で母を見送った日、香の煙の行方を追った少年は、人はなぜ消え、消えるものをなぜ愛しく思うのかと問いつづけた。"},
+ {t:"紅顔と白骨",cover:"files/covers-rennyo.jpg",pdf:"files/pdf-rennyo.pdf",who:"蓮如",era:"室町時代",d:"5たび妻を娶り27人の子をなし、80を過ぎてなお赤子を抱いた男を、十男・実悟が書き残す。"},
+ {t:"三浦按針",cover:"files/covers-anjin.jpg",pdf:"files/pdf-anjin.pdf",who:"ウィリアム・アダムス",era:"江戸初期・全7巻",d:"帰れない男が、江戸の河岸の舟大工の娘・鶴と巣をつくる。海の向こうの妻メアリーとの20年。"},
  {t:"沖の白帆",cover:"files/covers-bunzaemon.jpg",pdf:"files/pdf-bunzaemon.pdf",who:"紀伊國屋文左衛門",era:"江戸前期・元禄",d:"嵐の海へ白帆を張り、江戸じゅうの度肝を抜いた男。深川の庵で老いた意荃が、訪ねてきた娘に語る栄華と没落。"},
- {t:"見試しの川",cover:"files/covers-hirata.jpg",pdf:"files/pdf-hirata.pdf",who:"平田靱負",era:"江戸中期・宝暦治水",d:"遠い薩摩から美濃の輪中へ。三つの大河に挑み、工事を終えて逝った総奉行と、名も残らなかった侍たちの一年と三月。"},
- {t:"あべこべ宿",cover:"files/covers-kokudaya.jpg",pdf:"files/pdf-kokudaya.pdf",who:"穀田屋十三郎",era:"江戸中期・仙台藩吉岡宿",d:"百姓が殿様に金を貸す。泣く伝馬の馬、化かす狐、口をきく一文銭。八年かけて千両を貯めた九人の、あべこべで奇想天外な物語。"},
- {t:"ひりりと辛い",cover:"files/covers-karaku.jpg",pdf:"files/pdf-karaku.pdf",who:"初代三笑亭可楽",era:"江戸後期・寄席ばなし",d:"線香一本が灰になるまでに、客のお題で一席こしらえる。馬喰町の櫛挽き職人から、江戸に寄席の灯をともした男へ。"},
+ {t:"見試しの川",cover:"files/covers-hirata.jpg",pdf:"files/pdf-hirata.pdf",who:"平田靱負",era:"江戸中期・宝暦治水",d:"遠い薩摩から美濃の輪中へ。3つの大河に挑み、工事を終えて逝った総奉行と、名も残らなかった侍たちの1年と3カ月。"},
+ {t:"あべこべ宿",cover:"files/covers-kokudaya.jpg",pdf:"files/pdf-kokudaya.pdf",who:"穀田屋十三郎",era:"江戸中期・仙台藩吉岡宿",d:"百姓が殿様に金を貸す。泣く伝馬の馬、化かす狐、口をきく一文銭。8年かけて1000両を貯めた9人の、あべこべで奇想天外な物語。"},
+ {t:"ひりりと辛い",cover:"files/covers-karaku.jpg",pdf:"files/pdf-karaku.pdf",who:"初代三笑亭可楽",era:"江戸後期・寄席ばなし",d:"線香1本が灰になるまでに、客のお題で一席こしらえる。馬喰町の櫛挽き職人から、江戸に寄席の灯をともした男へ。"},
  {t:"灯ともす人",cover:"files/covers-yugaku.jpg",pdf:"files/pdf-yugaku.pdf",who:"大原幽学",era:"江戸後期・下総",d:"雪の夜、一人の博打打ちが泣いた。そこから村は生まれ変わった。干潟の村に先祖株を説き、百姓とともに生きた男の生涯。"},
  {t:"波頭",cover:"files/covers-manjiro.jpg",pdf:"files/pdf-manjiro.pdf",who:"ジョン万次郎",era:"幕末〜明治",d:"字も読めぬ土佐の漁師の少年が、鳥島から捕鯨船へ。日本とアメリカのあいだに架けたただ一人の橋。"},
  {t:"日出づる涯",cover:"files/covers-satow.jpg",pdf:"files/pdf-satow.pdf",who:"アーネスト・サトウ",era:"幕末〜明治・長編",d:"船上から見えた島影に始まる、英国人通訳官の目に映った幕末日本。植木職人の娘・兼と子どもたちへの、生涯消えなかった想い。"},
  {t:"到る処青山あり",cover:"files/covers-tanaka.jpg",pdf:"files/pdf-tanaka.pdf",who:"田中光顕",era:"幕末〜昭和・長編",d:"土佐佐川の少年は、志士の仲間を次々に見送り、ひとり昭和まで生き残った。「最後の志士」が語り継いだ、散った者たちの青山。"},
- {t:"暗闇の影",cover:"files/covers-kurayami.jpg",pdf:"files/pdf-kurayami.pdf",who:"木立凌庵",era:"幕末・慶応二年",d:"将軍家茂と孝明帝、二つの死をつなぐ護符と香。町医者の倅が、書かれなかった歴史の影を追う。"},
+ {t:"暗闇の影",cover:"files/covers-kurayami.jpg",pdf:"files/pdf-kurayami.pdf",who:"木立凌庵",era:"幕末・慶応2年",d:"将軍家茂と孝明帝、2つの死をつなぐ護符と香。町医者の倅が、書かれなかった歴史の影を追う。"},
  {t:"壁のなめくじ",cover:"files/covers-shinsho.jpg",pdf:"files/pdf-shinsho.pdf",who:"五代目古今亭志ん生",era:"明治〜昭和",d:"沼の上の長屋で、壁を這う銀の筋を女房は「きれい」と言った。のろくたって、止まらなかった噺家の生涯。"},
  {t:"まかり通る",cover:"files/covers-tesshu.jpg",pdf:"files/pdf-tesshu.pdf",who:"山岡鉄舟",era:"幕末〜明治",d:"「朝敵徳川慶喜家来、山岡鉄太郎まかり通る」。官軍の陣中を名乗って歩き、駿府で西郷と向き合った大男の、剣と禅と書の生涯。"},
- {t:"鈴の屋",cover:"files/covers-norinaga.jpg",pdf:"files/pdf-norinaga.pdf",who:"本居宣長",era:"江戸中期",d:"昼は子供の熱を診る町医者、夜は二階の書斎で鈴を鳴らし古事記に向かう。新上屋の一夜から三十五年、師に託された頂に立った人の生涯。"},
- {t:"クインシー",cover:"files/covers-quincy-chicago.jpg",pdf:"files/pdf-quincy.pdf",who:"クインシー・ジョーンズ",era:"昭和〜令和・アメリカ",d:"シカゴの路地で銃声に怯えた少年は、雨の街で盲目の兄に音の書き方を教わった。シナトラ、マイケル、そして見送った友たち。一杯のコーヒーと酒に刻まれた、九十一年の長い一曲。"}
+ {t:"鈴の屋",cover:"files/covers-norinaga.jpg",pdf:"files/pdf-norinaga.pdf",who:"本居宣長",era:"江戸中期",d:"昼は子供の熱を診る町医者、夜は2階の書斎で鈴を鳴らし古事記に向かう。新上屋の一夜から35年、師に託された頂に立った人の生涯。"},
+ {t:"クインシー",cover:"files/covers-quincy-chicago.jpg",pdf:"files/pdf-quincy.pdf",who:"クインシー・ジョーンズ",era:"昭和〜令和・アメリカ",d:"シカゴの路地で銃声に怯えた少年は、雨の街で盲目の兄に音の書き方を教わった。シナトラ、マイケル、そして見送った友たち。一杯のコーヒーと酒に刻まれた、91年の長い一曲。"}
 ];
 let state;
 try{state=window.SITE_STATE}catch(e){state={photos:[],youtube:{name:"",url:"",videos:[]}}}
