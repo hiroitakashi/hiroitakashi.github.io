@@ -21,7 +21,7 @@ const WORKS=[
  {t:"壁のなめくじ",cover:"files/covers-shinsho.jpg",pdf:"files/pdf-shinsho.pdf",who:"五代目古今亭志ん生",era:"明治〜昭和",d:"沼の上の長屋で、壁を這う銀の筋を女房は「きれい」と言った。のろくたって、止まらなかった噺家の生涯。"},
  {t:"まかり通る",cover:"files/covers-tesshu.jpg",pdf:"files/pdf-tesshu.pdf",who:"山岡鉄舟",era:"幕末〜明治",d:"「朝敵徳川慶喜家来、山岡鉄太郎まかり通る」。官軍の陣中を名乗って歩き、駿府で西郷と向き合った大男の、剣と禅と書の生涯。"},
  {t:"鈴の屋",cover:"files/covers-norinaga.jpg",pdf:"files/pdf-norinaga.pdf",who:"本居宣長",era:"江戸中期",d:"昼は子供の熱を診る町医者、夜は二階の書斎で鈴を鳴らし古事記に向かう。新上屋の一夜から三十五年、師に託された頂に立った人の生涯。"},
- {t:"夜を編む人",cover:"files/covers-quincy.jpg",pdf:"files/pdf-quincy.pdf",who:"クインシー・ジョーンズ",era:"昭和〜令和・アメリカ",d:"シカゴの路地で銃声に怯えた少年は、雨の街で盲目の兄に音の書き方を教わった。シナトラ、マイケル、そして見送った友たち。一杯のコーヒーと酒に刻まれた、九十一年の長い一曲。"}
+ {t:"クインシー",cover:"files/covers-quincy-chicago.jpg",pdf:"files/pdf-quincy.pdf",who:"クインシー・ジョーンズ",era:"昭和〜令和・アメリカ",d:"シカゴの路地で銃声に怯えた少年は、雨の街で盲目の兄に音の書き方を教わった。シナトラ、マイケル、そして見送った友たち。一杯のコーヒーと酒に刻まれた、九十一年の長い一曲。"}
 ];
 let state;
 try{state=window.SITE_STATE}catch(e){state={photos:[],youtube:{name:"",url:"",videos:[]}}}
@@ -33,7 +33,12 @@ const safeUrl=u=>{try{const x=new URL(u);return(x.protocol==="https:"||x.protoco
 
 /* 作品 */
 const wl=$("#works-list");
-WORKS.forEach(w=>wl.append(el("li",{class:"work"},[(w.cover?el("a",{class:"cover",href:w.pdf||w.cover,target:"_blank",rel:"noopener","aria-label":w.t+"をPDFで読む"},el("img",{src:w.cover,alt:"『"+w.t+"』表紙",loading:"lazy",width:"424",height:"600"})):null),el("h3",{class:"wt",text:w.t}),el("div",{class:"who",text:w.who}),el("div",{class:"era",text:w.era}),el("p",{text:w.d}),w.pdf?el("div",{class:"read"},[el("a",{href:w.pdf,target:"_blank",rel:"noopener",text:"PDFで読む"}),el("a",{href:w.pdf,download:w.t+".pdf",class:"dl",text:"ダウンロード"})]):null])));
+const wid=w=>"w-"+((w.cover||w.pdf||"").replace(/^.*?(covers|pdf)-/,"").replace(/[.-].*$/,"")||WORKS.indexOf(w));
+/* 目次：作品の表紙と題名を並べ、押すとその作品へ飛ぶ */
+const toc=el("nav",{class:"works-toc",id:"works-toc","aria-label":"作品の目次"},[el("h3",{class:"toc-h",text:"作品一覧"}),el("ol",{},WORKS.map(w=>el("li",{},el("a",{href:"#"+wid(w)},[w.cover?el("img",{src:w.cover,alt:"",loading:"lazy",width:"424",height:"600"}):null,el("span",{class:"tt",text:w.t}),el("span",{class:"te",text:w.era})]))))]);
+wl.before(toc);
+document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#w-"],a[href="#works-toc"]');if(!a||a.getAttribute("href")!==location.hash)return;e.preventDefault();const t=document.getElementById(a.getAttribute("href").slice(1));if(t)t.scrollIntoView({block:"start"})});
+WORKS.forEach(w=>wl.append(el("li",{class:"work",id:wid(w)},[(w.cover?el("a",{class:"cover",href:w.pdf||w.cover,target:"_blank",rel:"noopener","aria-label":w.t+"をPDFで読む"},el("img",{src:w.cover,alt:"『"+w.t+"』表紙",loading:"lazy",width:"424",height:"600"})):null),el("h3",{class:"wt",text:w.t}),el("div",{class:"who",text:w.who}),el("div",{class:"era",text:w.era}),el("p",{text:w.d}),w.pdf?el("div",{class:"read"},[el("a",{href:w.pdf,target:"_blank",rel:"noopener",text:"PDFで読む"}),el("a",{href:w.pdf,download:w.t+".pdf",class:"dl",text:"ダウンロード"})]):null,el("a",{class:"to-toc",href:"#works-toc",text:"▲ 作品一覧へ"})])));
 
 wl.addEventListener("click",async e=>{const a=e.target.closest("a.dl");if(!a||!downloads)return;e.preventDefault();const t=a.textContent;a.textContent="準備中…";try{const r=await fetch(a.getAttribute("href"));if(!r.ok)throw 0;await downloads.save({filename:a.getAttribute("download"),data:await r.blob()})}catch(err){if(!(err&&err.code==="declined"))window.open(a.getAttribute("href"),"_blank","noopener")}a.textContent=t});
 
@@ -50,7 +55,9 @@ function route(){
   document.documentElement.dataset.page=page;
   document.title=(PAGES[page]?PAGES[page]+" | ":"")+"Yellowman's Room";
   document.querySelectorAll(".subnav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.p===page));
-  scrollTo(0,0);syncTop();
+  const tgt=h&&!PAGES[h]&&document.getElementById(h);
+  if(tgt)tgt.scrollIntoView({block:"start"});else scrollTo(0,0);
+  syncTop();
 }
 addEventListener("hashchange",route);route();
 
