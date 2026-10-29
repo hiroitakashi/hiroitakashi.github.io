@@ -358,3 +358,7 @@ html[data-view="work"] #works .to-list{display:flex}
 .lb .lb-bar .lb-bgm.off{opacity:.6;text-decoration:line-through}
 @media (max-width:640px){.lb-bar{left:max(12px,env(safe-area-inset-left,0px));flex-wrap:wrap;justify-content:flex-end;gap:8px}.lb .lb-bar button{font-size:.78rem;padding:.35em .8em}}
 @media (prefers-reduced-motion:reduce){.lb-stage .layer{animation:none!important}}
+/* スマホのダウンロード案内 */
+#dl-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);width:min(92vw,420px);box-sizing:border-box;background:#1f2b3a;color:#fff;font-family:var(--f-body);font-size:.9rem;line-height:1.7;padding:14px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:1000}
+#dl-toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#dl-toast b{color:#ffd78a}

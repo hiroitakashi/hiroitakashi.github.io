@@ -82,6 +82,25 @@ if(window.FILE_PAGE==="top"){
   btns[0].setAttribute("aria-current","true");restart();
 })();
 
+/* スマホでのダウンロード：押したあとに何をすればよいかを画面に出す。LINEなどのアプリ内ブラウザは保存できないことが多いので、ふつうのブラウザで開き直す */
+if(!window.claude){
+  const ua=navigator.userAgent||"";
+  const isIOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const isAndroid=/Android/.test(ua);
+  const inLine=/ Line\//i.test(ua);
+  const inApp=inLine||/FBAN|FBAV|Instagram|Twitter|MicroMessenger/i.test(ua);
+  const toast=msg=>{let t=document.getElementById("dl-toast");if(!t){t=el("div",{id:"dl-toast",role:"status"});document.body.append(t);t.addEventListener("click",()=>t.classList.remove("on"))}t.innerHTML=msg;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),12000)};
+  if(isIOS||isAndroid)document.addEventListener("click",e=>{
+    const a=e.target.closest("a[download]");if(!a)return;
+    if(inApp){
+      e.preventDefault();
+      if(inLine){toast("<b>LINEの中の画面では保存できません。</b><br>SafariやChromeで開き直します…");const u=new URL(location.href);u.searchParams.set("openExternalBrowser","1");setTimeout(()=>{location.href=u.toString()},900);return}
+      toast("<b>このアプリの中の画面では保存できません。</b><br>右上（または右下）のメニューから「ブラウザで開く」を選び、SafariやChromeでもう一度「ダウンロード」を押してください。");return}
+    if(isIOS)toast("<b>iPhoneの場合</b><br>①「ダウンロードしますか？」と出たら<b>「ダウンロード」</b>を押します。<br>②保存先は<b>「ファイル」アプリ →「ダウンロード」</b>です。そこから押すと聴けます（小説のPDFは読めます）。");
+    else toast("<b>Androidの場合</b><br>自動で保存が始まります。<br>保存先は<b>「ファイル」アプリ（またはChromeのメニュー）→「ダウンロード」</b>です。");
+  },true);
+}
+
 /* 公開版：ダウンロードの保存場所を選べるように（Chrome・Edge など対応ブラウザ） */
 if(!window.claude){
   document.addEventListener("click",async e=>{
