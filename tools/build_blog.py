@@ -21,7 +21,7 @@ sources:
 ---
 政治・経済の記事は、まず blog/drafts/ に置き（ここは組み立てない＝公開されない）、廣居さんの「OK」が出てから blog/posts/ へ移す。
 
-本文（Markdown の一部：## 見出し / ### 小見出し / 段落 / - 箇条書き / 1. 番号付き / > 引用 / **太字** / [リンク](URL)）
+本文（Markdown の一部：## 見出し / ### 小見出し / 段落 / - 箇条書き / 1. 番号付き / > 引用 / | 表 |（2行目に |---|---| を入れると1行目が見出し）/ **太字** / [リンク](URL)）
 """
 import html, os, re, sys, glob, datetime
 
@@ -82,14 +82,25 @@ def inline(t):
     return t
 
 def md(body):
-    out, para, lst, ltype = [], [], [], None
+    out, para, lst, ltype, tbl = [], [], [], None, []
+    def cells(row): return [c.strip() for c in row.strip().strip('|').split('|')]
     def flush():
-        nonlocal para, lst, ltype
+        nonlocal para, lst, ltype, tbl
+        if tbl:
+            rows = [cells(r) for r in tbl]
+            head = rows[0] if len(rows) > 1 and re.match(r'^[\s|:-]+$', tbl[1]) else None
+            body = rows[2:] if head else rows
+            h = '<thead><tr>' + ''.join(f'<th>{inline(c)}</th>' for c in head) + '</tr></thead>' if head else ''
+            out.append('<div class="table"><table>' + h + '<tbody>' + ''.join('<tr>' + ''.join(f'<td>{inline(c)}</td>' for c in r) + '</tr>' for r in body) + '</tbody></table></div>'); tbl = []
         if para: out.append('<p>' + inline(' '.join(para)) + '</p>'); para = []
         if lst: out.append(f'<{ltype}>' + ''.join(f'<li>{inline(x)}</li>' for x in lst) + f'</{ltype}>'); lst = []; ltype = None
     for line in body.splitlines():
         s = line.rstrip()
         if not s.strip(): flush(); continue
+        if s.lstrip().startswith('|'):
+            if not tbl: flush()
+            tbl.append(s); continue
+        if tbl: flush()
         m = re.match(r'^(#{2,3})\s+(.*)$', s)
         if m: flush(); n = len(m.group(1)); out.append(f'<h{n}>{inline(m.group(2))}</h{n}>'); continue
         m = re.match(r'^\s*[-*]\s+(.*)$', s)
