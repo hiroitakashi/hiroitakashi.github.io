@@ -22,8 +22,10 @@
 | app.js | 小説の追加・修正 → 先頭の `const WORKS=[ … ]`（t=題名, cover, pdf, who=主人公, era=時代, d=紹介文）。並びはおおむね時代順 |
 | data.js | 曲の追加・曲名修正 → `window.SITE_STATE.songs`（cat は "邦楽" / "洋楽" / "インストゥルメンタル"）。YouTube は `youtube.channels` |
 | style.css | デザイン |
+| data.js（写真集） | 写真はフォルダ単位の `window.SITE_STATE.albums`（id, title=フォルダ名, note, photos=[{url, caption, camera}]）。本人がフォルダで送った写真を1アルバムにし、フォルダ名を題名にする。画像は files/img-<アルバムid>-NN.jpg（長辺2000px程度のJPEG）。並びは新しいフォルダを先頭に |
 | files/ | PDF・表紙・曲（MP3）・トップ写真。名前は `pdf-xxx.pdf`, `covers-xxx.jpg`, `music-<分類>-<番号>.mp3` |
 
+- 写真集（photos.html）はフォルダの目次。フォルダを押すと全画面のスライドショー（5秒ごと・フェード）になり、BGMは作曲のインストゥルメンタルからランダムに流れる（曲が終わると別の曲。app.js の「拡大表示・スライドショー」）。
 - トップのスライドショーの写真は各HTMLの `<div class="hero">` 内の `<figure class="slide">`（6ファイルとも同じ）。画像は files/img-hero-*.jpg と files/img-top.jpg。6秒ごとにフェードで切り替わる（app.js）。
 - 小説を追加したら、各HTMLの小説欄の見出し「○○作。」の数も直す（6ファイルとも同じ文）。
 - 表紙は PDF の1ページ目を 600px 高で JPEG にしたもの（`pdftoppm -f 1 -l 1 -jpeg -scale-to 600`）。

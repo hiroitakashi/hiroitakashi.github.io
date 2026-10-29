@@ -25,7 +25,7 @@ const WORKS=[
 ];
 let state;
 try{state=window.SITE_STATE}catch(e){state={photos:[],youtube:{name:"",url:"",videos:[]}}}
-state.photos=state.photos||[];state.songs=state.songs||[];state.comments=state.comments||[];state.youtube=Object.assign({name:"",url:"",videos:[]},state.youtube||{});
+state.photos=state.photos||[];state.albums=(state.albums||[]).filter(a=>a&&a.photos&&a.photos.length);state.songs=state.songs||[];state.comments=state.comments||[];state.youtube=Object.assign({name:"",url:"",videos:[]},state.youtube||{});
 
 const $=s=>document.querySelector(s);
 const el=(tag,props={},kids=[])=>{const n=document.createElement(tag);for(const[k,v]of Object.entries(props)){if(k==="text")n.textContent=v;else if(k.startsWith("on"))n.addEventListener(k.slice(2),v);else n.setAttribute(k,v)}for(const c of[].concat(kids))if(c)n.append(c);return n};
@@ -99,25 +99,67 @@ if(!window.claude){
   });
 }
 
-/* 拡大表示 */
+/* 拡大表示・スライドショー（写真集のフォルダを押すと全画面で順に映す。BGMはインストゥルメンタルからランダム） */
 const lb=$("#lightbox");
-let lbIdx=0;
-function showLb(i){const L=state.photos;if(!L.length)return;lbIdx=(i+L.length)%L.length;const p=L[lbIdx];$("#lb-img").src=p.url;$("#lb-img").alt=p.caption||"写真";$("#lb-cap").textContent=(p.caption||"")+(p.camera?"　／　"+p.camera:"");$("#lb-count").textContent=(lbIdx+1)+" / "+L.length;const one=L.length<2;$("#lb-prev").hidden=one;$("#lb-next").hidden=one;const nx=L[(lbIdx+1)%L.length];if(nx){const im=new Image();im.src=nx.url}}
-function openLb(p){const i=state.photos.indexOf(p);showLb(i<0?0:i);lb.hidden=false;lb.classList.remove("chrome-off");document.body.style.overflow="hidden";try{if(lb.requestFullscreen&&!document.fullscreenElement)lb.requestFullscreen().catch(()=>{})}catch(e){}$("#lb-next").focus()}
-function closeLb(){lb.hidden=true;$("#lb-img").removeAttribute("src");document.body.style.overflow="";try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
-$("#lb-img").addEventListener("click",()=>lb.classList.toggle("chrome-off"));
+const SHOW_MS=5000;
+let lbList=state.photos,lbIdx=0,lbTimer=null,lbPlay=false,lbAlbum=null;
+const lbImg=$("#lb-img");
+const lbBar=lb.querySelector(".lb-bar");
+const bgmBtn=el("button",{type:"button",class:"lb-bgm",hidden:"","aria-label":"BGMを止める"});
+const playBtn=el("button",{type:"button",class:"lb-play",hidden:""});
+lbBar.prepend(playBtn,bgmBtn);
+const bgm=new Audio();bgm.preload="none";
+let bgmOn=true,bgmCur=null;
+const inst=()=>state.songs.filter(s=>s.url&&s.cat==="インストゥルメンタル");
+function bgmLabel(){bgmBtn.textContent=bgmOn&&bgmCur?"♪ "+bgmCur.title:"♪ BGMなし";bgmBtn.setAttribute("aria-label",bgmOn?"BGMを止める":"BGMを流す");bgmBtn.classList.toggle("off",!bgmOn)}
+function bgmNext(){const L=inst();if(!L.length){bgmBtn.hidden=true;return}let s=L[Math.floor(Math.random()*L.length)];if(L.length>1)while(s===bgmCur)s=L[Math.floor(Math.random()*L.length)];bgmCur=s;bgm.src=s.url;bgmLabel();if(bgmOn)bgm.play().catch(()=>{})}
+bgm.addEventListener("ended",bgmNext);
+bgm.addEventListener("error",()=>{if(!lb.hidden&&bgmOn)setTimeout(bgmNext,500)});
+bgmBtn.addEventListener("click",e=>{e.stopPropagation();bgmOn=!bgmOn;if(bgmOn){if(!bgmCur)bgmNext();else bgm.play().catch(()=>{})}else bgm.pause();bgmLabel()});
+function playLabel(){playBtn.textContent=lbPlay?"一時停止":"再生";playBtn.setAttribute("aria-label",lbPlay?"スライドショーを止める":"スライドショーを始める")}
+function lbArm(){clearTimeout(lbTimer);if(lbPlay&&!lb.hidden&&lbList.length>1)lbTimer=setTimeout(()=>showLb(lbIdx+1),SHOW_MS)}
+playBtn.addEventListener("click",e=>{e.stopPropagation();lbPlay=!lbPlay;playLabel();lbArm()});
+function showLb(i){const L=lbList;if(!L.length)return;lbIdx=(i+L.length)%L.length;const p=L[lbIdx];
+  const set=()=>{lbImg.src=p.url;lbImg.alt=p.caption||"写真"};
+  if(lbImg.getAttribute("src")&&lbAlbum){lbImg.classList.add("fade");setTimeout(()=>{set();lbImg.classList.remove("fade")},350)}else set();
+  $("#lb-cap").textContent=(lbAlbum?lbAlbum.title+(p.caption?"　―　":""):"")+(p.caption||"")+(p.camera?"　／　"+p.camera:"");
+  $("#lb-count").textContent=(lbIdx+1)+" / "+L.length;const one=L.length<2;$("#lb-prev").hidden=one;$("#lb-next").hidden=one;
+  const nx=L[(lbIdx+1)%L.length];if(nx){const im=new Image();im.src=nx.url}
+  lbArm()}
+function lbShow(){lb.hidden=false;lb.classList.remove("chrome-off");document.body.style.overflow="hidden";try{if(lb.requestFullscreen&&!document.fullscreenElement)lb.requestFullscreen().catch(()=>{})}catch(e){}$("#lb-next").focus()}
+function openLb(p){lbAlbum=null;lbList=state.photos;lbPlay=false;playBtn.hidden=true;bgmBtn.hidden=true;lbImg.removeAttribute("src");const i=lbList.indexOf(p);showLb(i<0?0:i);lbShow()}
+function openAlbum(a){lbAlbum=a;lbList=a.photos;lbPlay=true;playBtn.hidden=lbList.length<2;playLabel();lbImg.removeAttribute("src");showLb(0);lbShow();lbArm();
+  bgmBtn.hidden=!inst().length;if(bgmOn)bgmNext();else bgmLabel()}
+function closeLb(){if(lb.hidden)return;lb.hidden=true;clearTimeout(lbTimer);lbPlay=false;bgm.pause();bgm.removeAttribute("src");bgm.load();bgmCur=null;lbImg.removeAttribute("src");document.body.style.overflow="";try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
+lbImg.addEventListener("click",()=>lb.classList.toggle("chrome-off"));
 $("#lb-close").addEventListener("click",closeLb);
 lb.addEventListener("click",e=>{if(e.target===lb)closeLb()});
-document.addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")closeLb();else if(e.key==="ArrowRight")showLb(lbIdx+1);else if(e.key==="ArrowLeft")showLb(lbIdx-1)});
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&!lb.hidden)closeLb()});
+document.addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")closeLb();else if(e.key==="ArrowRight")showLb(lbIdx+1);else if(e.key==="ArrowLeft")showLb(lbIdx-1);else if(e.key===" "&&lbAlbum){e.preventDefault();playBtn.click()}});
 $("#lb-prev").addEventListener("click",e=>{e.stopPropagation();showLb(lbIdx-1)});
 $("#lb-next").addEventListener("click",e=>{e.stopPropagation();showLb(lbIdx+1)});
 {let sx=null;lb.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});lb.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)showLb(lbIdx+(dx<0?1:-1))})}
+
+/* 写真集の目次：フォルダ（アルバム）ごとに表紙・題名・枚数を並べる */
+function renderAlbums(area){
+  const g=el("ul",{class:"albums"});
+  state.albums.forEach(a=>{
+    const cover=a.cover||a.photos[0].url;
+    g.append(el("li",{class:"album"},el("button",{type:"button",class:"open","aria-label":a.title+"（"+a.photos.length+"枚）をスライドショーで見る",onclick:()=>openAlbum(a)},[
+      el("span",{class:"stack"},el("img",{src:cover,alt:"",loading:"lazy"})),
+      el("span",{class:"meta"},[el("span",{class:"tab","aria-hidden":"true"}),el("span",{class:"at",text:a.title}),el("span",{class:"an",text:a.photos.length+"枚"+(a.note?"　"+a.note:"")})]),
+      el("span",{class:"go","aria-hidden":"true",text:"▶ スライドショー"})
+    ])));
+  });
+  area.append(g);
+}
 
 let owner=null; // {assets, artifact}
 let dirty=false;
 
 function renderGallery(){
   const area=$("#gallery-area");area.replaceChildren();
+  if(!owner&&state.albums.length){renderAlbums(area);if(!state.photos.length)return}
   if(!state.photos.length){
     area.append(el("div",{class:"empty",text:owner?"まだ写真がありません。下の「写真を追加」から載せてください。":"写真集は準備中です。"}));
     return;

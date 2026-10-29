@@ -321,3 +321,27 @@ html[data-view="work"] #works .work.cur{grid-template-rows:auto auto auto auto 1
 html[data-view="work"] #works .work.cur .read{align-items:flex-start}
 .to-list{display:none;margin:0 0 14px}
 html[data-view="work"] #works .to-list{display:flex}
+
+/* 写真集：フォルダ（アルバム）の目次 */
+.albums{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:28px 22px}
+.album button.open{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box}
+.album .stack{position:relative;display:block;aspect-ratio:4/3;margin:10px 10px 0 0}
+.album .stack::before,.album .stack::after{content:"";position:absolute;inset:0;background:var(--surface);border:1px solid var(--rule)}
+.album .stack::before{transform:translate(10px,-10px)}
+.album .stack::after{transform:translate(5px,-5px)}
+.album .stack img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;border:1px solid var(--rule);transition:transform .4s}
+.album button.open:hover .stack img,.album button.open:focus-visible .stack img{transform:translate(-3px,3px)}
+.album button.open:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.album .meta{display:flex;align-items:baseline;gap:10px;padding:12px 2px 2px;flex-wrap:wrap}
+.album .tab{width:16px;height:12px;flex:none;align-self:center;background:var(--rule);clip-path:polygon(0 18%,40% 18%,50% 0,100% 0,100% 100%,0 100%)}
+.album .at{font-family:var(--f-display);font-weight:700;font-size:1.15rem;letter-spacing:.08em;color:var(--ink)}
+.album .an{font-size:.8rem;color:var(--muted);letter-spacing:.05em}
+.album .go{display:inline-block;margin:4px 2px 0;font-size:.78rem;letter-spacing:.12em;color:var(--muted)}
+.album button.open:hover .go{color:var(--ink)}
+/* スライドショー */
+.lb #lb-img{transition:opacity .35s}
+.lb #lb-img.fade{opacity:0}
+.lb .lb-bar .lb-bgm{max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .lb-bar .lb-bgm.off{opacity:.6;text-decoration:line-through}
+@media (max-width:640px){.lb-bar{left:max(12px,env(safe-area-inset-left,0px));flex-wrap:wrap;justify-content:flex-end;gap:8px}.lb .lb-bar button{font-size:.78rem;padding:.35em .8em}}
+@media (prefers-reduced-motion:reduce){.lb #lb-img{transition:none}}
