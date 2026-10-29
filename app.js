@@ -17,6 +17,7 @@ const WORKS=[
  {t:"波頭",cover:"files/covers-manjiro.jpg",pdf:"files/pdf-manjiro.pdf",who:"ジョン万次郎",era:"幕末〜明治",d:"字も読めぬ土佐の漁師の少年が、鳥島から捕鯨船へ。日本とアメリカのあいだに架けたただ一人の橋。"},
  {t:"日出づる涯",cover:"files/covers-satow.jpg",pdf:"files/pdf-satow.pdf",who:"アーネスト・サトウ",era:"幕末〜明治・長編",d:"船上から見えた島影に始まる、英国人通訳官の目に映った幕末日本。植木職人の娘・兼と子どもたちへの、生涯消えなかった想い。"},
  {t:"到る処青山あり",cover:"files/covers-tanaka.jpg",pdf:"files/pdf-tanaka.pdf",who:"田中光顕",era:"幕末〜昭和・長編",d:"土佐佐川の少年は、志士の仲間を次々に見送り、ひとり昭和まで生き残った。「最後の志士」が語り継いだ、散った者たちの青山。"},
+ {t:"時鳥",cover:"files/covers-tokitori.jpg",pdf:"files/pdf-tokitori.pdf",who:"久坂玄瑞",era:"幕末・長州",d:"15歳で家族を失い頭を剃った医者の倅は、松陰に叩きのめされ、志に体を与えると誓った。馬関の砲声、八月十八日の雨、男山の軍議。25歳、炎の鷹司邸で尽きた声を知るのは、有明の月だけだったのか。"},
  {t:"暗闇の影",cover:"files/covers-kurayami.jpg",pdf:"files/pdf-kurayami.pdf",who:"木立凌庵",era:"幕末・慶応2年",d:"将軍家茂と孝明帝、2つの死をつなぐ護符と香。町医者の倅が、書かれなかった歴史の影を追う。"},
  {t:"壁のなめくじ",cover:"files/covers-shinsho.jpg",pdf:"files/pdf-shinsho.pdf",who:"五代目古今亭志ん生",era:"明治〜昭和",d:"沼の上の長屋で、壁を這う銀の筋を女房は「きれい」と言った。のろくたって、止まらなかった噺家の生涯。"},
  {t:"まかり通る",cover:"files/covers-tesshu.jpg",pdf:"files/pdf-tesshu.pdf",who:"山岡鉄舟",era:"幕末〜明治",d:"「朝敵徳川慶喜家来、山岡鉄太郎まかり通る」。官軍の陣中を名乗って歩き、駿府で西郷と向き合った大男の、剣と禅と書の生涯。"},
