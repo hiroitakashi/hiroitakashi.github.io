@@ -101,7 +101,21 @@ if(!window.claude){
 
 /* 拡大表示・スライドショー（写真集のフォルダを押すと全画面で順に映す。BGMはインストゥルメンタルからランダム） */
 const lb=$("#lightbox");
-const SHOW_MS=5000;
+const SHOW_MS=5000; // 1枚ずつの拡大表示で使う間隔
+/* アルバムのスライドショー：1曲でひと回りするよう、曲の長さ÷枚数で1枚の時間を決める（曲の長さがわかるまでは8秒） */
+const lbStage=el("div",{class:"lb-stage","aria-hidden":"true"});
+let curLayer=null;
+const perMs=()=>{const d=bgmOn&&isFinite(bgm.duration)&&bgm.duration>0?bgm.duration*1000/Math.max(lbList.length,1):8000;return Math.min(Math.max(d,5000),60000)};
+const fadeMs=()=>Math.min(3500,perMs()*0.35);
+const KB=["kb1","kb2","kb3","kb4"];
+function stageShow(p){
+  const im=new Image();im.alt=p.caption||"写真";im.className="layer "+KB[Math.floor(Math.random()*KB.length)];
+  const f=fadeMs();im.style.transitionDuration=f+"ms";im.style.animationDuration=(perMs()+f+1000)+"ms";
+  const old=curLayer;curLayer=im;
+  const go=()=>{if(curLayer!==im)return;requestAnimationFrame(()=>requestAnimationFrame(()=>{im.classList.add("in");if(old){old.classList.add("out");setTimeout(()=>old.remove(),f+100)}}))};
+  im.onload=go;im.onerror=go;im.src=p.url;lbStage.append(im);
+  lbStage.querySelectorAll(".layer.out").forEach(x=>{if(x!==old)x.remove()});
+}
 let lbList=state.photos,lbIdx=0,lbTimer=null,lbPlay=false,lbAlbum=null;
 const lbImg=$("#lb-img");
 const lbBar=lb.querySelector(".lb-bar");
@@ -117,21 +131,25 @@ bgm.addEventListener("ended",bgmNext);
 bgm.addEventListener("error",()=>{if(!lb.hidden&&bgmOn)setTimeout(bgmNext,500)});
 bgmBtn.addEventListener("click",e=>{e.stopPropagation();bgmOn=!bgmOn;if(bgmOn){if(!bgmCur)bgmNext();else bgm.play().catch(()=>{})}else bgm.pause();bgmLabel()});
 function playLabel(){playBtn.textContent=lbPlay?"一時停止":"再生";playBtn.setAttribute("aria-label",lbPlay?"スライドショーを止める":"スライドショーを始める")}
-function lbArm(){clearTimeout(lbTimer);if(lbPlay&&!lb.hidden&&lbList.length>1)lbTimer=setTimeout(()=>showLb(lbIdx+1),SHOW_MS)}
+function lbArm(){clearTimeout(lbTimer);lb.classList.toggle("paused",!lbPlay);if(lbPlay&&!lb.hidden&&lbList.length>1)lbTimer=setTimeout(()=>showLb(lbIdx+1),lbAlbum?perMs():SHOW_MS)}
 playBtn.addEventListener("click",e=>{e.stopPropagation();lbPlay=!lbPlay;playLabel();lbArm()});
 function showLb(i){const L=lbList;if(!L.length)return;lbIdx=(i+L.length)%L.length;const p=L[lbIdx];
   const set=()=>{lbImg.src=p.url;lbImg.alt=p.caption||"写真"};
-  if(lbImg.getAttribute("src")&&lbAlbum){lbImg.classList.add("fade");setTimeout(()=>{set();lbImg.classList.remove("fade")},350)}else set();
+  if(lbAlbum)stageShow(p);else set();
   $("#lb-cap").textContent=(lbAlbum?lbAlbum.title+(p.caption?"　―　":""):"")+(p.caption||"")+(p.camera?"　／　"+p.camera:"");
   $("#lb-count").textContent=(lbIdx+1)+" / "+L.length;const one=L.length<2;$("#lb-prev").hidden=one;$("#lb-next").hidden=one;
   const nx=L[(lbIdx+1)%L.length];if(nx){const im=new Image();im.src=nx.url}
   lbArm()}
 function lbShow(){lb.hidden=false;lb.classList.remove("chrome-off");document.body.style.overflow="hidden";try{if(lb.requestFullscreen&&!document.fullscreenElement)lb.requestFullscreen().catch(()=>{})}catch(e){}$("#lb-next").focus()}
-function openLb(p){lbAlbum=null;lbList=state.photos;lbPlay=false;playBtn.hidden=true;bgmBtn.hidden=true;lbImg.removeAttribute("src");const i=lbList.indexOf(p);showLb(i<0?0:i);lbShow()}
-function openAlbum(a){lbAlbum=a;lbList=a.photos;lbPlay=true;playBtn.hidden=lbList.length<2;playLabel();lbImg.removeAttribute("src");showLb(0);lbShow();lbArm();
+function openLb(p){lbAlbum=null;lb.classList.remove("album");lbList=state.photos;lbPlay=false;playBtn.hidden=true;bgmBtn.hidden=true;lbImg.removeAttribute("src");const i=lbList.indexOf(p);showLb(i<0?0:i);lbShow()}
+function openAlbum(a){lbAlbum=a;lb.classList.add("album");lbStage.replaceChildren();curLayer=null;lbList=a.photos;lbPlay=true;playBtn.hidden=lbList.length<2;playLabel();lbImg.removeAttribute("src");showLb(0);lbShow();lbArm();
   bgmBtn.hidden=!inst().length;if(bgmOn)bgmNext();else bgmLabel()}
-function closeLb(){if(lb.hidden)return;lb.hidden=true;clearTimeout(lbTimer);lbPlay=false;bgm.pause();bgm.removeAttribute("src");bgm.load();bgmCur=null;lbImg.removeAttribute("src");document.body.style.overflow="";try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
+function closeLb(){if(lb.hidden)return;lb.hidden=true;lbStage.replaceChildren();curLayer=null;clearTimeout(lbTimer);lbPlay=false;bgm.pause();bgm.removeAttribute("src");bgm.load();bgmCur=null;lbImg.removeAttribute("src");document.body.style.overflow="";try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
+lbImg.before(lbStage);
 lbImg.addEventListener("click",()=>lb.classList.toggle("chrome-off"));
+lbStage.addEventListener("click",()=>lb.classList.toggle("chrome-off"));
+/* 曲の長さがわかったら、1枚の時間を合わせ直す */
+bgm.addEventListener("loadedmetadata",()=>{if(!lb.hidden&&lbAlbum)lbArm()});
 $("#lb-close").addEventListener("click",closeLb);
 lb.addEventListener("click",e=>{if(e.target===lb)closeLb()});
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&!lb.hidden)closeLb()});
