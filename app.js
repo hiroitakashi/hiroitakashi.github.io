@@ -20,6 +20,7 @@ const WORKS=[
  {t:"暗闇の影",cover:"files/covers-kurayami.jpg",pdf:"files/pdf-kurayami.pdf",who:"木立凌庵",era:"幕末・慶応2年",d:"将軍家茂と孝明帝、2つの死をつなぐ護符と香。町医者の倅が、書かれなかった歴史の影を追う。"},
  {t:"壁のなめくじ",cover:"files/covers-shinsho.jpg",pdf:"files/pdf-shinsho.pdf",who:"五代目古今亭志ん生",era:"明治〜昭和",d:"沼の上の長屋で、壁を這う銀の筋を女房は「きれい」と言った。のろくたって、止まらなかった噺家の生涯。"},
  {t:"まかり通る",cover:"files/covers-tesshu.jpg",pdf:"files/pdf-tesshu.pdf",who:"山岡鉄舟",era:"幕末〜明治",d:"「朝敵徳川慶喜家来、山岡鉄太郎まかり通る」。官軍の陣中を名乗って歩き、駿府で西郷と向き合った大男の、剣と禅と書の生涯。"},
+ {t:"六角の海",cover:"files/covers-tenshin.jpg",pdf:"files/pdf-tenshin.pdf",who:"岡倉天心",era:"明治",d:"横浜の生糸の蔵で生まれ、英語で夢を見て漢籍で叱られて育った男。夢殿の扉を開き、美術学校を追われ、ボストンで「何ニーズ？」と問われて言い返した岡倉覚三の、美と恋と孤独の50年。"},
  {t:"鈴の屋",cover:"files/covers-norinaga.jpg",pdf:"files/pdf-norinaga.pdf",who:"本居宣長",era:"江戸中期",d:"昼は子供の熱を診る町医者、夜は2階の書斎で鈴を鳴らし古事記に向かう。新上屋の一夜から35年、師に託された頂に立った人の生涯。"},
  {t:"クインシー",cover:"files/covers-quincy-chicago.jpg",pdf:"files/pdf-quincy.pdf",who:"クインシー・ジョーンズ",era:"昭和〜令和・アメリカ",d:"シカゴの路地で銃声に怯えた少年は、雨の街で盲目の兄に音の書き方を教わった。シナトラ、マイケル、そして見送った友たち。一杯のコーヒーと酒に刻まれた、91年の長い一曲。"}
 ];
