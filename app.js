@@ -99,46 +99,98 @@ if(!window.claude){
   });
 }
 
-/* 拡大表示・スライドショー（写真集のフォルダを押すと全画面で順に映す。BGMはインストゥルメンタルからランダム） */
+/* 拡大表示・スライドショー
+   写真集のフォルダを押すと、全画面で写真をゆっくり動かしながら、重ね合わせて切り替える。
+   BGM はインストゥルメンタルからランダムに1曲。1曲を約1分半（SHOW_TOTAL）とし、その間に写真がちょうど一周する。
+   最後は曲の音量をゆっくり下げて静かに終わり、画面を暗くして目次へ戻る（繰り返さない）。 */
 const lb=$("#lightbox");
-const SHOW_MS=5000;
-let lbList=state.photos,lbIdx=0,lbTimer=null,lbPlay=false,lbAlbum=null;
+const SHOW_MS=5000;          // 1枚ずつの拡大表示（フォルダ以外）の間隔
+const SHOW_TOTAL=90000;      // フォルダのスライドショー全体の長さ（約1分半）
+const FADE_IN=2500,FADE_OUT=10000; // 曲の出だしと終わりの音量の変化（ミリ秒）
+const lbStage=el("div",{class:"lb-stage","aria-hidden":"true"});
+const lbVeil=el("div",{class:"lb-veil","aria-hidden":"true"});
+let lbList=state.photos,lbIdx=0,lbTimer=null,lbPlay=false,lbAlbum=null,curLayer=null;
+let clock=0,lastTick=0,tickId=null;
 const lbImg=$("#lb-img");
 const lbBar=lb.querySelector(".lb-bar");
-const bgmBtn=el("button",{type:"button",class:"lb-bgm",hidden:"","aria-label":"BGMを止める"});
+const bgmBtn=el("button",{type:"button",class:"lb-bgm",hidden:""});
 const playBtn=el("button",{type:"button",class:"lb-play",hidden:""});
 lbBar.prepend(playBtn,bgmBtn);
-const bgm=new Audio();bgm.preload="none";
-let bgmOn=true,bgmCur=null;
+const perMs=()=>SHOW_TOTAL/Math.max(lbList.length,1);
+const fadeMs=()=>Math.min(4000,perMs()*0.45);
+const KB=["kb1","kb2","kb3","kb4"];
+
+/* BGM：音量は Web Audio の GainNode で動かす（iPhone では audio.volume が効かないため） */
+const bgm=new Audio();bgm.preload="auto";
+let bgmOn=true,bgmCur=null,actx=null,gain=null;
 const inst=()=>state.songs.filter(s=>s.url&&s.cat==="インストゥルメンタル");
-function bgmLabel(){bgmBtn.textContent=bgmOn&&bgmCur?"♪ "+bgmCur.title:"♪ BGMなし";bgmBtn.setAttribute("aria-label",bgmOn?"BGMを止める":"BGMを流す");bgmBtn.classList.toggle("off",!bgmOn)}
-function bgmNext(){const L=inst();if(!L.length){bgmBtn.hidden=true;return}let s=L[Math.floor(Math.random()*L.length)];if(L.length>1)while(s===bgmCur)s=L[Math.floor(Math.random()*L.length)];bgmCur=s;bgm.src=s.url;bgmLabel();if(bgmOn)bgm.play().catch(()=>{})}
-bgm.addEventListener("ended",bgmNext);
-bgm.addEventListener("error",()=>{if(!lb.hidden&&bgmOn)setTimeout(bgmNext,500)});
-bgmBtn.addEventListener("click",e=>{e.stopPropagation();bgmOn=!bgmOn;if(bgmOn){if(!bgmCur)bgmNext();else bgm.play().catch(()=>{})}else bgm.pause();bgmLabel()});
-function playLabel(){playBtn.textContent=lbPlay?"一時停止":"再生";playBtn.setAttribute("aria-label",lbPlay?"スライドショーを止める":"スライドショーを始める")}
-function lbArm(){clearTimeout(lbTimer);if(lbPlay&&!lb.hidden&&lbList.length>1)lbTimer=setTimeout(()=>showLb(lbIdx+1),SHOW_MS)}
-playBtn.addEventListener("click",e=>{e.stopPropagation();lbPlay=!lbPlay;playLabel();lbArm()});
-function showLb(i){const L=lbList;if(!L.length)return;lbIdx=(i+L.length)%L.length;const p=L[lbIdx];
-  const set=()=>{lbImg.src=p.url;lbImg.alt=p.caption||"写真"};
-  if(lbImg.getAttribute("src")&&lbAlbum){lbImg.classList.add("fade");setTimeout(()=>{set();lbImg.classList.remove("fade")},350)}else set();
+function audioInit(){if(actx)return;try{const AC=window.AudioContext||window.webkitAudioContext;actx=new AC();gain=actx.createGain();actx.createMediaElementSource(bgm).connect(gain);gain.connect(actx.destination)}catch(e){actx=null;gain=null}}
+function setVol(v){v=Math.max(0,Math.min(1,v));if(gain)gain.gain.setTargetAtTime(v,actx.currentTime,0.08);else bgm.volume=v}
+function volAt(t){return Math.min(1,t/FADE_IN,(SHOW_TOTAL-t)/FADE_OUT)}
+function bgmLabel(){bgmBtn.textContent=bgmCur?(bgmOn?"♪ ":"♪ 消音中　")+bgmCur.title:"♪ BGMなし";bgmBtn.setAttribute("aria-label",bgmOn?"BGMを消す":"BGMを流す");bgmBtn.classList.toggle("off",!bgmOn)}
+function bgmPick(){const L=inst();if(!L.length){bgmCur=null;bgmBtn.hidden=true;return}bgmCur=L[Math.floor(Math.random()*L.length)];bgm.src=bgmCur.url;bgmBtn.hidden=false;bgmLabel()}
+function bgmSync(){if(!bgmCur)return;if(bgmOn&&lbPlay&&!lb.hidden){if(actx&&actx.state==="suspended")actx.resume().catch(()=>{});bgm.play().catch(()=>{})}else bgm.pause()}
+bgmBtn.addEventListener("click",e=>{e.stopPropagation();bgmOn=!bgmOn;bgmLabel();setVol(bgmOn?volAt(clock):0);bgmSync()});
+
+/* 写真の層：新しい写真を上に重ね、ゆっくり浮かび上がらせる。下の写真は重なり終わってから外す */
+function stageShow(p){
+  const im=new Image();im.alt=p.caption||"写真";im.className="layer "+KB[Math.floor(Math.random()*KB.length)];
+  const f=fadeMs();im.style.transitionDuration=f+"ms";im.style.animationDuration=(perMs()+f)+"ms";
+  const old=curLayer;curLayer=im;
+  lbStage.querySelectorAll(".layer").forEach(x=>{if(x!==old)x.remove()});
+  const go=()=>{if(curLayer!==im)return;requestAnimationFrame(()=>requestAnimationFrame(()=>{im.classList.add("in");if(old)setTimeout(()=>{if(old!==curLayer)old.remove()},f+200)}))};
+  im.onload=go;im.onerror=go;im.src=p.url;lbStage.append(im);
+}
+
+/* フォルダのスライドショーの時計：一時停止すると時計も曲も止まる */
+function tick(){
+  const now=performance.now();if(lbPlay)clock+=now-lastTick;lastTick=now;
+  if(!lbAlbum||lb.hidden)return;
+  if(bgmOn)setVol(volAt(clock));
+  const i=Math.min(lbList.length-1,Math.floor(clock/perMs()));
+  if(i>lbIdx)showLb(i);
+  if(clock>=SHOW_TOTAL)finishAlbum();
+}
+function finishAlbum(){clearInterval(tickId);tickId=null;lbPlay=false;lb.classList.add("ending");setTimeout(()=>{if(lb.classList.contains("ending"))closeLb()},2600)}
+function playLabel(){playBtn.textContent=lbPlay?"一時停止":"再生";playBtn.setAttribute("aria-label",lbPlay?"スライドショーを止める":"スライドショーを続ける");lb.classList.toggle("paused",!lbPlay)}
+playBtn.addEventListener("click",e=>{e.stopPropagation();if(lb.classList.contains("ending"))return;lbPlay=!lbPlay;lastTick=performance.now();playLabel();bgmSync()});
+
+/* 1枚ずつの拡大表示（フォルダ以外）の送り */
+function lbArm(){clearTimeout(lbTimer);if(!lbAlbum&&lbPlay&&!lb.hidden&&lbList.length>1)lbTimer=setTimeout(()=>showLb(lbIdx+1),SHOW_MS)}
+
+function showLb(i){const L=lbList;if(!L.length)return;
+  if(lbAlbum){i=Math.max(0,Math.min(L.length-1,i));lbIdx=i;stageShow(L[i])}
+  else{lbIdx=(i+L.length)%L.length;lbImg.src=L[lbIdx].url;lbImg.alt=L[lbIdx].caption||"写真"}
+  const p=L[lbIdx];
   $("#lb-cap").textContent=(lbAlbum?lbAlbum.title+(p.caption?"　―　":""):"")+(p.caption||"")+(p.camera?"　／　"+p.camera:"");
-  $("#lb-count").textContent=(lbIdx+1)+" / "+L.length;const one=L.length<2;$("#lb-prev").hidden=one;$("#lb-next").hidden=one;
-  const nx=L[(lbIdx+1)%L.length];if(nx){const im=new Image();im.src=nx.url}
+  $("#lb-count").textContent=(lbIdx+1)+" / "+L.length;
+  const one=L.length<2;$("#lb-prev").hidden=one||(lbAlbum&&lbIdx===0);$("#lb-next").hidden=one||(lbAlbum&&lbIdx===L.length-1);
+  const nx=L[lbAlbum?lbIdx+1:(lbIdx+1)%L.length];if(nx){const im=new Image();im.src=nx.url}
   lbArm()}
-function lbShow(){lb.hidden=false;lb.classList.remove("chrome-off");document.body.style.overflow="hidden";try{if(lb.requestFullscreen&&!document.fullscreenElement)lb.requestFullscreen().catch(()=>{})}catch(e){}$("#lb-next").focus()}
-function openLb(p){lbAlbum=null;lbList=state.photos;lbPlay=false;playBtn.hidden=true;bgmBtn.hidden=true;lbImg.removeAttribute("src");const i=lbList.indexOf(p);showLb(i<0?0:i);lbShow()}
-function openAlbum(a){lbAlbum=a;lbList=a.photos;lbPlay=true;playBtn.hidden=lbList.length<2;playLabel();lbImg.removeAttribute("src");showLb(0);lbShow();lbArm();
-  bgmBtn.hidden=!inst().length;if(bgmOn)bgmNext();else bgmLabel()}
-function closeLb(){if(lb.hidden)return;lb.hidden=true;clearTimeout(lbTimer);lbPlay=false;bgm.pause();bgm.removeAttribute("src");bgm.load();bgmCur=null;lbImg.removeAttribute("src");document.body.style.overflow="";try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
+/* 手で前後に送ったときは、時計をその写真の始まりに合わせる */
+function lbStep(d){if(lbAlbum){const j=Math.max(0,Math.min(lbList.length-1,lbIdx+d));if(j===lbIdx)return;clock=j*perMs();showLb(j)}else showLb(lbIdx+d)}
+function lbShow(){lb.hidden=false;lb.classList.remove("chrome-off","ending");document.body.style.overflow="hidden";try{if(lb.requestFullscreen&&!document.fullscreenElement)lb.requestFullscreen().catch(()=>{})}catch(e){}$("#lb-next").focus()}
+function openLb(p){lbAlbum=null;lb.classList.remove("album","paused");lbList=state.photos;lbPlay=false;playBtn.hidden=true;bgmBtn.hidden=true;lbImg.removeAttribute("src");const i=lbList.indexOf(p);showLb(i<0?0:i);lbShow()}
+function openAlbum(a){
+  audioInit();if(actx&&actx.state==="suspended")actx.resume().catch(()=>{});
+  lbAlbum=a;lbList=a.photos;lb.classList.add("album");lbStage.replaceChildren();curLayer=null;
+  clock=0;lastTick=performance.now();lbPlay=true;playBtn.hidden=false;playLabel();lbIdx=-1;
+  lbShow();showLb(0);
+  bgmPick();setVol(0);bgm.currentTime=0;bgmSync();
+  clearInterval(tickId);tickId=setInterval(tick,100)}
+function closeLb(){if(lb.hidden)return;lb.hidden=true;lb.classList.remove("ending","paused");clearInterval(tickId);tickId=null;clearTimeout(lbTimer);lbPlay=false;lbAlbum=null;
+  lbStage.replaceChildren();curLayer=null;bgm.pause();bgm.removeAttribute("src");bgm.load();bgmCur=null;lbImg.removeAttribute("src");document.body.style.overflow="";
+  try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
+lbImg.before(lbStage);lb.append(lbVeil);
 lbImg.addEventListener("click",()=>lb.classList.toggle("chrome-off"));
+lbStage.addEventListener("click",()=>lb.classList.toggle("chrome-off"));
 $("#lb-close").addEventListener("click",closeLb);
 lb.addEventListener("click",e=>{if(e.target===lb)closeLb()});
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&!lb.hidden)closeLb()});
-document.addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")closeLb();else if(e.key==="ArrowRight")showLb(lbIdx+1);else if(e.key==="ArrowLeft")showLb(lbIdx-1);else if(e.key===" "&&lbAlbum){e.preventDefault();playBtn.click()}});
-$("#lb-prev").addEventListener("click",e=>{e.stopPropagation();showLb(lbIdx-1)});
-$("#lb-next").addEventListener("click",e=>{e.stopPropagation();showLb(lbIdx+1)});
-{let sx=null;lb.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});lb.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)showLb(lbIdx+(dx<0?1:-1))})}
+document.addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")closeLb();else if(e.key==="ArrowRight")lbStep(1);else if(e.key==="ArrowLeft")lbStep(-1);else if(e.key===" "&&lbAlbum){e.preventDefault();playBtn.click()}});
+$("#lb-prev").addEventListener("click",e=>{e.stopPropagation();lbStep(-1)});
+$("#lb-next").addEventListener("click",e=>{e.stopPropagation();lbStep(1)});
+{let sx=null;lb.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});lb.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)lbStep(dx<0?1:-1)})}
 
 /* 写真集の目次：フォルダ（アルバム）ごとに表紙・題名・枚数を並べる */
 function renderAlbums(area){
