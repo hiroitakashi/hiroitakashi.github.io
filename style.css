@@ -362,3 +362,12 @@ html[data-view="work"] #works .to-list{display:flex}
 #dl-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);width:min(92vw,420px);box-sizing:border-box;background:#1f2b3a;color:#fff;font-family:var(--f-body);font-size:.9rem;line-height:1.7;padding:14px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:1000}
 #dl-toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 #dl-toast b{color:#ffd78a}
+/* パソコン用の読書画面 */
+.reader{display:none}
+html[data-view="read"] #works .works,html[data-view="read"] #works .works-toc,html[data-view="read"] #works .to-list,html[data-view="read"] #works .room-head,html[data-view="read"] #works .backrow.bottom{display:none}
+html[data-view="read"] #works .reader{display:block}
+.reader-bar{position:sticky;top:var(--subbar-h,60px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:10px 0;background:var(--paper)}
+.reader-t{font-family:var(--f-display);font-weight:700;letter-spacing:.06em}
+.reader-r{margin-left:auto;display:flex;gap:14px;font-size:.85rem}
+.reader-r a{color:var(--ai)}
+.reader-pdf{display:block;width:100%;height:calc(100vh - 140px);min-height:480px;border:1px solid var(--rule);background:#fff}
