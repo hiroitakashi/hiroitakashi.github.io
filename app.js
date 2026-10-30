@@ -28,7 +28,7 @@ const WORKS=[
 ];
 let state;
 try{state=window.SITE_STATE}catch(e){state={photos:[],youtube:{name:"",url:"",videos:[]}}}
-state.photos=state.photos||[];state.albums=(state.albums||[]).filter(a=>a&&a.photos&&a.photos.length);state.songs=state.songs||[];state.comments=state.comments||[];state.youtube=Object.assign({name:"",url:"",videos:[]},state.youtube||{});
+state.photos=state.photos||[];state.albums=(state.albums||[]).filter(a=>a&&((a.photos&&a.photos.length)||a.video));state.songs=state.songs||[];state.comments=state.comments||[];state.youtube=Object.assign({name:"",url:"",videos:[]},state.youtube||{});
 
 const $=s=>document.querySelector(s);
 const el=(tag,props={},kids=[])=>{const n=document.createElement(tag);for(const[k,v]of Object.entries(props)){if(k==="text")n.textContent=v;else if(k.startsWith("on"))n.addEventListener(k.slice(2),v);else n.setAttribute(k,v)}for(const c of[].concat(kids))if(c)n.append(c);return n};
@@ -219,11 +219,29 @@ $("#lb-prev").addEventListener("click",e=>{e.stopPropagation();lbStep(-1)});
 $("#lb-next").addEventListener("click",e=>{e.stopPropagation();lbStep(1)});
 {let sx=null;lb.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});lb.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)lbStep(dx<0?1:-1)})}
 
+/* 写真集の動画：全画面で再生。×・Esc・画面外を押すと閉じる */
+function openVideo(a){
+  const v=el("video",{src:a.video,controls:"",autoplay:"",playsinline:"",preload:"auto",poster:a.cover||""});
+  const box=el("div",{class:"vbox",role:"dialog","aria-label":a.title},[el("button",{type:"button",class:"vclose","aria-label":"閉じる",text:"×"}),el("div",{class:"vtitle",text:a.title}),v]);
+  const close=()=>{try{v.pause()}catch(e){}if(document.fullscreenElement===box)document.exitFullscreen().catch(()=>{});box.remove();document.removeEventListener("keydown",key);document.body.style.overflow=""};
+  const key=e=>{if(e.key==="Escape")close()};
+  box.addEventListener("click",e=>{if(e.target===box||e.target.classList.contains("vclose"))close()});
+  document.addEventListener("keydown",key);document.body.style.overflow="hidden";document.body.append(box);
+  if(box.requestFullscreen&&matchMedia("(hover:hover)").matches)box.requestFullscreen().catch(()=>{});
+  document.addEventListener("fullscreenchange",function fc(){if(!document.fullscreenElement&&box.isConnected){document.removeEventListener("fullscreenchange",fc);close()}});
+  v.play().catch(()=>{});
+}
+
 /* 写真集の目次：フォルダ（アルバム）ごとに表紙・題名・枚数を並べる */
 function renderAlbums(area){
   const g=el("ul",{class:"albums"});
   state.albums.forEach(a=>{
     const cover=a.cover||a.photos[0].url;
+    if(a.video){g.append(el("li",{class:"album is-video"},el("button",{type:"button",class:"open","aria-label":a.title+"（動画）を見る",onclick:()=>openVideo(a)},[
+      el("span",{class:"stack"},[el("img",{src:cover,alt:"",loading:"lazy"}),el("span",{class:"vplay","aria-hidden":"true",text:"▶"})]),
+      el("span",{class:"meta"},[el("span",{class:"tab","aria-hidden":"true"}),el("span",{class:"at",text:a.title}),el("span",{class:"an",text:"動画"+(a.length?"　"+a.length:"")+(a.note?"　"+a.note:"")})]),
+      el("span",{class:"go","aria-hidden":"true",text:"▶ 動画を見る"})
+    ])));return}
     g.append(el("li",{class:"album"},el("button",{type:"button",class:"open","aria-label":a.title+"（"+a.photos.length+"枚）をスライドショーで見る",onclick:()=>openAlbum(a)},[
       el("span",{class:"stack"},el("img",{src:cover,alt:"",loading:"lazy"})),
       el("span",{class:"meta"},[el("span",{class:"tab","aria-hidden":"true"}),el("span",{class:"at",text:a.title}),el("span",{class:"an",text:a.photos.length+"枚"+(a.note?"　"+a.note:"")})]),

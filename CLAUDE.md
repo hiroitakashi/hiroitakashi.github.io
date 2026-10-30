@@ -22,7 +22,7 @@
 | app.js | 小説の追加・修正 → 先頭の `const WORKS=[ … ]`（t=題名, cover, pdf, who=主人公, era=時代, d=紹介文）。並びはおおむね時代順 |
 | data.js | 曲の追加・曲名修正 → `window.SITE_STATE.songs`（cat は "邦楽" / "洋楽" / "インストゥルメンタル"）。YouTube は `youtube.channels` |
 | style.css | デザイン |
-| data.js（写真集） | 写真はフォルダ単位の `window.SITE_STATE.albums`（id, title=フォルダ名, note, photos=[{url, caption, camera}]）。本人がフォルダで送った写真を1アルバムにし、フォルダ名を題名にする。画像は files/img-<アルバムid>-NN.jpg（長辺2000px程度のJPEG）。並びは新しいフォルダを先頭に |
+| data.js（写真集） | 写真はフォルダ単位の `window.SITE_STATE.albums`（id, title=フォルダ名, note, photos=[{url, caption, camera}]）。本人がフォルダで送った写真を1アルバムにし、フォルダ名を題名にする。画像は files/img-<アルバムid>-NN.jpg（長辺2000px程度のJPEG）。並びは新しいフォルダを先頭に。動画は `video`（files/video-<id>.mp4、H.264・1080p・CRF27程度で50MB未満に縮める）、`cover`（files/img-<id>-cover.jpg）、`length` を持つアルバムにし、押すと全画面で再生 |
 | files/ | PDF・表紙・曲（MP3）・トップ写真。名前は `pdf-xxx.pdf`, `covers-xxx.jpg`, `music-<分類>-<番号>.mp3` |
 
 - 写真集（photos.html）はフォルダの目次。フォルダを押すと全画面（画面いっぱい）のスライドショー：写真はゆっくり動き（ケン・バーンズ風）、重なり合いながら切り替わる。BGMは作曲のインストゥルメンタルからランダムに1曲。全体を約1分半（app.js の SHOW_TOTAL）とし、その間に写真がちょうど一周、曲は最後の10秒で音量を下げて消え、画面が暗くなって目次へ戻る（繰り返さない。本人の指示）。
