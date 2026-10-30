@@ -8,6 +8,7 @@ const WORKS=[
  {t:"白道",cover:"files/covers-shinran.jpg",pdf:"files/pdf-shinran.pdf",who:"親鸞",era:"鎌倉時代",d:"煩悩を一つも捨てられぬまま、90年かけて歩みきった一本の白い道。妻・恵信尼の手紙を背骨に。"},
  {t:"花は愛惜に散る",cover:"files/covers-dogen.jpg",pdf:"files/pdf-dogen.pdf",who:"道元",era:"鎌倉時代",d:"8歳で母を見送った日、香の煙の行方を追った少年は、人はなぜ消え、消えるものをなぜ愛しく思うのかと問いつづけた。"},
  {t:"紅顔と白骨",cover:"files/covers-rennyo.jpg",pdf:"files/pdf-rennyo.pdf",who:"蓮如",era:"室町時代",d:"5たび妻を娶り27人の子をなし、80を過ぎてなお赤子を抱いた男を、十男・実悟が書き残す。"},
+ {t:"富　子",cover:"files/covers-tomiko.jpg",pdf:"files/pdf-tomiko.pdf",who:"日野富子",era:"室町時代・応仁の乱",d:"刀を持たぬ将軍の御台所は、銭を握った。東西両軍に貸し付け、焼け野原の京で天下を計らい、悪女と呼ばれながら最後まで御台であり続けた女の生涯。"},
  {t:"三浦按針",cover:"files/covers-anjin.jpg",pdf:"files/pdf-anjin.pdf",who:"ウィリアム・アダムス",era:"江戸初期・全7巻",d:"帰れない男が、江戸の河岸の舟大工の娘・鶴と巣をつくる。海の向こうの妻メアリーとの20年。"},
  {t:"沖の白帆",cover:"files/covers-bunzaemon.jpg",pdf:"files/pdf-bunzaemon.pdf",who:"紀伊國屋文左衛門",era:"江戸前期・元禄",d:"嵐の海へ白帆を張り、江戸じゅうの度肝を抜いた男。深川の庵で老いた意荃が、訪ねてきた娘に語る栄華と没落。"},
  {t:"見試しの川",cover:"files/covers-hirata.jpg",pdf:"files/pdf-hirata.pdf",who:"平田靱負",era:"江戸中期・宝暦治水",d:"遠い薩摩から美濃の輪中へ。3つの大河に挑み、工事を終えて逝った総奉行と、名も残らなかった侍たちの1年と3カ月。"},
