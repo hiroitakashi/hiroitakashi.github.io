@@ -20,6 +20,7 @@ const WORKS=[
  {t:"到る処青山あり",cover:"files/covers-tanaka.jpg",pdf:"files/pdf-tanaka.pdf",who:"田中光顕",era:"幕末〜昭和・長編",d:"土佐佐川の少年は、志士の仲間を次々に見送り、ひとり昭和まで生き残った。「最後の志士」が語り継いだ、散った者たちの青山。"},
  {t:"時鳥",cover:"files/covers-tokitori.jpg",pdf:"files/pdf-tokitori.pdf",who:"久坂玄瑞",era:"幕末・長州",d:"15歳で家族を失い頭を剃った医者の倅は、松陰に叩きのめされ、志に体を与えると誓った。馬関の砲声、八月十八日の雨、男山の軍議。25歳、炎の鷹司邸で尽きた声を知るのは、有明の月だけだったのか。"},
  {t:"暗闇の影",cover:"files/covers-kurayami.jpg",pdf:"files/pdf-kurayami.pdf",who:"木立凌庵",era:"幕末・慶応2年",d:"将軍家茂と孝明帝、2つの死をつなぐ護符と香。町医者の倅が、書かれなかった歴史の影を追う。"},
+ {t:"芽吹く志",cover:"files/covers-kumoi.jpg",pdf:"files/pdf-kumoi.pdf",who:"雲井龍雄",era:"幕末〜明治・米沢藩",d:"辰の年に生まれ、自ら龍雄と名乗った米沢藩の下士。討薩の檄を書き、敗れた者に生きる道を求めて27歳で刑場に散った志士と、その妻ヨシの物語。"},
  {t:"壁のなめくじ",cover:"files/covers-shinsho.jpg",pdf:"files/pdf-shinsho.pdf",who:"五代目古今亭志ん生",era:"明治〜昭和",d:"沼の上の長屋で、壁を這う銀の筋を女房は「きれい」と言った。のろくたって、止まらなかった噺家の生涯。"},
  {t:"まかり通る",cover:"files/covers-tesshu.jpg",pdf:"files/pdf-tesshu.pdf",who:"山岡鉄舟",era:"幕末〜明治",d:"「朝敵徳川慶喜家来、山岡鉄太郎まかり通る」。官軍の陣中を名乗って歩き、駿府で西郷と向き合った大男の、剣と禅と書の生涯。"},
  {t:"六角の海",cover:"files/covers-tenshin.jpg",pdf:"files/pdf-tenshin.pdf",who:"岡倉天心",era:"明治",d:"横浜の生糸の蔵で生まれ、英語で夢を見て漢籍で叱られて育った男。夢殿の扉を開き、美術学校を追われ、ボストンで「何ニーズ？」と問われて言い返した岡倉覚三の、美と恋と孤独の50年。"},
