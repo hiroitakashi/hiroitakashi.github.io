@@ -4,6 +4,7 @@ const TPL=document.getElementById("tpl");document.getElementById("root").append(
 const WORKS=[
  {t:"民の火種",cover:"files/covers-tami.jpg",pdf:"files/pdf-tami.pdf",who:"廣居図書忠起",era:"江戸中期・米沢藩",d:"破産寸前の米沢藩。鷹山の改革、七家騒動、天明の大飢饉――大手門前に屋敷を構える藩士が、帳面の数字の下にある民の顔を見つめ続けた、全3部18章の長編。"},
  {t:"天平の灯",cover:"files/covers-ganjin.jpg",pdf:"files/pdf-ganjin.pdf",who:"鑑真",era:"奈良時代・唐から日本へ",d:"6度目の渡海で、盲いた老僧は薩摩の浜の砂をすくった。栄叡と普照、2人の日本僧との12年。"},
+ {t:"一隅を照らす",cover:"files/covers-saicho.jpg",pdf:"files/pdf-saicho.pdf",who:"最澄（伝教大師）",era:"平安初期・比叡山",d:"比叡の暗い山に、19歳の若者がたった一人で灯をともした。唐への渡海、空海との交わりと別れ、徳一との論争、そして死の7日後に下りた勅許。信長の焼き討ちで消え、出羽の山寺から帰ってきた「不滅の法灯」に託した生涯。"},
  {t:"月かげの里",cover:"files/covers-honen.jpg",pdf:"files/pdf-honen.pdf",who:"法然",era:"平安末〜鎌倉",d:"「仇を討つな」と遺した父の言葉から、恨みの連鎖を断つ道としての念仏にたどり着くまで。"},
  {t:"白道",cover:"files/covers-shinran.jpg",pdf:"files/pdf-shinran.pdf",who:"親鸞",era:"鎌倉時代",d:"煩悩を一つも捨てられぬまま、90年かけて歩みきった一本の白い道。妻・恵信尼の手紙を背骨に。"},
  {t:"花は愛惜に散る",cover:"files/covers-dogen.jpg",pdf:"files/pdf-dogen.pdf",who:"道元",era:"鎌倉時代",d:"8歳で母を見送った日、香の煙の行方を追った少年は、人はなぜ消え、消えるものをなぜ愛しく思うのかと問いつづけた。"},
