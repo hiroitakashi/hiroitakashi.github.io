@@ -47,6 +47,7 @@
   - **必ず廣居さんの「OK」をもらってから公開する**。下書きは blog/drafts/（.gitignore 済み・push しない。.nojekyll なので push すると .md がそのまま見えてしまう）に置き、OK が出たら blog/posts/ へ移して build_blog.py。選挙の投票日当日は投票を呼びかける記事を出さない。
 - アフィリエイトのリンクは blog/affiliate.json に登録されたものだけを使い、使った記事は `pr: true`（記事の先頭に「PR」表記が出る）。
 
+- 検索エンジン向けのメタタグ（2026-11-06）：各HTMLの `<head>` にページごとの description・canonical・OGP（og:image は files/img-top.jpg）・twitter:card を入れている。index.html には構造化データ（WebSite と Person）もある。説明文に作品数や曲数を書くと古くなるので書かない。
 - `google6642eb6d4ee4a7ad.html` は Google Search Console の所有権確認ファイル。消さないこと。
 
 ## 下書き版
