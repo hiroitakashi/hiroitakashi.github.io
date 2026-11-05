@@ -345,7 +345,8 @@ html[data-view="work"] #works .to-list{display:flex}
 .lb.album .lb-stage{display:block;position:fixed;inset:0;overflow:hidden;background:#000}
 .lb-stage .layer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition-property:opacity;transition-timing-function:ease-in-out;animation-timing-function:linear;animation-fill-mode:both;will-change:transform,opacity}
 .lb-stage .layer.in{opacity:1}
-.lb-stage .kb1{animation-name:kb1}.lb-stage .kb2{animation-name:kb2}.lb-stage .kb3{animation-name:kb3}.lb-stage .kb4{animation-name:kb4}
+.lb-stage .kb0{animation-name:kb0;transform-origin:72% 50%}.lb-stage .kb1{animation-name:kb1}.lb-stage .kb2{animation-name:kb2}.lb-stage .kb3{animation-name:kb3}.lb-stage .kb4{animation-name:kb4}
+@keyframes kb0{from{transform:scale(1)}to{transform:scale(1.06)}}
 @keyframes kb1{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.16) translate(-2.5%,-1.5%)}}
 @keyframes kb2{from{transform:scale(1.16) translate(2%,1.5%)}to{transform:scale(1.03) translate(0,0)}}
 @keyframes kb3{from{transform:scale(1.12) translate(-3%,0)}to{transform:scale(1.12) translate(3%,0)}}

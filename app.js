@@ -164,7 +164,7 @@ bgmBtn.addEventListener("click",e=>{e.stopPropagation();bgmOn=!bgmOn;bgmLabel();
 
 /* 写真の層：新しい写真を上に重ね、ゆっくり浮かび上がらせる。下の写真は重なり終わってから外す */
 function stageShow(p){
-  const im=new Image();im.alt=p.caption||"写真";im.className="layer "+KB[Math.floor(Math.random()*KB.length)];
+  const im=new Image();im.alt=p.caption||"写真";im.className="layer "+(p.kb||KB[Math.floor(Math.random()*KB.length)]);if(p.pos)im.style.objectPosition=p.pos;
   const f=fadeMs();im.style.transitionDuration=f+"ms";im.style.animationDuration=(perMs()+f)+"ms";
   const old=curLayer;curLayer=im;
   lbStage.querySelectorAll(".layer").forEach(x=>{if(x!==old)x.remove()});
