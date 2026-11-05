@@ -25,8 +25,49 @@
 <div class="backrow"><a class="back" href="index.html"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
 <div class="blog-head"><h1>写真・映像工房<span class="kana">STUDIO</span></h1><p>古い白黒写真をカラーに。写真1枚を、ほほえみ、うなずく「動く写真」に。手元の写真を、自作の曲が流れる思い出のショートムービーに。大切な一枚を、もう一度ご家族で見られる形に仕立てます。</p></div>
 
+<section class="st-theater" aria-labelledby="st-trailer">
+<div class="th-in">
+<p class="th-studio">YELLOWMAN&nbsp;FILMS</p>
+<h2 id="st-trailer" class="th-h">予告編風ショートムービー</h2>
+<p class="th-lead">旅の記録も、仲間との一日も、映画の予告編のように。写真と動画を約1分の「いつか観たい映画」に仕立てます。</p>
+<div class="th-screen">
+  <video id="th-video" playsinline controls preload="none" poster="files/img-trailer-gsans.jpg"></video>
+  <button class="th-cover" type="button" id="th-cover" aria-label="再生する">
+    <img src="files/img-trailer-gsans.jpg" alt="" id="th-cover-img">
+    <span class="th-play" aria-hidden="true"></span>
+    <span class="th-meta"><span class="th-now">NOW SHOWING</span><span class="th-title" id="th-title">G SANS</span><span class="th-sub" id="th-sub">2022年 夏　1:06</span></span>
+  </button>
+</div>
+<p class="th-desc" id="th-desc"></p>
+<ol class="th-rail" aria-label="上映作品">
+  <li><button type="button" data-v="gsans" data-t="G SANS" data-s="2022年 夏　1:06" data-d="東北から信州へ、2,000kmの鉄道旅。最強の切符を手に、五能線を目指す「死に損ないのじーさん二人」の冒険。"><img src="files/img-trailer-gsans.jpg" alt="" loading="lazy"><span class="th-cap"><b>G SANS</b><small>1:06</small></span></button></li>
+  <li><button type="button" data-v="hakata" data-t="G SANS ― SERIES HAKATA" data-s="シリーズ第2弾　1:16" data-d="あのふたりが今度は博多へ。太宰府天満宮、雨の夜のイルミネーション、「変なホテル」、風の強い海辺。"><img src="files/img-trailer-hakata.jpg" alt="" loading="lazy"><span class="th-cap"><b>SERIES HAKATA</b><small>1:16</small></span></button></li>
+  <li><button type="button" data-v="shuzenji" data-t="修善寺 踊り子号の旅" data-s="2022年5月　1:17" data-d="特急踊り子号に乗って修善寺へ。宿は菊屋。竹林の小径、桂川のせせらぎ、温泉街の新緑をめぐる夫婦旅。"><img src="files/img-trailer-shuzenji.jpg" alt="" loading="lazy"><span class="th-cap"><b>修善寺 踊り子号の旅</b><small>1:17</small></span></button></li>
+  <li><button type="button" data-v="kashimura" data-t="樫村墓参と忘年会" data-s="1:04" data-d="コロナ禍で会えなかった時間を越えて。卒業以来53年の仲間が集い、友の墓に参り、忘年会で笑う一日。"><img src="files/img-trailer-kashimura.jpg" alt="" loading="lazy"><span class="th-cap"><b>樫村墓参と忘年会</b><small>1:04</small></span></button></li>
+  <li><button type="button" data-v="kaomen" data-t="顔面シリーズ" data-s="2023年　0:55" data-d="主演は顔ラー、顔スパ、顔うどん。料理で作った「顔」たちが主役の、ちょっとふざけた予告編。"><img src="files/img-trailer-kaomen.jpg" alt="" loading="lazy"><span class="th-cap"><b>顔面シリーズ</b><small>0:55</small></span></button></li>
+</ol>
+<p class="th-note">「思い出ショートムービー」は、この予告編風の仕立てでもお作りできます。</p>
+</div>
+</section>
+<script>(function(){
+var v=document.getElementById("th-video"),cov=document.getElementById("th-cover"),ci=document.getElementById("th-cover-img"),
+t=document.getElementById("th-title"),s=document.getElementById("th-sub"),d=document.getElementById("th-desc"),
+bs=document.querySelectorAll(".th-rail button");
+function pick(b,play){
+  bs.forEach(function(x){x.removeAttribute("aria-current")});b.setAttribute("aria-current","true");
+  var id=b.dataset.v,p="files/img-trailer-"+id+".jpg";
+  v.pause();v.poster=p;v.src="files/video-trailer-"+id+".mp4";ci.src=p;
+  t.textContent=b.dataset.t;s.textContent=b.dataset.s;d.textContent=b.dataset.d;
+  if(play){cov.hidden=true;v.play()}else{cov.hidden=false}
+}
+bs.forEach(function(b){b.addEventListener("click",function(){pick(b,true);v.scrollIntoView({behavior:"smooth",block:"center"})})});
+cov.addEventListener("click",function(){cov.hidden=true;v.play()});
+v.addEventListener("ended",function(){cov.hidden=false});
+pick(bs[0],false);
+})();</script>
+
 <section class="st-sec" aria-labelledby="st-sample">
-<h2 id="st-sample">見本</h2>
+<h2 id="st-sample">見本 ― 動く写真</h2>
 <p>古い白黒写真1枚から作った「動く写真」です。色も表情の動きも、この1枚から作りました。</p>
 <div class="st-ba">
   <figure><img src="files/img-studio-sample-before.jpg" alt="もとの白黒写真。手ぬぐいをかぶった女性が囲炉裏端で鉄瓶に手を添えている" width="787" height="1224" loading="lazy"><figcaption>もとの写真</figcaption></figure>
