@@ -378,3 +378,38 @@ html[data-view="read"] #works .reader{display:block}
 .vbox video{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;background:#000}
 .vbox .vclose{position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;z-index:2;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:26px;line-height:1;cursor:pointer}
 .vbox .vtitle{position:absolute;top:calc(18px + env(safe-area-inset-top));left:18px;z-index:2;color:rgba(255,255,255,.85);font-family:var(--f-display);letter-spacing:.1em;pointer-events:none}
+
+/* 写真・映像工房（studio.html） */
+.studio .st-sec{margin:0 0 2.6em}
+.studio h2{font-family:var(--f-display);font-size:1.35rem;margin:0 0 .6em;padding-left:.6em;border-left:4px solid var(--shu)}
+.studio p{line-height:1.95;margin:0 0 1em}
+.studio a{color:var(--ai)}
+.st-ba{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.st-ba figure{margin:0;min-width:0}
+.st-ba img,.st-ba video{display:block;width:100%;height:auto;aspect-ratio:9/14;object-fit:cover;border-radius:6px;background:var(--ink);box-shadow:0 2px 14px rgba(36,28,22,.22)}
+.st-ba figcaption{text-align:center;font-family:var(--f-body);font-size:.85rem;color:var(--muted);margin-top:.5em;letter-spacing:.08em}
+.st-arrow{font-size:1.6rem;color:var(--shu)}
+.st-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin:0 0 18px}
+.st-card{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:16px 18px}
+.st-card.st-hl{border-color:var(--ai);box-shadow:inset 0 3px 0 var(--ai)}
+.st-card h3{font-family:var(--f-display);font-size:1.08rem;margin:0 0 .3em}
+.st-card .st-price{font-family:var(--f-body);color:var(--ink);margin:0 0 .5em}
+.st-card .st-price b{font-family:var(--f-display);font-size:1.7rem;font-weight:800;color:var(--shu);letter-spacing:.02em;margin:0 .1em}
+.st-card p{font-size:.92rem;line-height:1.75;margin:0}
+.st-table{overflow-x:auto;margin:0 0 1em}
+.st-table table{border-collapse:collapse;width:100%;font-size:.92rem;line-height:1.6}
+.st-table caption{text-align:left;font-weight:700;font-family:var(--f-body);margin-bottom:.4em}
+.st-table th,.st-table td{border:1px solid var(--rule);padding:.5em .8em;text-align:left}
+.st-table th{background:var(--surface);font-weight:500}
+.st-table td{white-space:nowrap;font-variant-numeric:tabular-nums}
+.st-note{font-size:.88rem;color:var(--muted)}
+.st-flow{counter-reset:st;list-style:none;padding:0;margin:0 0 1em}
+.st-flow li{counter-increment:st;position:relative;padding:0 0 .9em 2.6em;line-height:1.8}
+.st-flow li::before{content:counter(st);position:absolute;left:0;top:.1em;width:1.8em;height:1.8em;border-radius:50%;background:var(--ai);color:#fff;font-family:var(--f-body);font-size:.85rem;display:grid;place-items:center}
+.st-flow b{display:block;font-family:var(--f-display)}
+.st-terms{padding-left:1.3em;line-height:1.85;margin:0}
+.st-terms li{margin-bottom:.5em}
+.st-contact{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:20px 22px}
+.st-mail{display:inline-block;font-family:var(--f-body);font-weight:700;font-size:1.05rem;text-decoration:none;background:var(--ai);color:#fff!important;padding:.6em 1.2em;border-radius:999px}
+@media (max-width:520px){.st-ba{gap:6px}.st-arrow{font-size:1.1rem}}
+.st-card h3 small{display:inline-block;font-family:var(--f-body);font-size:.72rem;font-weight:500;letter-spacing:.08em;color:var(--muted);border:1px solid var(--rule);border-radius:999px;padding:.05em .7em;margin-left:.5em;vertical-align:.15em}
