@@ -131,7 +131,7 @@ if(!window.claude){
 
 /* 拡大表示・スライドショー
    写真集のフォルダを押すと、全画面で写真をゆっくり動かしながら、重ね合わせて切り替える。
-   BGM はインストゥルメンタルからランダムに1曲。1曲を約1分半（SHOW_TOTAL）とし、その間に写真がちょうど一周する。
+   BGM はインストゥルメンタルからランダムに1曲（アルバムに bgm＝曲名 があればその曲に固定）。1曲を約1分半（SHOW_TOTAL）とし、その間に写真がちょうど一周する。
    最後は曲の音量をゆっくり下げて静かに終わり、画面を暗くして目次へ戻る（繰り返さない）。 */
 const lb=$("#lightbox");
 const SHOW_MS=5000;          // 1枚ずつの拡大表示（フォルダ以外）の間隔
@@ -158,7 +158,7 @@ function audioInit(){if(actx)return;try{const AC=window.AudioContext||window.web
 function setVol(v){v=Math.max(0,Math.min(1,v));if(gain)gain.gain.setTargetAtTime(v,actx.currentTime,0.08);else bgm.volume=v}
 function volAt(t){return Math.min(1,t/FADE_IN,(SHOW_TOTAL-t)/FADE_OUT)}
 function bgmLabel(){bgmBtn.textContent=bgmCur?(bgmOn?"♪ ":"♪ 消音中　")+bgmCur.title:"♪ BGMなし";bgmBtn.setAttribute("aria-label",bgmOn?"BGMを消す":"BGMを流す");bgmBtn.classList.toggle("off",!bgmOn)}
-function bgmPick(){const L=inst();if(!L.length){bgmCur=null;bgmBtn.hidden=true;return}bgmCur=L[Math.floor(Math.random()*L.length)];bgm.src=bgmCur.url;bgmBtn.hidden=false;bgmLabel()}
+function bgmPick(){const L=inst();if(!L.length){bgmCur=null;bgmBtn.hidden=true;return}const fix=lbAlbum&&lbAlbum.bgm?L.find(s=>s.title===lbAlbum.bgm):null;bgmCur=fix||L[Math.floor(Math.random()*L.length)];bgm.src=bgmCur.url;bgmBtn.hidden=false;bgmLabel()}
 function bgmSync(){if(!bgmCur)return;if(bgmOn&&lbPlay&&!lb.hidden){if(actx&&actx.state==="suspended")actx.resume().catch(()=>{});bgm.play().catch(()=>{})}else bgm.pause()}
 bgmBtn.addEventListener("click",e=>{e.stopPropagation();bgmOn=!bgmOn;bgmLabel();setVol(bgmOn?volAt(clock):0);bgmSync()});
 
