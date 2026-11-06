@@ -155,6 +155,12 @@ def page(title, desc, body, prefix, canonical, current='blog', og_type='website'
 <style>body{{margin:0}}img{{max-width:100%}}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="{FONTS}">
+<link rel="icon" href="{prefix}favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="{prefix}files/icon-32.png">
+<link rel="apple-touch-icon" href="{prefix}files/icon-180.png">
+<link rel="manifest" href="{prefix}manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Yellowman">
+<meta name="theme-color" content="#2e2018">
 <link rel="stylesheet" href="{prefix}style.css">
 </head>
 <body>

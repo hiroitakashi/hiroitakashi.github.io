@@ -53,3 +53,7 @@
 ## 下書き版
 Claude 上のアーティファクト https://claude.ai/artifact/DkeozbbydYfNz8M4ZQ7v8b は1ファイル版の下書き（#works などのハッシュでページ切替）。
 公開の本番はこのリポジトリ。
+
+## アイコン（スマホのホーム画面・ブラウザのタブ）（2026-11-06）
+- 濃い茶の地に金色の「Y」・アールデコの放射線・菱形の飾り・「ROOM」。files/icon-180.png（iPhone）、icon-192/512.png・icon-maskable-512.png（Android、manifest.webmanifest）、icon-32.png と favicon.ico（タブ）。
+- 各HTMLの `<head>` と tools/build_blog.py のテンプレートに読み込みタグを入れてある。ホーム画面の名前は「Yellowman」。
