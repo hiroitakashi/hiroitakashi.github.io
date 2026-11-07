@@ -363,15 +363,38 @@ html[data-view="work"] #works .to-list{display:flex}
 #dl-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);width:min(92vw,420px);box-sizing:border-box;background:#1f2b3a;color:#fff;font-family:var(--f-body);font-size:.9rem;line-height:1.7;padding:14px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:1000}
 #dl-toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 #dl-toast b{color:#ffd78a}
-/* パソコン用の読書画面 */
+/* 小説の読書画面（book.js）：画面いっぱいに広げ、本のようにめくる */
 .reader{display:none}
 html[data-view="read"] #works .works,html[data-view="read"] #works .works-toc,html[data-view="read"] #works .to-list,html[data-view="read"] #works .room-head,html[data-view="read"] #works .backrow.bottom{display:none}
-html[data-view="read"] #works .reader{display:block}
-.reader-bar{position:sticky;top:var(--subbar-h,60px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:10px 0;background:var(--paper)}
-.reader-t{font-family:var(--f-display);font-weight:700;letter-spacing:.06em}
-.reader-r{margin-left:auto;display:flex;gap:14px;font-size:.85rem}
-.reader-r a{color:var(--ai)}
-.reader-pdf{display:block;width:100%;height:calc(100vh - 140px);min-height:480px;border:1px solid var(--rule);background:#fff}
+html[data-view="read"],html[data-view="read"] body{overflow:hidden}
+html[data-view="read"] #works .reader{display:flex}
+.reader{position:fixed;inset:0;z-index:1500;flex-direction:column;background:radial-gradient(ellipse at 50% 45%,#4a3b2c 0%,#2a2018 60%,#1c150f 100%);color:#efe4cf;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.reader-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:8px 16px;background:rgba(20,14,9,.55);border-bottom:1px solid rgba(232,200,120,.18);font-size:.88rem}
+.reader-bar a{color:#f0d48a;text-decoration:none}
+.reader-bar a:hover{text-decoration:underline}
+.reader-bar a.back{background:none;border:0;box-shadow:none;padding:.2em 0;color:#f0d48a;font-size:inherit;letter-spacing:.04em}
+.reader-t{font-family:var(--f-display);font-weight:700;letter-spacing:.06em;color:#fff6e2}
+.reader-r{margin-left:auto;display:flex;gap:14px;font-size:.82rem}
+.book-box{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+.book-stage{flex:1;min-height:0;position:relative;overflow:hidden}
+.book-stage canvas{display:block;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
+.book-stage canvas:active{cursor:grabbing}
+.book-stage.bump-l canvas{animation:bookBumpL .32s ease}
+.book-stage.bump-r canvas{animation:bookBumpR .32s ease}
+@keyframes bookBumpL{30%{transform:translateX(10px)}}
+@keyframes bookBumpR{30%{transform:translateX(-10px)}}
+.book-msg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;font-size:.95rem;letter-spacing:.1em;color:#e8d9bb}
+.book-foot{display:flex;align-items:center;gap:10px;padding:6px 12px 8px;background:rgba(20,14,9,.55);border-top:1px solid rgba(232,200,120,.18)}
+.book-btn{flex:none;font:inherit;font-size:.85rem;letter-spacing:.06em;color:#f0d48a;background:transparent;border:1px solid rgba(240,212,138,.5);border-radius:3px;padding:.35em .9em;cursor:pointer}
+.book-btn:hover:not(:disabled){background:rgba(240,212,138,.12)}
+.book-btn:disabled{opacity:.3;cursor:default}
+.book-mid{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.book-range{flex:1;min-width:60px;accent-color:#e0b85a}
+.book-pg{flex:none;font-size:.8rem;font-variant-numeric:tabular-nums;color:#e8d9bb;min-width:5.5em;text-align:center}
+.book-toc{flex:none;max-width:9em;font:inherit;font-size:.8rem;color:#f0d48a;background:#2a2018;border:1px solid rgba(240,212,138,.5);border-radius:3px;padding:.25em .3em}
+.book-hint{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);max-width:90%;box-sizing:border-box;padding:.55em 1.1em;border-radius:20px;background:rgba(0,0,0,.6);color:#fff;font-size:.82rem;letter-spacing:.05em;text-align:center;white-space:nowrap;pointer-events:none;transition:opacity .8s}
+.book-hint.off{opacity:0}
+@media (max-width:640px){.reader-bar{padding:6px 10px;gap:4px 12px;font-size:.8rem}.reader-r{font-size:.75rem;gap:10px}.reader-t{flex-basis:100%;order:-1;font-size:.9rem}.book-foot{padding:6px 8px 8px;gap:6px}.book-btn{padding:.35em .6em;font-size:.8rem}.book-pg{min-width:4.5em}.book-toc{max-width:5.5em}}
 /* 写真集の動画 */
 .album.is-video .stack{position:relative}
 .album .vplay{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;font-size:22px;padding-left:4px;box-sizing:border-box;border:2px solid rgba(255,255,255,.85)}
