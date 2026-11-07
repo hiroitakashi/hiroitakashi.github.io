@@ -39,9 +39,12 @@ const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 /* 白い地をアイボリーに。写真や絵のページ（四隅が白くない）はそのまま */
 function tint(c){
   const x=c.getContext("2d",{willReadFrequently:true}),w=c.width,h=c.height;
-  const im=x.getImageData(0,0,w,h),d=im.data,m=Math.max(2,Math.round(w*.01));
-  const pts=[[m,m],[w-1-m,m],[m,h-1-m],[w-1-m,h-1-m]],bg=[0,0,0];
-  for(const [px,py] of pts){const j=(py*w+px)*4;bg[0]+=d[j]/4;bg[1]+=d[j+1]/4;bg[2]+=d[j+2]/4}
+  const im=x.getImageData(0,0,w,h),d=im.data;
+  /* 紙の地の色：四辺の上の点のうち明るいほう半分の平均（余白を詰めた端に文字がかかっていても大丈夫なように） */
+  const sm=[];
+  for(let k=0;k<40;k++){const t=(k+.5)/40;for(const [px,py] of [[t*(w-1),1],[t*(w-1),h-2],[1,t*(h-1)],[w-2,t*(h-1)]]){const j=(Math.round(py)*w+Math.round(px))*4;sm.push([d[j],d[j+1],d[j+2]])}}
+  sm.sort((a,b)=>(b[0]+b[1]+b[2])-(a[0]+a[1]+a[2]));
+  const bg=[0,0,0],hn=sm.length>>1;for(let k=0;k<hn;k++){bg[0]+=sm[k][0]/hn;bg[1]+=sm[k][1]/hn;bg[2]+=sm[k][2]/hn}
   if(Math.min(bg[0],bg[1],bg[2])<225)return;
   const k0=PAPER[0]/bg[0],k1=PAPER[1]/bg[1],k2=PAPER[2]/bg[2];
   for(let j=0;j<d.length;j+=4){
@@ -74,7 +77,7 @@ function open(box,opt){
   box.append(stage,foot,hint);
   let hintT=0;
   const say=(t,ms)=>{hint.textContent=t;hint.classList.remove("off");clearTimeout(hintT);hintT=setTimeout(()=>hint.classList.add("off"),ms||3800)};
-  say("左から右へスワイプで次のページ　＋で拡大",4200);
+  say("左から右へスワイプで次のページ。真ん中をタップでメニュー",4200);
 
   const ctx=cv.getContext("2d");
   const KEY="book:"+(opt.key||opt.src);
@@ -84,6 +87,11 @@ function open(box,opt){
   const cache=new Map(),annots=new Map();
   let flip=null,anim=null,drag=null;
   const ZMIN=1,ZMAX=3,ZSTEPS=[1,1.25,1.5,1.75,2,2.5,3];
+  /* 余白を詰める範囲（ページに対する割合）。読み込み時に数ページの文字の位置から決める */
+  let crop={x:0,y:0,w:1,h:1};
+  /* 読書中は上下の帯を隠して画面いっぱいに。真ん中のタップで出し入れ */
+  const host=box.closest(".reader")||box;let uiT=0;
+  const ui=on=>{host.classList.toggle("ui-off",!on)};
   let Z=Math.min(ZMAX,Math.max(ZMIN,parseFloat(store.get("book:zoom"))||1)),TX=0,TY=0,shownCur=-1,toldZoom=false;
   const step=()=>spread?2:1;
   const norm=i=>{i=Math.max(0,Math.min(i,N-1));return spread?i-(i%2):i};
@@ -93,7 +101,7 @@ function open(box,opt){
     const r=stage.getBoundingClientRect();SW=Math.max(1,r.width);SH=Math.max(1,r.height);
     dpr=Math.min(2,window.devicePixelRatio||1);
     spread=SW>=760&&SW/SH>1.05;
-    const pad=SW<600?6:22,cols=spread?2:1;
+    const pad=SW<600?0:14,cols=spread?2:1;
     const nW=Math.floor(Math.min((SW-pad*2)/cols,(SH-pad*2)/ratio));
     if(nW!==W){W=nW;gen++;cache.clear()}
     H=Math.round(W*ratio);
@@ -119,10 +127,12 @@ function open(box,opt){
     const g=gen;e.busy=true;
     try{
       const p=await doc.getPage(i+1);
-      const v0=p.getViewport({scale:1}),vp=p.getViewport({scale:W*dpr*q/v0.width});
-      const c=document.createElement("canvas");c.width=Math.round(vp.width);c.height=Math.round(vp.height);
+      const v0=p.getViewport({scale:1}),full=i===0;   /* 表紙は余白を詰めず全体を */
+      const vp=p.getViewport({scale:full?Math.min(W/v0.width,H/v0.height)*dpr*q:W*dpr*q/(v0.width*crop.w)});
+      const c=document.createElement("canvas");
+      c.width=Math.round(full?vp.width:W*dpr*q);c.height=Math.round(full?vp.height:H*dpr*q);c._full=full;
       const x=c.getContext("2d",{willReadFrequently:true});x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
-      await p.render({canvasContext:x,viewport:vp}).promise;
+      await p.render({canvasContext:x,viewport:vp,transform:full?null:[1,0,0,1,-crop.x*vp.width,-crop.y*vp.height]}).promise;
       tint(c);
       if(g!==gen||cache.get(i)!==e||closed){c.width=0;return}
       if(e.c)e.c.width=0;
@@ -138,7 +148,37 @@ function open(box,opt){
     for(const [k,e] of [...cache])if(k<lo||k>hi){if(e.c)e.c.width=0;cache.delete(k)}
   }
 
-  function pic(c,x,y){ctx.drawImage(c,x,y,W,H)}
+  function pic(c,x,y){
+    if(!c._full){ctx.drawImage(c,x,y,W,H);return}
+    const s=Math.min(W/c.width,H/c.height),w=c.width*s,h=c.height*s;
+    ctx.drawImage(c,x+(W-w)/2,y+(H-h)/2,w,h);
+  }
+  /* 余白を詰める範囲を決める：ページをいくつか小さく描いて、文字（濃い点）のある範囲を合わせ、少し余裕を足す */
+  async function findCrop(){
+    const idx=[];const n=Math.min(12,N-1);
+    for(let k=0;k<n;k++)idx.push(1+Math.floor(k*(N-1)/n));
+    let x0=1,y0=1,x1=0,y1=0;
+    for(const i of [...new Set(idx)]){
+      try{
+        const p=await doc.getPage(i+1),v=p.getViewport({scale:1}),vp=p.getViewport({scale:260/v.width});
+        const c=document.createElement("canvas");c.width=Math.round(vp.width);c.height=Math.round(vp.height);
+        const x=c.getContext("2d",{willReadFrequently:true});x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
+        await p.render({canvasContext:x,viewport:vp}).promise;
+        const d=x.getImageData(0,0,c.width,c.height).data,w=c.width,h=c.height;
+        let a=w,b=h,e=-1,f=-1,cnt=0;
+        for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const j=(yy*w+xx)*4;if(d[j]+d[j+1]+d[j+2]<480){cnt++;if(xx<a)a=xx;if(xx>e)e=xx;if(yy<b)b=yy;if(yy>f)f=yy}}
+        c.width=0;
+        if(e<0||cnt>w*h*.3)continue;              /* 白紙や絵のページは使わない */
+        x0=Math.min(x0,a/w);y0=Math.min(y0,b/h);x1=Math.max(x1,(e+1)/w);y1=Math.max(y1,(f+1)/h);
+      }catch(err){}
+      if(closed)return;
+    }
+    if(x1<=x0||y1<=y0)return;
+    const px=.035,py=.03;
+    x0=Math.max(0,x0-px);y0=Math.max(0,y0-py);x1=Math.min(1,x1+px);y1=Math.min(1,y1+py);
+    if((x1-x0)*(y1-y0)>.92)return;               /* ほとんど詰められないならそのまま */
+    crop={x:x0,y:y0,w:x1-x0,h:y1-y0};
+  }
   /* 画面の座標 = 本の座標 × Z ＋ (TX,TY)（拡大とずらし） */
   function base(){ctx.setTransform(dpr*Z,0,0,dpr*Z,dpr*TX,dpr*TY)}
   /* 紙1枚を描く（x,y は左上）。side: "L"=左ページ "R"=右ページ "S"=1ページ表示 */
@@ -337,7 +377,13 @@ function open(box,opt){
     draw();clearTimeout(zT);zT=setTimeout(prefetch,250);
   }
   let zT=0;
-  const stepZoom=dir=>{const i=ZSTEPS.findIndex(v=>v>=Z-.01);let k=dir>0?ZSTEPS.findIndex(v=>v>Z+.01):(()=>{let j=-1;ZSTEPS.forEach((v,n)=>{if(v<Z-.01)j=n});return j})();if(k<0)k=dir>0?ZSTEPS.length-1:0;setZoom(ZSTEPS[k])};
+  /* 画面の高さにページの高さをぴったり合わせる倍率（スマホの縦長画面で上下の隙間をなくす） */
+  const fitH=()=>{const f=SH/Math.max(1,H);return f>1.04&&f<ZMAX?Math.floor(f*100)/100:0};
+  const stepZoom=dir=>{
+    const st=[...ZSTEPS];const f=fitH();if(f&&!st.some(v=>Math.abs(v-f)<.06))st.push(f);st.sort((a,b)=>a-b);
+    const k=dir>0?st.find(v=>v>Z+.01):[...st].reverse().find(v=>v<Z-.01);
+    setZoom(k==null?(dir>0?ZMAX:ZMIN):k);
+  };
   zIn.addEventListener("click",()=>stepZoom(1));
   zOut.addEventListener("click",()=>stepZoom(-1));
   zVal.addEventListener("click",()=>setZoom(1));
@@ -393,7 +439,7 @@ function open(box,opt){
       if(Math.abs(dx)<8||Math.abs(dx)<Math.abs(dy))return;
       const dir=dx>0?1:-1;
       if(dir>0?!canFwd():!canBack()){drag.blocked=true;return}
-      drag.on=true;
+      drag.on=true;ui(false);
       const cy=drag.by-oy<H*.45?0:H;
       begin(dir,cy);drag.k=spread?1:2;
     }
@@ -429,16 +475,19 @@ function open(box,opt){
     const hit=spread?(bx>=ox+W?{i:cur,px:bx-ox-W}:{i:cur+1,px:bx-ox}):{i:cur,px:bx-ox};
     const py=by-oy;
     if(hit.i<N&&hit.px>=0&&hit.px<=W&&py>=0&&py<=H){
-      const to=await linkAt(hit.i,hit.px/W,py/H);
+      const to=await linkAt(hit.i,crop.x+hit.px/W*crop.w,crop.y+py/H*crop.h);
       if(to!=null){jump(to);return}
     }
     /* 左右の端はページめくり（拡大中は端を狭く）。真ん中のダブルタップで拡大／元に戻す */
-    const edge=Z>1?.28:.4;
-    if(x<SW*edge){lastTap=null;turn(1);return}
-    if(x>SW*(1-edge)){lastTap=null;turn(-1);return}
+    const edge=Z>1?.28:.34;
+    if(x<SW*edge){lastTap=null;ui(false);turn(1);return}
+    if(x>SW*(1-edge)){lastTap=null;ui(false);turn(-1);return}
     const now=performance.now();
-    if(lastTap&&now-lastTap.t<350&&Math.hypot(x-lastTap.x,y-lastTap.y)<40){lastTap=null;setZoom(Z>1?1:2,x,y,true);return}
+    clearTimeout(uiT);
+    if(lastTap&&now-lastTap.t<350&&Math.hypot(x-lastTap.x,y-lastTap.y)<40){lastTap=null;setZoom(Z>1?1:(fitH()||2),x,y,true);return}
     lastTap={t:now,x,y};
+    /* 1回だけのタップならメニュー（上下の帯）を出し入れ */
+    uiT=setTimeout(()=>{lastTap=null;ui(host.classList.contains("ui-off"))},330);
   }
   async function linkAt(i,u,v){
     try{
@@ -486,8 +535,10 @@ function open(box,opt){
   }).then(async d=>{
     if(!d||closed)return;
     doc=d;N=d.numPages;range.max=String(N);
-    const p=await d.getPage(1),v=p.getViewport({scale:1});ratio=v.height/v.width;
-    msg.remove();W=0;layout();cur=norm(cur);if(Z>1)toStart();setZoom(Z,null,null,true);changed();
+    const p=await d.getPage(1),v=p.getViewport({scale:1});
+    await findCrop();if(closed)return;
+    ratio=(v.height*crop.h)/(v.width*crop.w);
+    msg.remove();setTimeout(()=>{if(!closed)ui(false)},2600);W=0;layout();cur=norm(cur);if(Z>1)toStart();setZoom(Z,null,null,true);changed();
     try{
       const ol=await d.getOutline();
       if(ol&&ol.length){
@@ -505,7 +556,7 @@ function open(box,opt){
     closed=true;finishAnim();
     document.removeEventListener("keydown",onKey);window.removeEventListener("resize",onResize);if(ro)ro.disconnect();
     for(const e of cache.values())if(e.c)e.c.width=0;
-    cache.clear();clearTimeout(zT);clearTimeout(hintT);try{if(task)task.destroy()}catch(e){}
+    cache.clear();clearTimeout(zT);clearTimeout(uiT);host.classList.remove("ui-off");clearTimeout(hintT);try{if(task)task.destroy()}catch(e){}
   }};
 }
 window.BookReader={open};
