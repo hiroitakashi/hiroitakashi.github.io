@@ -139,7 +139,7 @@ def convert(src):
         for rc in rcols:
             groups, g = [], [rc['chars'][0]]
             for a, b in zip(rc['chars'], rc['chars'][1:]):
-                if b['y0'] - a['y1'] > .6 * a['s']:
+                if b['y0'] - a['y1'] > .75 * S:          # 親字1字分より狭い間はひと続きのルビ（にしだきへえ など）
                     groups.append(g); g = [b]
                 else:
                     g.append(b)
@@ -154,7 +154,7 @@ def convert(src):
             for g in groups:
                 ruby_on[best[1]].append((g[0]['y0'], g[-1]['y1'], ''.join(c['c'] for c in g)))
         for k, col in enumerate(cols):
-            col['text'] = attach_ruby(col['chars'], ruby_on.get(k, []), stat)
+            col['text'] = attach_ruby(col['chars'], ruby_on.get(k, []), stat, S)
             raw = ''.join(c['c'] for c in col['chars']).replace('　', '　')
             col['raw'] = raw
             col['head'] = (col['s'] > 1.08 * S and len(raw) <= 30) or (len(raw) <= 14 and HEAD_RE.match(raw.strip('　')) is not None and (col['y0'] > TOP + .5 * S or col['s'] > 1.04 * S))
@@ -209,7 +209,7 @@ def convert(src):
     return {'v': 1, 'title': title, 'size': S, 'blocks': blocks}, stat
 
 
-def attach_ruby(chars, rubies, stat):
+def attach_ruby(chars, rubies, stat, S=10):
     """列の字にルビを付けて ｜親字《るび》 の形の文字列にする"""
     if not rubies:
         return ''.join(c['c'] for c in chars)
@@ -220,6 +220,24 @@ def attach_ruby(chars, rubies, stat):
             ov = [(min(c['y1'], ry1) - max(c['y0'], ry0), i) for i, c in enumerate(chars)]
             ov = [t for t in ov if t[0] > 0]
             if ov: idx = [max(ov)[1]]
+        # ルビはふつう漢字に付く：ルビの範囲にある漢字の続き（真ん中に近いもの）を親字にする。
+        # 範囲に漢字がなければ、ルビの真ん中から1字以内のいちばん近い漢字（字の枠がずれているPDFのため）
+        isk = lambda ch: '\u4e00' <= ch <= '\u9fff' or ch in '々〆ヶ〇'
+        rc = (ry0 + ry1) / 2
+        ks = [i for i in idx if isk(chars[i]['c'])]
+        if not ks:
+            near = [(abs(c['yc'] - rc), i) for i, c in enumerate(chars) if isk(c['c']) and abs(c['yc'] - rc) < .9 * S]
+            if near: ks = [min(near)[1]]
+        if ks:
+            # 漢字の中心がルビの範囲の内側（両端を0.3字ぶん狭めた中）にあるものだけ。親字はルビの字数より多くしない
+            inner = [i for i in ks if ry0 + .3 * S <= chars[i]['yc'] <= ry1 - .3 * S] or ks
+            n0 = min(inner, key=lambda i: abs(chars[i]['yc'] - rc))
+            a0 = b0 = n0
+            while a0 - 1 in inner and b0 - a0 + 1 < len(rt): a0 -= 1
+            while b0 + 1 in inner and b0 - a0 + 1 < len(rt): b0 += 1
+            idx = list(range(a0, b0 + 1))
+        elif idx:
+            idx = [i for i in idx if chars[i]['c'] not in '、。，．「」『』（）'] or idx
         if not idx:
             stat['ruby_lost'] += 1; continue
         a, b = idx[0], idx[-1]
