@@ -132,11 +132,12 @@ function open(box,opt){
     W=Math.floor(SW/cols);H=Math.floor(SH);ox=Math.round((SW-W*cols)/2);oy=0;
     cv.width=Math.round(SW*dpr);cv.height=Math.round(SH*dpr);cv.style.width=SW+"px";cv.style.height=SH+"px";
     if(!FS){const v=parseInt(store.get("book:fs2")||"",10);FS=FSTEPS.includes(v)?v:fsDefault()}
-    const key=[W,H,FS,dpr].join("x");
+    const key=[W,H,FS,dpr,window.__zoomFix||1].join("x");
     if(key!==lastLay){
       const pos=PG&&PG.pages[cur]?PG.pages[cur].start:savedPos;
       const ib=insetB();
-      PG=window.Tate.paginate(TEXT,{title:opt.title||"",W,H,F:FS,mt:Math.max(26,FS*2.1),mb:FS*2.5+ib,ms:Math.max(16,FS*1.15)});
+      const zk=window.__zoomFix||1,F=FS/zk;   /* iPhone の「ページの拡大」で大きく出る分を打ち消す */
+      PG=window.Tate.paginate(TEXT,{title:opt.title||"",W,H,F,mt:Math.max(26/zk,F*2.1),mb:F*2.5+ib,ms:Math.max(16/zk,F*1.15)});
       N=PG.pages.length;range.max=String(N);
       cur=norm(PG.find(pos));lastLay=key;gen++;
       for(const e of cache.values())if(e.c)e.c.width=0;

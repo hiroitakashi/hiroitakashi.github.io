@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <script>window.FILE_PAGE="works";document.documentElement.dataset.page="works"</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){var R=document.documentElement;function f(){try{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
 <meta name="description" content="廣居隆史の歴史小説。鑑真を描く『天平の灯』、『三浦按針』（全7巻）、天誅組の『吉野のもみじ葉』、宝暦治水の『見試しの川』など、奈良時代から幕末・明治、昭和までの作品を表紙つきで紹介し、PDFで読めます。">
 <meta name="author" content="廣居隆史">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -26,7 +27,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-title" content="Yellowman">
 <meta name="theme-color" content="#2e2018">
-<link rel="stylesheet" href="style.css?v=20261108c">
+<link rel="stylesheet" href="style.css?v=20261108d">
 
 </head>
 <body>
@@ -161,7 +162,7 @@
 <div id="root"></div>
 <script src="data.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="app.js?v=20261108c"></script>
+<script src="app.js?v=20261108d"></script>
 
 </body>
 </html>

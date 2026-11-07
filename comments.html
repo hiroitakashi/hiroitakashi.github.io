@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <script>window.FILE_PAGE="comments";document.documentElement.dataset.page="comments"</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){var R=document.documentElement;function f(){try{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
 <meta name="description" content="Yellowman&#39;s Room（廣居隆史のホームページ）へのコメント・ご感想はこちらから。小説・作曲・写真へのひとことをお待ちしています。">
 <meta name="author" content="廣居隆史">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -26,7 +27,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-title" content="Yellowman">
 <meta name="theme-color" content="#2e2018">
-<link rel="stylesheet" href="style.css?v=20261108c">
+<link rel="stylesheet" href="style.css?v=20261108d">
 
 </head>
 <body>
@@ -161,7 +162,7 @@
 <div id="root"></div>
 <script src="data.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="app.js?v=20261108c"></script>
+<script src="app.js?v=20261108d"></script>
 
 </body>
 </html>
