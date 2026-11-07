@@ -58,6 +58,9 @@ const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
 const canFull=!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)&&(document.fullscreenEnabled||document.webkitFullscreenEnabled);
 function goFull(){if(!canFull||fsEl())return;const d=document.documentElement;try{const r=d.requestFullscreen?d.requestFullscreen({navigationUI:"hide"}):d.webkitRequestFullscreen();if(r&&r.catch)r.catch(()=>{})}catch(e){}}
 function exitFull(){if(!fsEl())return;try{const r=document.exitFullscreen?document.exitFullscreen():document.webkitExitFullscreen();if(r&&r.catch)r.catch(()=>{})}catch(e){}}
+/* トップページの写真6割・カテゴリー4割：アイコン起動の拡大打ち消し（html の zoom）中は svh が縮むので、画面の高さを入れ直す */
+function setAppH(){const k=window.__zoomFix;if(k)document.documentElement.style.setProperty("--app-h",(innerHeight*k)+"px");else document.documentElement.style.removeProperty("--app-h")}
+setAppH();addEventListener("resize",setAppH);
 /* アイコンから開いたときの拡大の打ち消し（各HTMLの head）は、読書画面のあいだだけ外す（指の位置がずれないように。文字の大きさは book.js で補正） */
 function zoomHold(on){window.__zoomHold=on;if(on)document.documentElement.style.zoom="";else if(window.__zoomFixApply)window.__zoomFixApply()}
 function closeBook(){if(book){book.close();book=null;exitFull();zoomHold(false)}bookW=null}

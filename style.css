@@ -513,3 +513,17 @@ html:has(.st-theater){overflow-x:clip}
   .th-play::after{border-width:10px 0 10px 17px}
 }
 @media (max-width:560px){.studio .th-h{font-size:1.55rem;letter-spacing:.04em;word-break:keep-all}}
+/* トップページ：写真を上の端から断ち切りで画面の6割、カテゴリーを下の4割に（本人の指示、2026-11-08）。
+   --app-h はアイコン起動の拡大打ち消し（__zoomFix）のときだけ app.js が入れる画面の高さ */
+html[data-page="top"] header.top{display:flex;flex-direction:column}
+html[data-page="top"] .hero{flex:none;height:calc(var(--app-h,100svh)*.6);min-height:0}
+html[data-page="top"] .hero::after{background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0) 45%)}
+html[data-page="top"] header.top>.wrap{flex:none;min-height:calc(var(--app-h,100svh)*.4);display:flex;flex-direction:column;justify-content:center;box-sizing:border-box}
+html[data-page="top"] nav.rooms{padding-block:clamp(8px,2svh,22px)}
+@media (max-width:640px){
+  html[data-page="top"] header.top>.wrap{height:calc(var(--app-h,100svh)*.4)}
+  html[data-page="top"] nav.rooms{flex:1;min-height:0;grid-template-rows:repeat(7,1fr);padding:0}
+  html[data-page="top"] nav.rooms a{display:flex;align-items:center;justify-content:center;padding:0 .4em;min-height:0;font-size:clamp(.8rem,2.1svh,1.05rem)}
+  html[data-page="top"] nav.rooms a:last-child{border-bottom:0}
+}
+
