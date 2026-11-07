@@ -103,7 +103,7 @@ function open(box,opt){
   const POSKEY="bookpos:"+(opt.key||opt.src);
   let savedPos=null;try{savedPos=JSON.parse(store.get(POSKEY)||"null")}catch(e){}
   const FSTEPS=[13,14,15,16,17,18,19,20,22,24,26,28,31,34,38,42];
-  const fsDefault=()=>SW<600?18:20;
+  const fsDefault=()=>SW<600?16:19;
   /* 画面下の安全領域（iPhone のホームバー） */
   const insetB=()=>{const d=document.createElement("div");d.style.cssText="position:fixed;bottom:0;height:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden";document.body.append(d);const v=parseFloat(getComputedStyle(d).paddingBottom)||0;d.remove();return v};
   const step=()=>spread?2:1;
@@ -131,7 +131,7 @@ function open(box,opt){
     const cols=spread?2:1;
     W=Math.floor(SW/cols);H=Math.floor(SH);ox=Math.round((SW-W*cols)/2);oy=0;
     cv.width=Math.round(SW*dpr);cv.height=Math.round(SH*dpr);cv.style.width=SW+"px";cv.style.height=SH+"px";
-    if(!FS){const v=parseInt(store.get("book:fs")||"",10);FS=FSTEPS.includes(v)?v:fsDefault()}
+    if(!FS){const v=parseInt(store.get("book:fs2")||"",10);FS=FSTEPS.includes(v)?v:fsDefault()}
     const key=[W,H,FS,dpr].join("x");
     if(key!==lastLay){
       const pos=PG&&PG.pages[cur]?PG.pages[cur].start:savedPos;
@@ -157,7 +157,7 @@ function open(box,opt){
     let i=FSTEPS.indexOf(FS);if(i<0)i=FSTEPS.indexOf(fsDefault());
     const n=to!=null?to:FSTEPS[Math.max(0,Math.min(FSTEPS.length-1,i+dir))];
     if(n===FS)return;
-    FS=n;store.set("book:fs",String(FS));
+    FS=n;store.set("book:fs2",String(FS));
     zVal.textContent=Math.round(FS/fsDefault()*100)+"%";
     zOut.disabled=FS<=FSTEPS[0];zIn.disabled=FS>=FSTEPS[FSTEPS.length-1];
     finishAnim();flip=null;layoutText();
@@ -622,7 +622,7 @@ function open(box,opt){
   /* ---- 読み込み ---- */
   let outline=[],task=null;
   /* 本文データがあれば本文モード、なければ PDF */
-  const tateP=window.Tate?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement("script");s.src="tate.js?v=1";s.onload=res;s.onerror=rej;document.head.append(s)});
+  const tateP=window.Tate?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement("script");s.src="tate.js?v=2";s.onload=res;s.onerror=rej;document.head.append(s)});
   (opt.text?Promise.all([fetch(opt.text).then(r=>{if(!r.ok)throw 0;return r.json()}),tateP]).then(([data])=>data):Promise.reject()).then(data=>{
     if(closed)return;
     TEXT=data;doc={text:true};

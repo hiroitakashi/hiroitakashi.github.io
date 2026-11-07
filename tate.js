@@ -2,7 +2,7 @@
    Tate.paginate(本文データ, {W,H,F,…}) → {pages, heads, find(pos)}   … ページ割り
    Tate.drawPage(ctx, page, layout, scale)                          … 1ページをキャンバスに描く
    本文データは tools/pdf_to_text.py が作る files/text-xxx.json
-   - 1字＝1em の升目で上から下へ、行は右から左へ。行間は字の大きさの0.85倍
+   - 1字＝1em の升目で上から下へ、行は右から左へ。行の間隔は字の大きさの1.75倍
    - 禁則：句読点・閉じかっこ・小書きの仮名などは行頭に置かず、前の行の下へぶら下げる（2字まで）。開きかっこは行末に置かない
    - 縦書きの約物：かっこ・長音・ダッシュ・三点リーダーは90度回し、句読点は升目の右上、小書きの仮名は少し右上へ
    - 英語は横倒し、2桁までの数字は縦中横
@@ -82,7 +82,7 @@ function breakLines(units,N,indent){
 }
 
 function paginate(data,P){
-  const F=P.F,L=Math.round(F*1.85*10)/10;
+  const F=P.F,L=Math.round(F*1.75*10)/10;
   const mt=P.mt,mb=P.mb,ms=P.ms;
   const N=Math.max(6,Math.floor((P.H-mt-mb)/F));
   const usable=P.W-2*ms;
