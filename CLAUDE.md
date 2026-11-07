@@ -22,13 +22,13 @@
 | app.js | 小説の追加・修正 → 先頭の `const WORKS=[ … ]`（t=題名, cover, pdf, who=主人公, era=時代, d=紹介文）。並びはおおむね時代順 |
 | data.js | 曲の追加・曲名修正 → `window.SITE_STATE.songs`（cat は "邦楽" / "洋楽" / "インストゥルメンタル"）。YouTube は `youtube.channels` |
 | style.css | デザイン |
-| book.js | 小説の読書画面（2026-11-07）。PDF を PDF.js（lib/pdfjs/ に同梱、v3.11.174）で描き、陰影つきで紙をめくる。縦書きは右綴じ＝左から右へスワイプ（左側タップ・←キー）で次へ、横書きは WORKS に `yoko:true` を付けると左綴じ（右から左へ）。紙の色はアイボリー（book.js の PAPER）で、PDF の白い地を置きかえる。広い画面は見開き、スマホは1ページ。目次のリンクとしおり（下の「目次」）で章へ飛べる。読みかけのページはブラウザが覚える |
+| book.js | 小説の読書画面（2026-11-07）。PDF を PDF.js（lib/pdfjs/ に同梱、v3.11.174）で描き、陰影つきで紙をめくる。縦書きは右綴じ＝左から右へスワイプ（左側タップ・←キー）で次へ、横書きのPDF用に WORKS の `yoko:true`（左綴じ）もあるが、今は使っていない。紙の色はアイボリー（book.js の PAPER）で、PDF の白い地を置きかえる。広い画面は見開き、スマホは1ページ。目次のリンクとしおり（下の「目次」）で章へ飛べる。読みかけのページはブラウザが覚える |
 | data.js（写真集） | 写真はフォルダ単位の `window.SITE_STATE.albums`（id, title=フォルダ名, note, photos=[{url, caption, camera}]）。本人がフォルダで送った写真を1アルバムにし、フォルダ名を題名にする。画像は files/img-<アルバムid>-NN.jpg（長辺2000px程度のJPEG）。並びは新しいフォルダを先頭に。動画は `video`（files/video-<id>.mp4、H.264・1080p・CRF27程度で50MB未満に縮める）、`cover`（files/img-<id>-cover.jpg）、`length` を持つアルバムにし、押すと全画面で再生。写真アルバムも `cover` で目次の表紙を指定できる。写真ごとに `pos`（object-position。例 "72% 50%"）と `kb`（"kb0"=ほぼ動かない控えめなズーム）を付けると、文字入りのタイトル写真などが切れずに見える（国道駅の1枚目で使用） |
 | files/ | PDF・表紙・曲（MP3）・トップ写真。名前は `pdf-xxx.pdf`, `covers-xxx.jpg`, `music-<分類>-<番号>.mp3` |
 
 - 写真集（photos.html）はフォルダの目次。フォルダを押すと全画面（画面いっぱい）のスライドショー：写真はゆっくり動き（ケン・バーンズ風）、重なり合いながら切り替わる。BGMは作曲のインストゥルメンタルからランダムに1曲（アルバムに `bgm`＝曲名 があればその曲に固定。鶴見線 国道駅は "Darkness"、浅草三社祭は "午後の紅茶" に固定＝本人の指示）。全体を約1分半（app.js の SHOW_TOTAL）とし、その間に写真がちょうど一周、曲は最後の10秒で音量を下げて消え、画面が暗くなって目次へ戻る（繰り返さない。本人の指示）。
 - トップのスライドショーの写真は各HTMLの `<div class="hero">` 内の `<figure class="slide">`（6ファイルとも同じ）。画像は files/img-hero-*.jpg と files/img-top.jpg。6秒ごとにフェードで切り替わる（app.js）。
-- 小説を追加したら、横書きの作品なら WORKS に `yoko:true` を付ける（今は「波頭」「あべこべ宿」）。
+- 小説はすべて縦書き（本人の指示、2026-11-07）。横書きの原稿が来たら `python3 tools/yoko_to_tate.py 入力.pdf 出力.pdf` で縦書きA5に組み直す（Chromium＋Noto Serif CJK JP。目次リンク・しおり・算用数字のノンブル込み。「波頭」はこれで組み直した）。
 - 小説を追加したら、各HTMLの小説欄の見出し「○○作。」の数も直す（6ファイルとも同じ文）。
 - 表紙は PDF の1ページ目を 600px 高で JPEG にしたもの（`pdftoppm -f 1 -l 1 -jpeg -scale-to 600`）。
 - 小説PDFの目次には各章へのページ内リンクと「しおり」を付けている。新しい小説を追加したら同じ処理をする（スクリプトは tools/toc_links.py：`python3 tools/toc_links.py 入力.pdf 出力.pdf`。PyMuPDF が必要）。
