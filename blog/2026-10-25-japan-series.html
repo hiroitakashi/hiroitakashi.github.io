@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){var R=document.documentElement;function f(){try{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
+<script>/* スマホで「ページの拡大」が効いて全体が大きく出るのを打ち消す（ホーム画面のアイコンから開いたときなど。2026-11-08） */(function(){var R=document.documentElement;function f(){try{if(window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height);if(!(navigator.maxTouchPoints>0)||a>500)return;var v=window.visualViewport,w=innerWidth*(v&&v.scale?v.scale:1),k=(innerWidth>innerHeight?b:a)/w;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
 <title>日本シリーズ2026はDeNA対ソフトバンク――日程・球場・テレビ放送と配信をまとめました | Yellowman&#x27;s Room</title>
 <meta name="description" content="10月24日に開幕した「SMBC日本シリーズ2026」は横浜DeNAベイスターズと福岡ソフトバンクホークスの対戦。全7戦の日程と球場、試合開始時間、テレビ中継とネット配信、ルールの基本をまとめました。">
 <link rel="canonical" href="https://hiroitakashi.github.io/blog/2026-10-25-japan-series.html">

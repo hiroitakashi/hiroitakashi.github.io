@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){var R=document.documentElement;function f(){try{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
+<script>/* スマホで「ページの拡大」が効いて全体が大きく出るのを打ち消す（ホーム画面のアイコンから開いたときなど。2026-11-08） */(function(){var R=document.documentElement;function f(){try{if(window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height);if(!(navigator.maxTouchPoints>0)||a>500)return;var v=window.visualViewport,w=innerWidth*(v&&v.scale?v.scale:1),k=(innerWidth>innerHeight?b:a)/w;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
 <title>紅葉の見ごろ2026――高尾山は11月13日頃、京都・嵐山は23日頃。11月中旬以降の名所は「平年よりやや遅め」（ウェザーニュース・日本気象協会の最新予想） | Yellowman&#x27;s Room</title>
 <meta name="description" content="11月に入り、紅葉は平地や標高の低い山へ。ウェザーニュースの予想では高尾山は11月13日頃、宮島21日頃、香嵐渓と嵐山は23日頃、秋月城跡は28日頃が見ごろ。日本気象協会は「全国的に平年並みか遅め」。最新予想を表でまとめました。">
 <link rel="canonical" href="https://hiroitakashi.github.io/blog/2026-11-01-koyo-migoro.html">

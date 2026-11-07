@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){var R=document.documentElement;function f(){try{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
+<script>/* スマホで「ページの拡大」が効いて全体が大きく出るのを打ち消す（ホーム画面のアイコンから開いたときなど。2026-11-08） */(function(){var R=document.documentElement;function f(){try{if(window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height);if(!(navigator.maxTouchPoints>0)||a>500)return;var v=window.visualViewport,w=innerWidth*(v&&v.scale?v.scale:1),k=(innerWidth>innerHeight?b:a)/w;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
 <title>11月の値上げは1477品目――マヨネーズなど調味料が644品目で最多、2026年の値上げは累計2万327品目に（帝国データバンク調べ） | Yellowman&#x27;s Room</title>
 <meta name="description" content="帝国データバンクの調べで、11月に値上げされる飲食料品は1477品目。3カ月ぶりに3000品目を下回り「値上げラッシュは一服」ですが、前年同月の約10倍です。調味料・飲料・加工食品の内訳と、値上げの理由をまとめました。">
 <link rel="canonical" href="https://hiroitakashi.github.io/blog/2026-10-31-neage-november.html">

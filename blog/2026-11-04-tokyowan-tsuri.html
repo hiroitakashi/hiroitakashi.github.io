@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){var R=document.documentElement;function f(){try{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
+<script>/* スマホで「ページの拡大」が効いて全体が大きく出るのを打ち消す（ホーム画面のアイコンから開いたときなど。2026-11-08） */(function(){var R=document.documentElement;function f(){try{if(window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height);if(!(navigator.maxTouchPoints>0)||a>500)return;var v=window.visualViewport,w=innerWidth*(v&&v.scale?v.scale:1),k=(innerWidth>innerHeight?b:a)/w;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
 <title>東京湾の釣り情報（11月4日）——横浜港のLTアジでトップ76匹、本牧海づり施設は文化の日にアジ239匹・タチウオ20匹 | Yellowman&#x27;s Room</title>
 <meta name="description" content="11月3日、横浜港新山下・広島屋のLTアジ船で17〜76匹。本牧海づり施設はアジ239匹・タチウオ20匹・イワシ1,085匹（入場者850人）。金沢八景・弁天屋は竹岡沖のカワハギで0〜18匹、サワラは最大2.5kg。11月4日のアジ船の釣果もまとめました。">
 <link rel="canonical" href="https://hiroitakashi.github.io/blog/2026-11-04-tokyowan-tsuri.html">

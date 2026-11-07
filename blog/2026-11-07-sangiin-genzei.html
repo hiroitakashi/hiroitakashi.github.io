@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){var R=document.documentElement;function f(){try{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
+<script>/* スマホで「ページの拡大」が効いて全体が大きく出るのを打ち消す（ホーム画面のアイコンから開いたときなど。2026-11-08） */(function(){var R=document.documentElement;function f(){try{if(window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height);if(!(navigator.maxTouchPoints>0)||a>500)return;var v=window.visualViewport,w=innerWidth*(v&&v.scale?v.scale:1),k=(innerWidth>innerHeight?b:a)/w;if(k>1.1&&k<4){R.style.zoom=String(1/k);window.__zoomFix=k}else{R.style.zoom="";window.__zoomFix=0}}catch(e){}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)})();</script>
 <title>「踏み込んだ答弁」と認めながら反対票――消費減税、勝負は参院へ。公明と国民民主は2月の約束を思い出せ | Yellowman&#x27;s Room</title>
 <meta name="description" content="食料品の消費税を1%に下げる法案が、全野党の反対の中で衆院を通過しました。11日から与党少数の参院で審議が始まります。首相の答弁を「踏み込んだ」と認めた公明党も反対に回りました。カギを握る公明・国民民主の約束と行動を並べます。">
 <link rel="canonical" href="https://hiroitakashi.github.io/blog/2026-11-07-sangiin-genzei.html">
