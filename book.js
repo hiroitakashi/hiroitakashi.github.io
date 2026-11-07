@@ -3,8 +3,10 @@
    - 縦書き・右綴じの本なので、左から右へスワイプ（または左側をタップ・← キー）で次のページへ
    - 紙は真っ白ではなくアイボリー（PAPER）。PDF の白い地をこの色に置きかえる
    - 読みかけのページはブラウザに覚えておき、次に開いたときそこから
-   - 横書きの本（opt.yoko）は左綴じなので向きが逆：右から左へスワイプで次へ（画面全体を左右反転して描き、ページの絵だけ戻す）
-   使い方：BookReader.open(入れ物の要素, {src:"files/pdf-xxx.pdf", key:"xxx", title:"題名", yoko:false}) → {close()} */
+   - 老眼の方のために拡大縮小できる（右下の＋−、2本指で広げる・つまむ、真ん中をダブルタップ、Ctrl＋ホイール、＋/−キー）。
+     拡大中は指（マウス）でずらして読み、ページは左右の端のタップ・ボタン・キーでめくる。めくると次のページの書き出し（右上）へ。
+     倍率はブラウザが覚える
+   使い方：BookReader.open(入れ物の要素, {src:"files/pdf-xxx.pdf", key:"xxx", title:"題名"}) → {close()} */
 (function(){
 "use strict";
 const PAPER=[248,241,222];               /* 紙の色（少し黄みのあるアイボリー） */
@@ -55,17 +57,24 @@ function open(box,opt){
   cv.setAttribute("role","img");cv.setAttribute("aria-label","『"+(opt.title||"")+"』");
   stage.append(cv,msg);
   const foot=mk("div","book-foot");
-  const LTR=!!opt.yoko;
-  const bNext=mk("button","book-btn next",LTR?"次へ ›":"‹ 次へ"),bPrev=mk("button","book-btn prev",LTR?"‹ 前へ":"前へ ›");
+  const bNext=mk("button","book-btn next","‹ 次へ"),bPrev=mk("button","book-btn prev","前へ ›");
   bNext.type=bPrev.type="button";
-  const range=mk("input","book-range");range.type="range";range.min="1";range.value="1";range.dir=LTR?"ltr":"rtl";range.setAttribute("aria-label","ページ");
+  const range=mk("input","book-range");range.type="range";range.min="1";range.value="1";range.dir="rtl";range.setAttribute("aria-label","ページ");
   const pg=mk("span","book-pg","");
   const tocSel=mk("select","book-toc");tocSel.setAttribute("aria-label","目次");tocSel.hidden=true;
   const mid=mk("div","book-mid");mid.append(range,pg,tocSel);
-  if(LTR)foot.append(bPrev,mid,bNext);else foot.append(bNext,mid,bPrev);
-  const hint=mk("div","book-hint",LTR?"右から左へスワイプで次のページ":"左から右へスワイプで次のページ");
+  foot.append(bNext,mid,bPrev);
+  const hint=mk("div","book-hint","左から右へスワイプで次のページ");
+  /* 拡大・縮小のボタン（大きめ） */
+  const zoomBox=mk("div","book-zoom"),zIn=mk("button","zin","＋"),zVal=mk("button","zval","100%"),zOut=mk("button","zout","－");
+  zIn.type=zVal.type=zOut.type="button";
+  zIn.setAttribute("aria-label","拡大");zOut.setAttribute("aria-label","縮小");zVal.setAttribute("aria-label","元の大きさに戻す");
+  zIn.title="拡大";zOut.title="縮小";zVal.title="元の大きさに戻す";
+  zoomBox.append(zIn,zVal,zOut);stage.append(zoomBox);
   box.append(stage,foot,hint);
-  setTimeout(()=>hint.classList.add("off"),3800);
+  let hintT=0;
+  const say=(t,ms)=>{hint.textContent=t;hint.classList.remove("off");clearTimeout(hintT);hintT=setTimeout(()=>hint.classList.add("off"),ms||3800)};
+  say("左から右へスワイプで次のページ　＋で拡大",4200);
 
   const ctx=cv.getContext("2d");
   const KEY="book:"+(opt.key||opt.src);
@@ -74,6 +83,8 @@ function open(box,opt){
   let cur=parseInt(store.get(KEY)||"0",10)||0;
   const cache=new Map(),annots=new Map();
   let flip=null,anim=null,drag=null;
+  const ZMIN=1,ZMAX=3,ZSTEPS=[1,1.25,1.5,1.75,2,2.5,3];
+  let Z=Math.min(ZMAX,Math.max(ZMIN,parseFloat(store.get("book:zoom"))||1)),TX=0,TY=0,shownCur=-1,toldZoom=false;
   const step=()=>spread?2:1;
   const norm=i=>{i=Math.max(0,Math.min(i,N-1));return spread?i-(i%2):i};
 
@@ -89,43 +100,52 @@ function open(box,opt){
     ox=Math.round((SW-W*cols)/2);oy=Math.round((SH-H)/2);
     cv.width=Math.round(SW*dpr);cv.height=Math.round(SH*dpr);cv.style.width=SW+"px";cv.style.height=SH+"px";
     if(N)cur=norm(cur);
+    if(Z>1)clampPan();else TX=TY=0;
     draw();prefetch();
   }
 
   /* ---- ページの絵 ---- */
+  /* 描く細かさ：拡大したら細かく描き直す（ただし1ページの画素数に上限。スマホのメモリのため） */
+  const wantQ=()=>Math.max(1,Math.min(Z,Math.sqrt(4.5e6/Math.max(1,W*H*dpr*dpr))));
   function img(i){
     if(!doc||i<0||i>=N)return null;
-    const e=cache.get(i);if(e)return e.c;
-    render(i);return null;
+    let e=cache.get(i);
+    if(!e){e={c:null,q:0,busy:false};cache.set(i,e)}
+    const q=wantQ();
+    if(!e.busy&&e.q<q-.01)render(i,e,q);
+    return e.c;
   }
-  async function render(i){
-    const e={c:null},g=gen;cache.set(i,e);
+  async function render(i,e,q){
+    const g=gen;e.busy=true;
     try{
       const p=await doc.getPage(i+1);
-      const v0=p.getViewport({scale:1}),vp=p.getViewport({scale:W*dpr/v0.width});
+      const v0=p.getViewport({scale:1}),vp=p.getViewport({scale:W*dpr*q/v0.width});
       const c=document.createElement("canvas");c.width=Math.round(vp.width);c.height=Math.round(vp.height);
       const x=c.getContext("2d",{willReadFrequently:true});x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
       await p.render({canvasContext:x,viewport:vp}).promise;
       tint(c);
-      if(g!==gen||cache.get(i)!==e||closed)return;
-      e.c=c;if(!anim)draw();
-    }catch(err){if(cache.get(i)===e)cache.delete(i)}
+      if(g!==gen||cache.get(i)!==e||closed){c.width=0;return}
+      if(e.c)e.c.width=0;
+      e.c=c;e.q=q;e.busy=false;if(!anim)draw();
+    }catch(err){e.busy=false;e.q=q}
   }
   function prefetch(){
     if(!doc)return;
     const s=step();
-    [cur,cur+1,cur+2,cur+3,cur-1,cur-2,cur+4,cur+5].forEach(i=>{if(i>=0&&i<N)img(i)});
-    for(const k of [...cache.keys()])if(k<cur-4*s||k>cur+6*s)cache.delete(k);
+    const big=Z>1.4;
+    (big?[cur,cur+1,cur+2,cur+3,cur-1,cur-2]:[cur,cur+1,cur+2,cur+3,cur-1,cur-2,cur+4,cur+5]).forEach(i=>{if(i>=0&&i<N)img(i)});
+    const lo=big?cur-2*s:cur-4*s,hi=big?cur+2*s+1:cur+6*s;
+    for(const [k,e] of [...cache])if(k<lo||k>hi){if(e.c)e.c.width=0;cache.delete(k)}
   }
 
-  /* ページの絵を置く（横書きの本は画面全体を反転しているので、絵だけもう一度反転して正しい向きに） */
-  function pic(c,x,y){if(!LTR){ctx.drawImage(c,x,y,W,H);return}ctx.save();ctx.translate(x+W,y);ctx.scale(-1,1);ctx.drawImage(c,0,0,W,H);ctx.restore()}
-  function base(){ctx.setTransform(dpr,0,0,dpr,0,0);if(LTR){ctx.translate(SW,0);ctx.scale(-1,1)}}
+  function pic(c,x,y){ctx.drawImage(c,x,y,W,H)}
+  /* 画面の座標 = 本の座標 × Z ＋ (TX,TY)（拡大とずらし） */
+  function base(){ctx.setTransform(dpr*Z,0,0,dpr*Z,dpr*TX,dpr*TY)}
   /* 紙1枚を描く（x,y は左上）。side: "L"=左ページ "R"=右ページ "S"=1ページ表示 */
   function paper(i,x,y,side,shadow){
     if(i<0||i>=N)return false;
     ctx.save();
-    if(shadow){ctx.shadowColor="rgba(0,0,0,.45)";ctx.shadowBlur=22*dpr;ctx.shadowOffsetY=6*dpr}
+    if(shadow){ctx.shadowColor="rgba(0,0,0,.45)";ctx.shadowBlur=22*dpr*Z;ctx.shadowOffsetY=6*dpr*Z}
     ctx.fillStyle=PAPER_CSS;ctx.fillRect(x,y,W,H);
     ctx.restore();
     const c=img(i);if(c)pic(c,x,y);
@@ -196,8 +216,8 @@ function open(box,opt){
     /* 3) 返っている紙（裏側）。まず紙の形の落ち影 */
     if(flap.length>2){
       ctx.save();
-      ctx.shadowColor="rgba(20,12,0,.38)";ctx.shadowBlur=(10+20*Math.sin(Math.PI*prog))*dpr;
-      ctx.shadowOffsetX=-nx*4*dpr;ctx.shadowOffsetY=3*dpr;
+      ctx.shadowColor="rgba(20,12,0,.38)";ctx.shadowBlur=(10+20*Math.sin(Math.PI*prog))*dpr*Z;
+      ctx.shadowOffsetX=-nx*4*dpr*Z;ctx.shadowOffsetY=3*dpr*Z;
       pathPoly(ctx,flap);ctx.fillStyle=PAPER_CSS;ctx.fill();ctx.restore();
       ctx.save();pathPoly(ctx,flap);ctx.clip();
       /* 折れ線で鏡に映した座標系 */
@@ -278,10 +298,11 @@ function open(box,opt){
     animate(t=>({x:from+(to-from)*t,y:H-Math.sin(Math.PI*t)*H*.16}),spread?820:700,easeInOut,()=>{cur=dir>0?b+s:b;flip=null;changed()});
   }
   function bump(dir){
-    stage.classList.remove("bump-l","bump-r");void stage.offsetWidth;stage.classList.add((dir>0)!==LTR?"bump-l":"bump-r");
+    stage.classList.remove("bump-l","bump-r");void stage.offsetWidth;stage.classList.add(dir>0?"bump-l":"bump-r");
   }
   function jump(i){finishAnim();flip=null;cur=norm(i);changed()}
   function changed(){
+    if(cur!==shownCur){if(shownCur>=0&&Z>1)toStart();shownCur=cur}
     draw();prefetch();
     if(!N)return;
     store.set(KEY,String(cur));
@@ -292,33 +313,102 @@ function open(box,opt){
     bNext.disabled=!canFwd();bPrev.disabled=!canBack();
   }
 
+  /* ---- 拡大・縮小 ---- */
+  /* 本（見開きなら2ページ分）の範囲が画面を外れすぎないように、ずらしを制限する */
+  function clampPan(){
+    const cols=spread?2:1,x0=ox,x1=ox+W*cols,y0=oy,y1=oy+H,m=10;
+    const cw=(x1-x0)*Z,ch=(y1-y0)*Z;
+    TX=cw+2*m<=SW?(SW-(x0+x1)*Z)/2:Math.min(m-x0*Z,Math.max(SW-m-x1*Z,TX));
+    TY=ch+2*m<=SH?(SH-(y0+y1)*Z)/2:Math.min(m-y0*Z,Math.max(SH-m-y1*Z,TY));
+  }
+  /* ページの書き出し（縦書きなので右上）を見せる */
+  function toStart(){const cols=spread?2:1;TX=SW-10-(ox+W*cols)*Z;TY=10-oy*Z;clampPan()}
+  function setZoom(nz,fx,fy,keep){
+    nz=Math.min(ZMAX,Math.max(ZMIN,nz));
+    if(fx==null){fx=SW/2;fy=SH/2}
+    const sx=(fx-TX)/Z,sy=(fy-TY)/Z,first=Z<=1.001&&nz>1.001;
+    Z=nz;
+    if(Z<=1.001){Z=1;TX=TY=0}else if(first&&!keep){toStart()}else{TX=fx-sx*Z;TY=fy-sy*Z;clampPan()}
+    zVal.textContent=Math.round(Z*100)+"%";
+    zOut.disabled=Z<=ZMIN;zIn.disabled=Z>=ZMAX;
+    stage.classList.toggle("zoomed",Z>1);
+    store.set("book:zoom",String(Z));
+    if(Z>1&&!toldZoom){toldZoom=true;say("拡大中は指でずらして読めます。左右の端をタップでページをめくります",4500)}
+    draw();clearTimeout(zT);zT=setTimeout(prefetch,250);
+  }
+  let zT=0;
+  const stepZoom=dir=>{const i=ZSTEPS.findIndex(v=>v>=Z-.01);let k=dir>0?ZSTEPS.findIndex(v=>v>Z+.01):(()=>{let j=-1;ZSTEPS.forEach((v,n)=>{if(v<Z-.01)j=n});return j})();if(k<0)k=dir>0?ZSTEPS.length-1:0;setZoom(ZSTEPS[k])};
+  zIn.addEventListener("click",()=>stepZoom(1));
+  zOut.addEventListener("click",()=>stepZoom(-1));
+  zVal.addEventListener("click",()=>setZoom(1));
+  stage.addEventListener("wheel",e=>{
+    if(!doc)return;
+    const r=cv.getBoundingClientRect(),fx=e.clientX-r.left,fy=e.clientY-r.top;
+    if(e.ctrlKey){e.preventDefault();setZoom(Z*Math.exp(-e.deltaY*.01),fx,fy,true);return}
+    if(Z>1){e.preventDefault();TX-=e.deltaX;TY-=e.deltaY;clampPan();draw()}
+  },{passive:false});
+
   /* ---- 指・マウス ---- */
+  const ptrs=new Map();let pinch=null,lastTap=null;
+  const local=e=>{const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+  /* 画面の点 → 本の座標 */
+  const toBook=(x,y)=>({x:(x-TX)/Z,y:(y-TY)/Z});
   cv.addEventListener("pointerdown",e=>{
     if(!doc||(e.button&&e.button!==0))return;
-    finishAnim();
-    const r=cv.getBoundingClientRect();
-    const mx0=LTR?-e.clientX:e.clientX;
-    drag={id:e.pointerId,x0:mx0,y0:e.clientY,lx:LTR?r.right-e.clientX:e.clientX-r.left,ly:e.clientY-r.top,on:false,pts:[{x:mx0,t:performance.now()}]};
+    ptrs.set(e.pointerId,local(e));
     try{cv.setPointerCapture(e.pointerId)}catch(err){}
+    if(ptrs.size===2){
+      /* 2本指：めくりかけていたら戻して、拡大・縮小へ */
+      if(drag&&drag.on&&flip&&!anim)settle(false);
+      drag=null;
+      const [a,b]=[...ptrs.values()];
+      pinch={d0:Math.max(20,Math.hypot(a.x-b.x,a.y-b.y)),z0:Z,s:toBook((a.x+b.x)/2,(a.y+b.y)/2)};
+      return;
+    }
+    if(ptrs.size>2)return;
+    finishAnim();
+    const p=local(e),bp=toBook(p.x,p.y);
+    drag={id:e.pointerId,x0:e.clientX,y0:e.clientY,sx:p.x,sy:p.y,bx:bp.x,by:bp.y,tx0:TX,ty0:TY,pan:Z>1.001,on:false,pts:[{x:e.clientX,t:performance.now()}]};
   });
   cv.addEventListener("pointermove",e=>{
+    if(!ptrs.has(e.pointerId))return;
+    ptrs.set(e.pointerId,local(e));
+    if(pinch&&ptrs.size>=2){
+      const [a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      Z=Math.min(ZMAX,Math.max(ZMIN,pinch.z0*d/pinch.d0));
+      TX=mx-pinch.s.x*Z;TY=my-pinch.s.y*Z;
+      if(Z<=1.001){Z=1;TX=TY=0}else clampPan();
+      zVal.textContent=Math.round(Z*100)+"%";stage.classList.toggle("zoomed",Z>1);
+      draw();return;
+    }
     if(!drag||e.pointerId!==drag.id)return;
-    const ex=LTR?-e.clientX:e.clientX,dx=ex-drag.x0,dy=e.clientY-drag.y0;
-    drag.pts.push({x:ex,t:performance.now()});if(drag.pts.length>8)drag.pts.shift();
+    const dx=e.clientX-drag.x0,dy=e.clientY-drag.y0;
+    drag.pts.push({x:e.clientX,t:performance.now()});if(drag.pts.length>8)drag.pts.shift();
+    if(drag.pan){
+      /* 拡大中はずらして読む */
+      if(!drag.moved&&Math.hypot(dx,dy)<6)return;
+      drag.moved=true;TX=drag.tx0+dx;TY=drag.ty0+dy;clampPan();draw();return;
+    }
     if(!drag.on){
       if(Math.abs(dx)<8||Math.abs(dx)<Math.abs(dy))return;
       const dir=dx>0?1:-1;
       if(dir>0?!canFwd():!canBack()){drag.blocked=true;return}
       drag.on=true;
-      const cy=drag.ly-oy<H*.45?0:H;
+      const cy=drag.by-oy<H*.45?0:H;
       begin(dir,cy);drag.k=spread?1:2;
     }
     if(drag.blocked)return;
-    const base=flip.dir>0?0:2*W;
-    flip.d={x:base+dx*drag.k,y:flip.cy+dy*(flip.cy?1:1)};
+    const base0=flip.dir>0?0:2*W;
+    flip.d={x:base0+dx*drag.k,y:flip.cy+dy};
     draw();
   });
   const up=e=>{
+    if(!ptrs.has(e.pointerId))return;
+    ptrs.delete(e.pointerId);
+    if(pinch){
+      if(ptrs.size<2){pinch=null;drag=null;setZoom(Z,null,null,true)}
+      return;
+    }
     if(!drag||e.pointerId!==drag.id)return;
     const g=drag;drag=null;
     if(g.on&&flip){
@@ -327,22 +417,28 @@ function open(box,opt){
       const commit=flip.dir>0?(vx>.3||(pr>.22&&vx>-.2)):(vx<-.3||(pr<.78&&vx<.2));
       settle(commit);return;
     }
-    const ex=LTR?-e.clientX:e.clientX;
-    if(g.blocked){bump(ex>g.x0?1:-1);return}
-    if(e.type==="pointercancel")return;
-    if(Math.hypot(ex-g.x0,e.clientY-g.y0)<10)tap(g.lx,g.ly);
+    if(g.blocked){bump(e.clientX>g.x0?1:-1);return}
+    if(e.type==="pointercancel"||g.moved)return;
+    if(Math.hypot(e.clientX-g.x0,e.clientY-g.y0)<10)tap(g.sx,g.sy,g.bx,g.by);
   };
   cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
 
-  async function tap(x,y){
+  /* x,y は画面の点、bx,by は本の座標 */
+  async function tap(x,y,bx,by){
     /* 目次などのページ内リンク */
-    const hit=spread?(x>=ox+W?{i:cur,px:x-ox-W}:{i:cur+1,px:x-ox}):{i:cur,px:x-ox};
-    const py=y-oy;
+    const hit=spread?(bx>=ox+W?{i:cur,px:bx-ox-W}:{i:cur+1,px:bx-ox}):{i:cur,px:bx-ox};
+    const py=by-oy;
     if(hit.i<N&&hit.px>=0&&hit.px<=W&&py>=0&&py<=H){
-      const to=await linkAt(hit.i,LTR?1-hit.px/W:hit.px/W,py/H);
+      const to=await linkAt(hit.i,hit.px/W,py/H);
       if(to!=null){jump(to);return}
     }
-    if(x<SW*.4)turn(1);else if(x>SW*.6)turn(-1);
+    /* 左右の端はページめくり（拡大中は端を狭く）。真ん中のダブルタップで拡大／元に戻す */
+    const edge=Z>1?.28:.4;
+    if(x<SW*edge){lastTap=null;turn(1);return}
+    if(x>SW*(1-edge)){lastTap=null;turn(-1);return}
+    const now=performance.now();
+    if(lastTap&&now-lastTap.t<350&&Math.hypot(x-lastTap.x,y-lastTap.y)<40){lastTap=null;setZoom(Z>1?1:2,x,y,true);return}
+    lastTap={t:now,x,y};
   }
   async function linkAt(i,u,v){
     try{
@@ -368,9 +464,11 @@ function open(box,opt){
   tocSel.addEventListener("change",async()=>{const o=outline[+tocSel.value];tocSel.value="";if(!o)return;const i=await destIndex(o.dest).catch(()=>null);if(i!=null)jump(i)});
   const onKey=e=>{
     if(e.altKey||e.metaKey||e.ctrlKey||/^(INPUT|SELECT|TEXTAREA)$/.test((e.target&&e.target.tagName)||""))return;
-    const nextK=LTR?"ArrowRight":"ArrowLeft",prevK=LTR?"ArrowLeft":"ArrowRight";
-    if(e.key===nextK||e.key==="PageDown"||(e.key===" "&&!e.shiftKey)){e.preventDefault();turn(1)}
-    else if(e.key===prevK||e.key==="PageUp"||(e.key===" "&&e.shiftKey)){e.preventDefault();turn(-1)}
+    if(e.key==="+"||e.key===";"||e.key==="="){e.preventDefault();stepZoom(1);return}
+    if(e.key==="-"||e.key==="_"){e.preventDefault();stepZoom(-1);return}
+    if(e.key==="0"){e.preventDefault();setZoom(1);return}
+    if(e.key==="ArrowLeft"||e.key==="PageDown"||(e.key===" "&&!e.shiftKey)){e.preventDefault();turn(1)}
+    else if(e.key==="ArrowRight"||e.key==="PageUp"||(e.key===" "&&e.shiftKey)){e.preventDefault();turn(-1)}
     else if(e.key==="Home"){e.preventDefault();jump(0)}
     else if(e.key==="End"){e.preventDefault();jump(N-1)}
   };
@@ -389,7 +487,7 @@ function open(box,opt){
     if(!d||closed)return;
     doc=d;N=d.numPages;range.max=String(N);
     const p=await d.getPage(1),v=p.getViewport({scale:1});ratio=v.height/v.width;
-    msg.remove();W=0;layout();cur=norm(cur);changed();
+    msg.remove();W=0;layout();cur=norm(cur);if(Z>1)toStart();setZoom(Z,null,null,true);changed();
     try{
       const ol=await d.getOutline();
       if(ol&&ol.length){
@@ -406,7 +504,8 @@ function open(box,opt){
   return{close(){
     closed=true;finishAnim();
     document.removeEventListener("keydown",onKey);window.removeEventListener("resize",onResize);if(ro)ro.disconnect();
-    cache.clear();try{if(task)task.destroy()}catch(e){}
+    for(const e of cache.values())if(e.c)e.c.width=0;
+    cache.clear();clearTimeout(zT);clearTimeout(hintT);try{if(task)task.destroy()}catch(e){}
   }};
 }
 window.BookReader={open};

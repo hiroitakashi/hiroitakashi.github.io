@@ -392,8 +392,15 @@ html[data-view="read"] #works .reader{display:flex}
 .book-range{flex:1;min-width:60px;accent-color:#e0b85a}
 .book-pg{flex:none;font-size:.8rem;font-variant-numeric:tabular-nums;color:#e8d9bb;min-width:5.5em;text-align:center}
 .book-toc{flex:none;max-width:9em;font:inherit;font-size:.8rem;color:#f0d48a;background:#2a2018;border:1px solid rgba(240,212,138,.5);border-radius:3px;padding:.25em .3em}
-.book-hint{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);max-width:90%;box-sizing:border-box;padding:.55em 1.1em;border-radius:20px;background:rgba(0,0,0,.6);color:#fff;font-size:.82rem;letter-spacing:.05em;text-align:center;white-space:nowrap;pointer-events:none;transition:opacity .8s}
+.book-hint{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:max-content;max-width:min(86%,30em);box-sizing:border-box;padding:.55em 1.1em;border-radius:20px;background:rgba(0,0,0,.6);color:#fff;font-size:.82rem;letter-spacing:.05em;line-height:1.6;text-align:center;pointer-events:none;transition:opacity .8s;z-index:3}
 .book-hint.off{opacity:0}
+.book-zoom{position:absolute;right:max(10px,env(safe-area-inset-right,0px));bottom:10px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;border-radius:28px;background:rgba(20,14,9,.62);border:1px solid rgba(240,212,138,.35);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.book-zoom button{font:inherit;color:#f0d48a;background:transparent;border:0;cursor:pointer;border-radius:50%;width:46px;height:46px;font-size:1.5rem;line-height:1;display:grid;place-items:center}
+.book-zoom button.zval{height:auto;width:auto;border-radius:4px;padding:.15em .3em;font-size:.72rem;font-variant-numeric:tabular-nums;color:#e8d9bb}
+.book-zoom button:hover:not(:disabled){background:rgba(240,212,138,.14)}
+.book-zoom button:disabled{opacity:.3;cursor:default}
+.book-zoom button:focus-visible{outline:2px solid #f0d48a;outline-offset:1px}
+.book-stage.zoomed canvas{cursor:move}
 @media (max-width:640px){.reader-bar{padding:6px 10px;gap:4px 12px;font-size:.8rem}.reader-r{font-size:.75rem;gap:10px}.reader-t{flex-basis:100%;order:-1;font-size:.9rem}.book-foot{padding:6px 8px 8px;gap:6px}.book-btn{padding:.35em .6em;font-size:.8rem}.book-pg{min-width:4.5em}.book-toc{max-width:5.5em}}
 /* 写真集の動画 */
 .album.is-video .stack{position:relative}
