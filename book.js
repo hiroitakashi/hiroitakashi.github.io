@@ -1,12 +1,16 @@
 /* 小説の読書画面（本のようにページをめくる）
-   - PDF を PDF.js（lib/pdfjs/）で1ページずつ描き、紙がめくれる動きをキャンバスに描く
+   - 本文モード（ふだん）：tools/pdf_to_text.py が作った本文データ（files/text-xxx.json）を、tate.js で
+     画面の大きさ・文字の大きさに合わせて縦書きに組み直す（Kindle のように画面いっぱいがページ）。
+     ＋−・2本指・Ctrl＋ホイール・＋−キーは「文字の大きさ」を変える（組み直して、読んでいた所はそのまま）
+   - PDFモード（本文データが読めないとき）：PDF を PDF.js（lib/pdfjs/）で1ページずつ描く。＋−は拡大
+   - 紙がめくれる動きをキャンバスに描く
    - 縦書き・右綴じの本なので、左から右へスワイプ（または左側をタップ・← キー）で次のページへ
    - 紙は真っ白ではなくアイボリー（PAPER）。PDF の白い地をこの色に置きかえる
    - 読みかけのページはブラウザに覚えておき、次に開いたときそこから
    - 老眼の方のために拡大縮小できる（右下の＋−、2本指で広げる・つまむ、真ん中をダブルタップ、Ctrl＋ホイール、＋/−キー）。
      拡大中は指（マウス）でずらして読み、ページは左右の端のタップ・ボタン・キーでめくる。めくると次のページの書き出し（右上）へ。
      倍率はブラウザが覚える
-   使い方：BookReader.open(入れ物の要素, {src:"files/pdf-xxx.pdf", key:"xxx", title:"題名"}) → {close()} */
+   使い方：BookReader.open(入れ物の要素, {src:"files/pdf-xxx.pdf", text:"files/text-xxx.json", cover:"表紙画像", key:"xxx", title:"題名"}) → {close()} */
 (function(){
 "use strict";
 const PAPER=[248,241,222];               /* 紙の色（少し黄みのあるアイボリー） */
@@ -94,6 +98,14 @@ function open(box,opt){
   const host=box.closest(".reader")||box;let uiT=0;
   const ui=on=>{host.classList.toggle("ui-off",!on)};
   let Z=Math.min(ZMAX,Math.max(ZMIN,parseFloat(store.get("book:zoom"))||1)),TX=0,TY=0,shownCur=-1,toldZoom=false;
+  /* 本文モード */
+  let TEXT=null,PG=null,FS=0,fontsReady=Promise.resolve(),coverImg=null,lastLay="";
+  const POSKEY="bookpos:"+(opt.key||opt.src);
+  let savedPos=null;try{savedPos=JSON.parse(store.get(POSKEY)||"null")}catch(e){}
+  const FSTEPS=[13,14,15,16,17,18,19,20,22,24,26,28,31,34,38,42];
+  const fsDefault=()=>SW<600?18:20;
+  /* 画面下の安全領域（iPhone のホームバー） */
+  const insetB=()=>{const d=document.createElement("div");d.style.cssText="position:fixed;bottom:0;height:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden";document.body.append(d);const v=parseFloat(getComputedStyle(d).paddingBottom)||0;d.remove();return v};
   const step=()=>spread?2:1;
   const norm=i=>{i=Math.max(0,Math.min(i,N-1));return spread?i-(i%2):i};
 
@@ -102,6 +114,7 @@ function open(box,opt){
     const r=stage.getBoundingClientRect();SW=Math.max(1,r.width);SH=Math.max(1,r.height);
     dpr=Math.min(2,window.devicePixelRatio||1);
     spread=SW>=760&&SW/SH>1.05;
+    if(TEXT){layoutText();return}
     const pad=SW<600?0:14,cols=spread?2:1;
     const nW=Math.floor(Math.min((SW-pad*2)/cols,(SH-pad*2)/ratio));
     if(nW!==W){W=nW;gen++;cache.clear()}
@@ -113,9 +126,46 @@ function open(box,opt){
     draw();prefetch();
   }
 
+  /* 本文モードの大きさ：ページ＝画面（見開きなら半分ずつ）。大きさか文字が変わったら組み直す */
+  function layoutText(){
+    const cols=spread?2:1;
+    W=Math.floor(SW/cols);H=Math.floor(SH);ox=Math.round((SW-W*cols)/2);oy=0;
+    cv.width=Math.round(SW*dpr);cv.height=Math.round(SH*dpr);cv.style.width=SW+"px";cv.style.height=SH+"px";
+    if(!FS){const v=parseInt(store.get("book:fs")||"",10);FS=FSTEPS.includes(v)?v:fsDefault()}
+    const key=[W,H,FS,dpr].join("x");
+    if(key!==lastLay){
+      const pos=PG&&PG.pages[cur]?PG.pages[cur].start:savedPos;
+      const ib=insetB();
+      PG=window.Tate.paginate(TEXT,{title:opt.title||"",W,H,F:FS,mt:Math.max(26,FS*2.1),mb:FS*2.5+ib,ms:Math.max(16,FS*1.15)});
+      N=PG.pages.length;range.max=String(N);
+      cur=norm(PG.find(pos));lastLay=key;gen++;
+      for(const e of cache.values())if(e.c)e.c.width=0;
+      cache.clear();
+      fillToc();
+    }else cur=norm(cur);
+    TX=TY=0;Z=1;
+    draw();prefetch();changed();
+  }
+  function fillToc(){
+    tocSel.replaceChildren();
+    const o0=mk("option",null,"目次");o0.value="";tocSel.append(o0);
+    PG.heads.forEach((h,i)=>{const op=mk("option",null,h.t);op.value=String(i);tocSel.append(op)});
+    tocSel.hidden=!PG.heads.length;
+  }
+  function changeFont(dir,to){
+    if(!TEXT)return;
+    let i=FSTEPS.indexOf(FS);if(i<0)i=FSTEPS.indexOf(fsDefault());
+    const n=to!=null?to:FSTEPS[Math.max(0,Math.min(FSTEPS.length-1,i+dir))];
+    if(n===FS)return;
+    FS=n;store.set("book:fs",String(FS));
+    zVal.textContent=Math.round(FS/fsDefault()*100)+"%";
+    zOut.disabled=FS<=FSTEPS[0];zIn.disabled=FS>=FSTEPS[FSTEPS.length-1];
+    finishAnim();flip=null;layoutText();
+  }
+
   /* ---- ページの絵 ---- */
   /* 描く細かさ：拡大したら細かく描き直す（ただし1ページの画素数に上限。スマホのメモリのため） */
-  const wantQ=()=>Math.max(1,Math.min(Z,Math.sqrt(4.5e6/Math.max(1,W*H*dpr*dpr))));
+  const wantQ=()=>TEXT?1:Math.max(1,Math.min(Z,Math.sqrt(4.5e6/Math.max(1,W*H*dpr*dpr))));
   function img(i){
     if(!doc||i<0||i>=N)return null;
     let e=cache.get(i);
@@ -126,6 +176,35 @@ function open(box,opt){
   }
   async function render(i,e,q){
     const g=gen;e.busy=true;
+    if(TEXT){
+      try{
+        await fontsReady;
+        if(g!==gen||cache.get(i)!==e||closed)return;
+        const pgo=PG.pages[i],c=document.createElement("canvas");
+        c.width=Math.round(W*dpr*q);c.height=Math.round(H*dpr*q);
+        const x=c.getContext("2d");
+        if(pgo.cover){
+          /* 表紙：暗い地に、表紙の絵を画面に収まる大きさで */
+          x.fillStyle="#2a2018";x.fillRect(0,0,c.width,c.height);
+          const im=await coverImg;
+          if(im&&im.naturalWidth){
+            /* 地：表紙の絵を画面いっぱいに広げてぼかし、少し暗く（小さく縮めてから引き伸ばすとぼける） */
+            const t=document.createElement("canvas");t.width=12;t.height=Math.max(1,Math.round(12*im.naturalHeight/im.naturalWidth));
+            t.getContext("2d").drawImage(im,0,0,t.width,t.height);
+            const bs=Math.max(c.width/t.width,c.height/t.height);
+            x.imageSmoothingEnabled=true;x.imageSmoothingQuality="high";
+            x.drawImage(t,(c.width-t.width*bs)/2,(c.height-t.height*bs)/2,t.width*bs,t.height*bs);
+            x.fillStyle="rgba(0,0,0,.28)";x.fillRect(0,0,c.width,c.height);
+            x.save();x.shadowColor="rgba(0,0,0,.5)";x.shadowBlur=30*dpr;
+            const sc=Math.min(c.width/im.naturalWidth,c.height/im.naturalHeight),w=im.naturalWidth*sc,h=im.naturalHeight*sc;
+            x.drawImage(im,(c.width-w)/2,(c.height-h)/2,w,h);x.restore();
+          }
+        }else window.Tate.drawPage(x,pgo,PG.P,dpr*q,i);
+        if(g!==gen||cache.get(i)!==e||closed){c.width=0;return}
+        e.c=c;e.q=q;e.busy=false;if(!anim)draw();
+      }catch(err){e.busy=false;e.q=q}
+      return;
+    }
     try{
       const p=await doc.getPage(i+1);
       const v0=p.getViewport({scale:1}),full=i===0;   /* 表紙は余白を詰めず全体を */
@@ -346,7 +425,7 @@ function open(box,opt){
     if(cur!==shownCur){if(shownCur>=0&&Z>1)toStart();shownCur=cur}
     draw();prefetch();
     if(!N)return;
-    store.set(KEY,String(cur));
+    if(TEXT){if(PG&&PG.pages[cur])store.set(POSKEY,JSON.stringify(PG.pages[cur].start))}else store.set(KEY,String(cur));
     const a=cur+1,b=spread&&cur+2<=N?cur+2:0;
     pg.textContent=(b?a+"–"+b:a)+" / "+N;
     range.value=String(cur+1);
@@ -377,7 +456,7 @@ function open(box,opt){
     if(Z>1&&!toldZoom){toldZoom=true;say("拡大中は指でずらして読めます。左右の端をタップでページをめくります",4500)}
     draw();clearTimeout(zT);zT=setTimeout(prefetch,250);
   }
-  let zT=0;
+  let zT=0,wheelT=0;
   /* 画面の高さにページの高さをぴったり合わせる倍率（スマホの縦長画面で上下の隙間をなくす） */
   const fitH=()=>{const f=SH/Math.max(1,H);return f>1.04&&f<ZMAX?Math.floor(f*100)/100:0};
   const stepZoom=dir=>{
@@ -385,13 +464,13 @@ function open(box,opt){
     const k=dir>0?st.find(v=>v>Z+.01):[...st].reverse().find(v=>v<Z-.01);
     setZoom(k==null?(dir>0?ZMAX:ZMIN):k);
   };
-  zIn.addEventListener("click",()=>stepZoom(1));
-  zOut.addEventListener("click",()=>stepZoom(-1));
-  zVal.addEventListener("click",()=>setZoom(1));
+  zIn.addEventListener("click",()=>TEXT?changeFont(1):stepZoom(1));
+  zOut.addEventListener("click",()=>TEXT?changeFont(-1):stepZoom(-1));
+  zVal.addEventListener("click",()=>TEXT?changeFont(0,fsDefault()):setZoom(1));
   stage.addEventListener("wheel",e=>{
     if(!doc)return;
     const r=cv.getBoundingClientRect(),fx=e.clientX-r.left,fy=e.clientY-r.top;
-    if(e.ctrlKey){e.preventDefault();setZoom(Z*Math.exp(-e.deltaY*.01),fx,fy,true);return}
+    if(e.ctrlKey){e.preventDefault();if(TEXT){const t=performance.now();if(t-wheelT>250){wheelT=t;changeFont(e.deltaY<0?1:-1)}return}setZoom(Z*Math.exp(-e.deltaY*.01),fx,fy,true);return}
     if(Z>1){e.preventDefault();TX-=e.deltaX;TY-=e.deltaY;clampPan();draw()}
   },{passive:false});
 
@@ -422,6 +501,7 @@ function open(box,opt){
     ptrs.set(e.pointerId,local(e));
     if(pinch&&ptrs.size>=2){
       const [a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      if(TEXT){pinch.r=d/pinch.d0;return}
       Z=Math.min(ZMAX,Math.max(ZMIN,pinch.z0*d/pinch.d0));
       TX=mx-pinch.s.x*Z;TY=my-pinch.s.y*Z;
       if(Z<=1.001){Z=1;TX=TY=0}else clampPan();
@@ -453,7 +533,11 @@ function open(box,opt){
     if(!ptrs.has(e.pointerId))return;
     ptrs.delete(e.pointerId);
     if(pinch){
-      if(ptrs.size<2){pinch=null;drag=null;setZoom(Z,null,null,true)}
+      if(ptrs.size<2){
+        const r=pinch.r||1;pinch=null;drag=null;
+        if(TEXT){if(r>1.12||r<.89){let i=FSTEPS.indexOf(FS);const st=Math.max(1,Math.round(Math.abs(Math.log(r))/.12));i=Math.max(0,Math.min(FSTEPS.length-1,i+(r>1?st:-st)));changeFont(0,FSTEPS[i])}}
+        else setZoom(Z,null,null,true);
+      }
       return;
     }
     if(!drag||e.pointerId!==drag.id)return;
@@ -472,6 +556,14 @@ function open(box,opt){
 
   /* x,y は画面の点、bx,by は本の座標 */
   async function tap(x,y,bx,by){
+    if(TEXT){
+      const i=spread?(bx>=ox+W?cur:cur+1):cur,px=spread?(bx>=ox+W?bx-ox-W:bx-ox):bx-ox;
+      const pgo=PG.pages[i];
+      if(pgo){const l=pgo.links.find(l=>px>=l.x0&&px<=l.x1&&by>=l.y0&&by<=l.y1);if(l&&l.page!=null){jump(l.page);return}}
+      if(x<SW*.34){ui(false);turn(1);return}
+      if(x>SW*.66){ui(false);turn(-1);return}
+      ui(host.classList.contains("ui-off"));return;
+    }
     /* 目次などのページ内リンク */
     const hit=spread?(bx>=ox+W?{i:cur,px:bx-ox-W}:{i:cur+1,px:bx-ox}):{i:cur,px:bx-ox};
     const py=by-oy;
@@ -511,12 +603,12 @@ function open(box,opt){
   bPrev.addEventListener("click",()=>turn(-1));
   range.addEventListener("input",()=>{const i=norm(+range.value-1);const a=i+1,b=spread&&i+2<=N?i+2:0;pg.textContent=(b?a+"–"+b:a)+" / "+N});
   range.addEventListener("change",()=>jump(+range.value-1));
-  tocSel.addEventListener("change",async()=>{const o=outline[+tocSel.value];tocSel.value="";if(!o)return;const i=await destIndex(o.dest).catch(()=>null);if(i!=null)jump(i)});
+  tocSel.addEventListener("change",async()=>{if(TEXT){const h=PG.heads[+tocSel.value];tocSel.value="";if(h)jump(h.page);return}const o=outline[+tocSel.value];tocSel.value="";if(!o)return;const i=await destIndex(o.dest).catch(()=>null);if(i!=null)jump(i)});
   const onKey=e=>{
     if(e.altKey||e.metaKey||e.ctrlKey||/^(INPUT|SELECT|TEXTAREA)$/.test((e.target&&e.target.tagName)||""))return;
-    if(e.key==="+"||e.key===";"||e.key==="="){e.preventDefault();stepZoom(1);return}
-    if(e.key==="-"||e.key==="_"){e.preventDefault();stepZoom(-1);return}
-    if(e.key==="0"){e.preventDefault();setZoom(1);return}
+    if(e.key==="+"||e.key===";"||e.key==="="){e.preventDefault();TEXT?changeFont(1):stepZoom(1);return}
+    if(e.key==="-"||e.key==="_"){e.preventDefault();TEXT?changeFont(-1):stepZoom(-1);return}
+    if(e.key==="0"){e.preventDefault();TEXT?changeFont(0,fsDefault()):setZoom(1);return}
     if(e.key==="ArrowLeft"||e.key==="PageDown"||(e.key===" "&&!e.shiftKey)){e.preventDefault();turn(1)}
     else if(e.key==="ArrowRight"||e.key==="PageUp"||(e.key===" "&&e.shiftKey)){e.preventDefault();turn(-1)}
     else if(e.key==="Home"){e.preventDefault();jump(0)}
@@ -529,6 +621,39 @@ function open(box,opt){
 
   /* ---- 読み込み ---- */
   let outline=[],task=null;
+  /* 本文データがあれば本文モード、なければ PDF */
+  const tateP=window.Tate?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement("script");s.src="tate.js?v=1";s.onload=res;s.onerror=rej;document.head.append(s)});
+  (opt.text?Promise.all([fetch(opt.text).then(r=>{if(!r.ok)throw 0;return r.json()}),tateP]).then(([data])=>data):Promise.reject()).then(data=>{
+    if(closed)return;
+    TEXT=data;doc={text:true};
+    if(opt.cover)coverImg=new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=opt.cover});
+    fontsReady=loadFonts(data);
+    stage.classList.add("text-mode");
+    msg.remove();setTimeout(()=>{if(!closed)ui(false)},2600);
+    zIn.setAttribute("aria-label","文字を大きく");zOut.setAttribute("aria-label","文字を小さく");zVal.setAttribute("aria-label","文字の大きさを元に戻す");
+    zIn.title="文字を大きく";zOut.title="文字を小さく";zVal.title="文字の大きさを元に戻す";
+    W=0;layout();
+    zVal.textContent=Math.round(FS/fsDefault()*100)+"%";zOut.disabled=FS<=FSTEPS[0];zIn.disabled=FS>=FSTEPS[FSTEPS.length-1];
+  }).catch(()=>{if(!closed&&!TEXT)startPdf()});
+  /* 明朝体：Mac・iPhone・Windows は本体の明朝体。ないとき（Android など）は Noto Serif JP を読み込む */
+  function loadFonts(data){
+    const T=window.Tate,chars=T.allChars(data);
+    /* その書体が本体にあるか：英数字の幅が既定の書体と違えばある */
+    const mc=document.createElement("canvas").getContext("2d"),probe="abcdefghijklmnopqrstuvwxyzABCDEFGHIJ0123456789";
+    const wOf=f=>{mc.font="40px "+f;return mc.measureText(probe).width};
+    const has=f=>wOf(f+",monospace")!==wOf("monospace")||wOf(f+",sans-serif")!==wOf("sans-serif");
+    const local=["Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif CJK JP","Source Han Serif JP","IPAexMincho"].some(f=>has('"'+f+'"'));
+    if(!local&&!document.getElementById("noto-serif-jp")){
+      const l=document.createElement("link");l.id="noto-serif-jp";l.rel="stylesheet";
+      l.href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap";document.head.append(l);
+    }
+    let late=false;
+    const done=Promise.all([document.fonts.load(T.font(16),chars),document.fonts.load(T.font(16,true),chars)]).catch(()=>{});
+    /* 6秒待っても読み込めなければいったん手持ちの書体で描き、読み込めたら描き直す */
+    done.then(()=>{if(late&&!closed){gen++;for(const e of cache.values())if(e.c)e.c.width=0;cache.clear();prefetch();draw()}});
+    return Promise.race([done,new Promise(r=>setTimeout(()=>{late=true;r()},6000))]);
+  }
+  function startPdf(){
   loadLib().then(lib=>{
     if(closed)return;
     task=lib.getDocument({url:opt.src,isEvalSupported:false});
@@ -551,7 +676,8 @@ function open(box,opt){
       }
     }catch(err){}
   }).catch(()=>{if(!closed){msg.textContent="読み込めませんでした。上の「PDFで開く」からお読みください。"}});
-  requestAnimationFrame(layout);
+  }
+  requestAnimationFrame(()=>{if(TEXT||doc)layout()});
 
   return{close(){
     closed=true;finishAnim();
