@@ -78,6 +78,7 @@ function open(box,opt){
   let hintT=0;
   const say=(t,ms)=>{hint.textContent=t;hint.classList.remove("off");clearTimeout(hintT);hintT=setTimeout(()=>hint.classList.add("off"),ms||3800)};
   say("左から右へスワイプで次のページ。真ん中をタップでメニュー",4200);
+  if(opt.note)setTimeout(()=>{if(!closed)say(opt.note,8000)},4600);
 
   const ctx=cv.getContext("2d");
   const KEY="book:"+(opt.key||opt.src);

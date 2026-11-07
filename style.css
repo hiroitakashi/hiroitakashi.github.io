@@ -372,6 +372,7 @@ html[data-view="read"] #works .reader{display:flex}
 .reader-bar{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:calc(8px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));background:rgba(20,14,9,.9);transition:opacity .25s,transform .25s;border-bottom:1px solid rgba(232,200,120,.18);font-size:.88rem}
 .reader-bar a{color:#f0d48a;text-decoration:none}
 .reader-bar a:hover{text-decoration:underline}
+.reader-bar .fs{font:inherit;color:#f0d48a;background:transparent;border:1px solid rgba(240,212,138,.5);border-radius:3px;padding:.1em .6em;cursor:pointer}
 .reader-bar a.back{background:none;border:0;box-shadow:none;padding:.2em 0;color:#f0d48a;font-size:inherit;letter-spacing:.04em}
 .reader-t{font-family:var(--f-display);font-weight:700;letter-spacing:.06em;color:#fff6e2}
 .reader-r{margin-left:auto;display:flex;gap:14px;font-size:.82rem}
