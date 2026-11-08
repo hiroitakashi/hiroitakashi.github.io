@@ -9,9 +9,10 @@
 | index.html | トップページ（全幅の写真スライドショー＋サイト名「Yellowman's Room」、下にメニューとカウンター）。写真は上の端から断ち切りで画面の高さの6割、カテゴリーは下の4割に収める（本人の指示、2026-11-08。style.css の末尾） |
 | novels.html | 小説 |
 | songs.html | 作曲（邦楽・洋楽・インストゥルメンタル） |
-| photos.html | 写真集 |
+| photos.html | 写真（2026-11-09 に「写真集」から改名） |
 | youtube.html | YouTubeチャンネル（2チャンネルのボタン） |
 | comments.html | コメント |
+| studio.html | 映像工房（お仕事の受付。2026-11-09 に「写真・映像工房」から改名。カテゴリーは「写真」と「映像工房」で分ける＝本人の指示） |
 | blog.html, blog/*.html | ブログ（tools/build_blog.py が blog/posts/*.md から生成） |
 
 6つのHTMLはマークアップが共通で、`<script>window.FILE_PAGE="…"</script>` で表示するカテゴリーを切り替えている。

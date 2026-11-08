@@ -29,9 +29,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 POSTS = os.path.join(ROOT, 'blog', 'posts')
 SITE = 'https://hiroitakashi.github.io'
 FONTS = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Poiret+One&display=swap'
-NAV = [('novels.html', '小説', ''), ('songs.html', '作曲', ''), ('photos.html', '写真集', ''),
+NAV = [('novels.html', '小説', ''), ('songs.html', '作曲', ''), ('photos.html', '写真', ''),
        ('youtube.html', 'YouTubeチャンネル', 'yt-link'), ('comments.html', 'コメント', ''), ('blog.html', 'ブログ', ''),
-       ('studio.html', '写真・映像工房', '')]
+       ('studio.html', '映像工房', '')]
 
 CATS = ['話題', '釣り', '政治・経済']
 OPINION = '<p class="opinion">この記事は筆者・廣居隆史の個人的な意見です。事実の部分は末尾の「参考にした情報」に出典を載せています。</p>'

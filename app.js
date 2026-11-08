@@ -76,7 +76,7 @@ const syncTop=()=>{totop.hidden=scrollY<360};addEventListener("scroll",syncTop,{
 totop.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
 
 /* ページの切り替え（トップ／各カテゴリー） */
-const PAGES={works:"小説",songs:"作曲",photos:"写真集",youtube:"YouTubeチャンネル",comments:"コメント"};
+const PAGES={works:"小説",songs:"作曲",photos:"写真",youtube:"YouTubeチャンネル",comments:"コメント"};
 function route(){
   const h=(location.hash||"").slice(1);
   const page=window.FILE_PAGE||(PAGES[h]?h:"top");
@@ -282,7 +282,7 @@ function renderGallery(){
   const area=$("#gallery-area");area.replaceChildren();
   if(!owner&&state.albums.length){renderAlbums(area);if(!state.photos.length)return}
   if(!state.photos.length){
-    area.append(el("div",{class:"empty",text:owner?"まだ写真がありません。下の「写真を追加」から載せてください。":"写真集は準備中です。"}));
+    area.append(el("div",{class:"empty",text:owner?"まだ写真がありません。下の「写真を追加」から載せてください。":"写真は準備中です。"}));
     return;
   }
   const g=el("div",{class:"gallery"});
