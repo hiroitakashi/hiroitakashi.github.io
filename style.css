@@ -179,6 +179,11 @@ body.owner-on .totop{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 .brand.deco{font-family:"Smart Frocks NF","SmartFrocksNF","Poiret One",var(--f-display);font-size:1.7rem;letter-spacing:-.1em}
 .counter{display:flex;justify-content:center;margin:6px 0 10px}
 .counter img{height:20px;width:auto;opacity:.9}
+.cnt{display:inline-flex;font-family:var(--f-body);font-size:12px;line-height:20px;opacity:.9;font-variant-numeric:tabular-nums}
+.cnt-l{background:#8a949b;color:#fff;padding:0 7px;letter-spacing:.08em}
+.cnt-v{background:#24476b;color:#fff;padding:0 8px}
+.owner-toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;max-width:min(92vw,520px);background:#2e2018;color:#fff;font-family:var(--f-body);font-size:.9rem;line-height:1.6;padding:12px 18px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.stats-note{display:block;margin-top:.4em;font-size:.8em;opacity:.75}
 .home{display:inline-flex;align-items:center;gap:.3em;text-decoration:none;color:#fff;background:var(--ai);font-size:.9rem;letter-spacing:.08em;padding:.35em .9em .35em .7em;border-radius:999px;white-space:nowrap}
 .home span{font-size:1.3em;line-height:1;margin-top:-.1em}
 .home:hover{opacity:.88}

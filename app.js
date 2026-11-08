@@ -89,12 +89,19 @@ function route(){
 }
 addEventListener("hashchange",route);route();
 
-/* 訪問者カウンター（公開中のホームページのトップだけ） */
+/* 訪問者カウンター（トップだけ表示。2026-11-09 に hits.sh から Abacus へ付け替え）
+   持ち主の端末（stats.js の ?me 登録）は数えずに今の数だけ見る。同じ人が開き直しても1回の訪問中は数えない */
 if(window.FILE_PAGE==="top"){
   const c=$("#counter");
-  const img=el("img",{src:"https://hits.sh/hiroitakashi.github.io.svg?style=flat-square&label=%E3%81%94%E8%A8%AA%E5%95%8F&color=24476b&labelColor=8a949b",alt:"訪問者数",height:"20",decoding:"async"});
-  img.addEventListener("error",()=>{c.hidden=true});
-  c.append(img);c.hidden=false;
+  const base="https://abacus.jasoncameron.dev/",key="hiroitakashi.github.io/top";
+  let seen=false;try{seen=sessionStorage.getItem("yr-hit")==="1"}catch(e){}
+  const count=!window.YR_OWNER&&!seen;
+  fetch(base+(count?"hit/":"get/")+key).then(r=>r.status===404?{value:0}:r.json()).then(d=>{
+    if(typeof d.value!=="number")return;
+    if(count){try{sessionStorage.setItem("yr-hit","1")}catch(e){}}
+    c.replaceChildren(el("span",{class:"cnt",title:"トップページへのご訪問の数"},[el("span",{class:"cnt-l",text:"ご訪問"}),el("span",{class:"cnt-v",text:d.value.toLocaleString("ja-JP")})]));
+    c.hidden=false;
+  }).catch(()=>{c.hidden=true});
 }
 
 /* トップの写真スライドショー */

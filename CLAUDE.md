@@ -53,6 +53,12 @@
 - 検索エンジン向けのメタタグ（2026-11-06）：各HTMLの `<head>` にページごとの description・canonical・OGP（og:image は files/img-top.jpg）・twitter:card を入れている。index.html には構造化データ（WebSite と Person）もある。説明文に作品数や曲数を書くと古くなるので書かない。
 - `google6642eb6d4ee4a7ad.html` は Google Search Console の所有権確認ファイル。消さないこと。
 
+## アクセス数（2026-11-09）
+- 数字をページに見せるのは**トップだけ**（本人の指示。ブログ一覧・記事のカウンターは外した。他のページにも付けない）。トップのカウンターは app.js の「訪問者カウンター」で、Abacus（abacus.jasoncameron.dev、キー hiroitakashi.github.io/top）。1回の訪問中に開き直しても1回と数える。以前の hits.sh の数は本人の閲覧がほとんどだったので引き継がず0から。
+- ページごとの閲覧数は Google アナリティクスの管理画面で見る（stats.js。各HTMLと tools/build_blog.py のテンプレートの head で読み込む）。`GA_ID` に測定ID（G-…）を入れると計測が始まり、各ページの footer に解析を使っている旨の一言が自動で付く。
+- 本人の端末は数えない：その端末・ブラウザで一度 `https://hiroitakashi.github.io/?me` を開くと localStorage（yr-owner）に印が付き、計測もトップのカウンターも数えない（カウンターは数えずに今の数だけ表示）。外すのは `?notme`。Safari は長く開かないと印が消えることがあるので、そのときはもう一度 ?me。
+- 誰が見たかは個人として特定しない（できないし、しない）。
+
 ## 下書き版
 Claude 上のアーティファクト https://claude.ai/artifact/DkeozbbydYfNz8M4ZQ7v8b は1ファイル版の下書き（#works などのハッシュでページ切替）。
 公開の本番はこのリポジトリ。

@@ -38,12 +38,6 @@ OPINION = '<p class="opinion">この記事は筆者・廣居隆史の個人的�
 
 def esc(t): return html.escape(t, quote=True)
 
-def counter(key, label):
-    # 訪問者カウンター（hits.sh）。読み込めない時は表示しない
-    from urllib.parse import quote
-    src = f'https://hits.sh/hiroitakashi.github.io/{key}.svg?style=flat-square&label={quote(label)}&color=24476b&labelColor=8a949b'
-    return f'<div class="counter blog-counter"><img src="{src}" alt="{esc(label)}の数" height="20" decoding="async" onerror="this.parentNode.remove()"></div>'
-
 # ブログの写真（一覧の上のスライドショーと、記事ページの帯）。入れ替えるときはここを直す
 BLOG_PHOTOS = [
     ('files/img-blog-01.jpg', '岩清水の手水鉢と柄杓'),
@@ -149,6 +143,7 @@ def page(title, desc, body, prefix, canonical, current='blog', og_type='website'
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){{var R=document.documentElement;function f(){{try{{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){{R.style.zoom=String(1/k);window.__zoomFix=k}}else{{R.style.zoom="";window.__zoomFix=0}}}}catch(e){{}}}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)}})();</script>
+<script src="{prefix}stats.js?v=20261109"></script>
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{canonical}">
@@ -219,7 +214,6 @@ def build():
 {md(p['body'])}
 </div>
 {src}
-{counter('blog/' + p['slug'], 'この記事の閲覧')}
 </article>
 {nav}'''
         fn = os.path.join(ROOT, 'blog', p['slug'] + '.html'); keep.add(fn)
@@ -230,7 +224,7 @@ def build():
     items = ''.join(f'''<li data-cat="{esc(p['category'])}"><a href="blog/{p['slug']}.html"><time datetime="{p['date']}">{jdate(p['date'])}</time>{catlabel(p)}{''.join(f'<span class="tag">{esc(t)}</span>' for t in p['tags'])}<h2>{esc(p['title'])}</h2><p>{esc(p.get('description', ''))}</p></a></li>''' for p in posts)
     tb = tabs(posts)
     body = f'''<div class="backrow"><a class="back" href="index.html"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
-<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。{'東京湾の最新の釣り情報も毎日お届けします。' if any(p['category'] == '釣り' for p in posts) else ''}{'政治・経済についての意見も載せています。' if any(p['category'] == '政治・経済' for p in posts) else ''}</p>{counter('blog', 'ブログへのご訪問')}</div>
+<div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。{'東京湾の最新の釣り情報も毎日お届けします。' if any(p['category'] == '釣り' for p in posts) else ''}{'政治・経済についての意見も載せています。' if any(p['category'] == '政治・経済' for p in posts) else ''}</p></div>
 {tb[0]}<ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>{tb[1]}'''
     open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG')))
     urls = ['', 'novels.html', 'songs.html', 'photos.html', 'youtube.html', 'comments.html', 'blog.html', 'studio.html'] + [f'blog/{p["slug"]}.html' for p in posts]
