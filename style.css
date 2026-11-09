@@ -527,7 +527,7 @@ html[data-page="top"] header.top>.wrap{flex:none;min-height:calc(var(--app-h,100
 html[data-page="top"] nav.rooms{padding-block:clamp(8px,2svh,22px)}
 @media (max-width:640px){
   html[data-page="top"] header.top>.wrap{height:calc(var(--app-h,100svh)*.4)}
-  html[data-page="top"] nav.rooms{flex:1;min-height:0;grid-template-rows:repeat(7,1fr);padding:0}
+  html[data-page="top"] nav.rooms{flex:1;min-height:0;grid-template-rows:repeat(6,1fr);padding:0}
   html[data-page="top"] nav.rooms a{display:flex;align-items:center;justify-content:center;padding:0 .4em;min-height:0;font-size:clamp(.8rem,2.1svh,1.05rem)}
   html[data-page="top"] nav.rooms a:last-child{border-bottom:0}
 }

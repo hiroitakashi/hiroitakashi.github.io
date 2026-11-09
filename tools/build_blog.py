@@ -30,7 +30,7 @@ POSTS = os.path.join(ROOT, 'blog', 'posts')
 SITE = 'https://hiroitakashi.github.io'
 FONTS = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Poiret+One&display=swap'
 NAV = [('novels.html', '小説', ''), ('songs.html', '作曲', ''), ('photos.html', '写真', ''),
-       ('youtube.html', 'YouTubeチャンネル', 'yt-link'), ('comments.html', 'コメント', ''), ('blog.html', 'ブログ', ''),
+       ('comments.html', 'コメント', ''), ('blog.html', 'ブログ', ''),
        ('studio.html', '映像工房', '')]
 
 CATS = ['話題', '釣り', '政治・経済']
@@ -227,7 +227,7 @@ def build():
 <div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。{'東京湾の最新の釣り情報も毎日お届けします。' if any(p['category'] == '釣り' for p in posts) else ''}{'政治・経済についての意見も載せています。' if any(p['category'] == '政治・経済' for p in posts) else ''}</p></div>
 {tb[0]}<ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>{tb[1]}'''
     open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG')))
-    urls = ['', 'novels.html', 'songs.html', 'photos.html', 'youtube.html', 'comments.html', 'blog.html', 'studio.html'] + [f'blog/{p["slug"]}.html' for p in posts]
+    urls = ['', 'novels.html', 'songs.html', 'photos.html', 'comments.html', 'blog.html', 'studio.html'] + [f'blog/{p["slug"]}.html' for p in posts]
     today = datetime.date.today().isoformat()
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{SITE}/{u}</loc><lastmod>{(posts[[f"blog/{x["slug"]}.html" for x in posts].index(u)]["date"] if u.startswith("blog/") else today)}</lastmod></url>\n' for u in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w', encoding='utf-8').write(sm)

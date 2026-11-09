@@ -10,7 +10,7 @@
 | novels.html | 小説 |
 | songs.html | 作曲（邦楽・洋楽・インストゥルメンタル） |
 | photos.html | 写真（2026-11-09 に「写真集」から改名） |
-| youtube.html | YouTubeチャンネル（2チャンネルのボタン） |
+| youtube.html | （2026-11-09 廃止）YouTubeチャンネルは全くのプライベートなので、本人の指示でカテゴリー・メニュー・サイトマップ・検索向けの情報（description・sameAs）から外した。youtube.html はトップへ転送するだけ（noindex）。メニューに戻さないこと |
 | comments.html | コメント |
 | studio.html | 映像工房（お仕事の受付。2026-11-09 に「写真・映像工房」から改名。カテゴリーは「写真」と「映像工房」で分ける＝本人の指示） |
 | blog.html, blog/*.html | ブログ（tools/build_blog.py が blog/posts/*.md から生成） |
