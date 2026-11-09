@@ -28,6 +28,7 @@ const WORKS=[
  {t:"まかり通る",cover:"files/covers-tesshu.jpg",pdf:"files/pdf-tesshu.pdf",who:"山岡鉄舟",era:"幕末〜明治",d:"「朝敵徳川慶喜家来、山岡鉄太郎まかり通る」。官軍の陣中を名乗って歩き、駿府で西郷と向き合った大男の、剣と禅と書の生涯。"},
  {t:"六角の海",cover:"files/covers-tenshin.jpg",pdf:"files/pdf-tenshin.pdf",who:"岡倉天心",era:"明治",d:"横浜の生糸の蔵で生まれ、英語で夢を見て漢籍で叱られて育った男。夢殿の扉を開き、美術学校を追われ、ボストンで「何ニーズ？」と問われて言い返した岡倉覚三の、美と恋と孤独の50年。"},
  {t:"鈴の屋",cover:"files/covers-norinaga.jpg",pdf:"files/pdf-norinaga.pdf",who:"本居宣長",era:"江戸中期",d:"昼は子供の熱を診る町医者、夜は2階の書斎で鈴を鳴らし古事記に向かう。新上屋の一夜から35年、師に託された頂に立った人の生涯。"},
+ {t:"霧の祈り",cover:"files/covers-higuchi.jpg",pdf:"files/pdf-higuchi.pdf",who:"樋口季一郎",era:"大正〜昭和・北の海",d:"国境の雪の駅で凍える難民に道を開き、霧の島の守備隊には玉砕を求める電報を打った将軍。救った命と救えなかった命を一つの秤に載せたまま、戦後は毎朝、小さなアッツ島の絵に頭を下げ続けた。"},
  {t:"釣り竿担いで",cover:"files/covers-nemoto.jpg",pdf:"files/pdf-nemoto.pdf",who:"根本博",era:"昭和・台湾海峡",d:"家族に「釣りに行ってくる」とだけ告げ、竿を担いで小舟で台湾へ。張家口で4万の同胞を逃がし、恩人・蔣介石のために金門島の砂を掘った陸軍中将は、褒賞を断り、釣り竿を担いで帰ってきた。"},
  {t:"クインシー",cover:"files/covers-quincy-chicago.jpg",pdf:"files/pdf-quincy.pdf",who:"クインシー・ジョーンズ",era:"昭和〜令和・アメリカ",d:"シカゴの路地で銃声に怯えた少年は、雨の街で盲目の兄に音の書き方を教わった。シナトラ、マイケル、そして見送った友たち。一杯のコーヒーと酒に刻まれた、91年の長い一曲。"}
 ];
