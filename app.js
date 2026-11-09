@@ -3,6 +3,7 @@
 const TPL=document.getElementById("tpl");document.getElementById("root").append(TPL.content.cloneNode(true));
 const WORKS=[
  {t:"民の火種",cover:"files/covers-tami.jpg",pdf:"files/pdf-tami.pdf",who:"廣居図書忠起",era:"江戸中期・米沢藩",d:"破産寸前の米沢藩。鷹山の改革、七家騒動、天明の大飢饉――大手門前に屋敷を構える藩士が、帳面の数字の下にある民の顔を見つめ続けた、全3部18章の長編。"},
+ {t:"天寿国の帳",cover:"files/covers-shotoku.jpg",pdf:"files/pdf-shotoku.pdf",who:"厩戸皇子（聖徳太子）",era:"飛鳥時代",d:"夫を亡くした妃は、天寿国のありさまを一針ずつ繡わせた。14歳で河内の野に人の死を見た少年が「和を以て貴しと為す」「共に是れ凡夫」の言葉にたどり着くまで――国宝・天寿国繡帳の銘文から紡ぐ聖徳太子の生涯。"},
  {t:"天平の灯",cover:"files/covers-ganjin.jpg",pdf:"files/pdf-ganjin.pdf",who:"鑑真",era:"奈良時代・唐から日本へ",d:"6度目の渡海で、盲いた老僧は薩摩の浜の砂をすくった。栄叡と普照、2人の日本僧との12年。"},
  {t:"一隅を照らす",cover:"files/covers-saicho.jpg",pdf:"files/pdf-saicho.pdf",who:"最澄（伝教大師）",era:"平安初期・比叡山",d:"比叡の暗い山に、19歳の若者がたった一人で灯をともした。唐への渡海、空海との交わりと別れ、徳一との論争、そして死の7日後に下りた勅許。信長の焼き討ちで消え、出羽の山寺から帰ってきた「不滅の法灯」に託した生涯。"},
  {t:"月かげの里",cover:"files/covers-honen.jpg",pdf:"files/pdf-honen.pdf",who:"法然",era:"平安末〜鎌倉",d:"「仇を討つな」と遺した父の言葉から、恨みの連鎖を断つ道としての念仏にたどり着くまで。"},
