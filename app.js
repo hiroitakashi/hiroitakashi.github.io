@@ -107,6 +107,29 @@ if(window.FILE_PAGE==="top"){
   }).catch(()=>{c.hidden=true});
 }
 
+/* トップのカテゴリー：右から左へ流れ続ける電光掲示板（本人の希望、2026-11-14）。
+   指やマウスを乗せると止まり、押すとそのページへ。動きを減らす設定の端末では、これまでの並びのまま */
+if(window.FILE_PAGE==="top"){
+  const nav=$("nav.rooms");
+  if(nav&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
+    const EN={"novels.html":"NOVELS","songs.html":"MUSIC","photos.html":"PHOTOS","comments.html":"COMMENTS","blog.html":"BLOG","studio.html":"STUDIO"};
+    const src=[...nav.querySelectorAll("a")].map(a=>({href:a.getAttribute("href"),ja:a.textContent.trim()}));
+    const group=hidden=>{const g=el("div",{class:"mq-group"});if(hidden)g.setAttribute("aria-hidden","true");
+      for(const s of src){const a=el("a",{href:s.href},[el("span",{class:"mq-ja",text:s.ja}),el("span",{class:"mq-en",text:EN[s.href]||""})]);if(hidden)a.tabIndex=-1;g.append(a)}return g};
+    const track=el("div",{class:"mq-track"});
+    nav.replaceChildren(track);nav.classList.add("marquee");
+    const build=()=>{
+      track.replaceChildren(group(false));
+      const w=track.firstChild.getBoundingClientRect().width;if(!w)return;
+      const n=Math.ceil(nav.clientWidth/w)+1;for(let i=0;i<n;i++)track.append(group(true));
+      track.style.setProperty("--mq-w",w+"px");track.style.setProperty("--mq-t",(w/60).toFixed(1)+"s");
+    };
+    let lastW=0;const rebuild=()=>{if(nav.clientWidth!==lastW){lastW=nav.clientWidth;build()}};
+    rebuild();addEventListener("resize",rebuild);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{lastW=0;rebuild()});
+  }
+}
+
 /* トップの写真スライドショー */
 (function(){
   const slides=[...document.querySelectorAll("#hero .slide")];const dots=$("#dots");if(slides.length<2)return;
