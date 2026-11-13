@@ -143,7 +143,7 @@ def page(title, desc, body, prefix, canonical, current='blog', og_type='website'
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>/* ホーム画面のアイコンから開いたとき、iPhone の「ページの拡大」で全体が大きく出るのを打ち消す（2026-11-08） */(function(){{var R=document.documentElement;function f(){{try{{var s=navigator.standalone||matchMedia("(display-mode: standalone)").matches;if(!s||window.__zoomHold)return;var a=Math.min(screen.width,screen.height),b=Math.max(screen.width,screen.height),k=(innerWidth>innerHeight?b:a)/innerWidth;if(k>1.1&&k<4){{R.style.zoom=String(1/k);window.__zoomFix=k}}else{{R.style.zoom="";window.__zoomFix=0}}}}catch(e){{}}}}window.__zoomFixApply=f;f();addEventListener("DOMContentLoaded",f);addEventListener("resize",f)}})();</script>
-<script src="{prefix}stats.js?v=20261109"></script>
+<script src="{prefix}stats.js?v=20261113"></script>
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{canonical}">

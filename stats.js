@@ -4,7 +4,7 @@
      以後その端末・そのブラウザでは計測もトップのカウンターも数えない。外すときは ?notme
    ・GA_ID に測定ID（G-で始まる）を入れると計測が始まる。空のあいだは何もしない */
 (function(){
-  var GA_ID="";
+  var GA_ID="G-N7S108HM62";
   var K="yr-owner",owner=false,msg="";
   try{
     var q=location.search;
