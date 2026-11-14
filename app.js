@@ -30,7 +30,8 @@ const WORKS=[
  {t:"吉野のもみじ葉",cover:"files/covers-yoshimura.jpg",pdf:"files/pdf-yoshimura.pdf",who:"吉村虎太郎",era:"幕末・天誅組",d:"呼び捨てにされて郡奉行に噛みついた土佐の山の庄屋は、番所を押し通って藩を捨て、京を出て44日目の朝、吉野の炭小屋で撃たれた。民の側に立とうとして民を巻きこんだ27年と、辞世のもみじ葉。"},
  {t:"天寿国の帳",cover:"files/covers-shotoku.jpg",pdf:"files/pdf-shotoku.pdf",who:"厩戸皇子（聖徳太子）",era:"飛鳥時代",d:"夫を亡くした妃は、天寿国のありさまを一針ずつ繡わせた。14歳で河内の野に人の死を見た少年が「和を以て貴しと為す」「共に是れ凡夫」の言葉にたどり着くまで――国宝・天寿国繡帳の銘文から紡ぐ聖徳太子の生涯。"},
  {t:"釣り竿担いで",cover:"files/covers-nemoto.jpg",pdf:"files/pdf-nemoto.pdf",who:"根本博",era:"昭和・台湾海峡",d:"家族に「釣りに行ってくる」とだけ告げ、竿を担いで小舟で台湾へ。張家口で4万の同胞を逃がし、恩人・蔣介石のために金門島の砂を掘った陸軍中将は、褒賞を断り、釣り竿を担いで帰ってきた。"},
- {t:"霧の祈り",cover:"files/covers-higuchi.jpg",pdf:"files/pdf-higuchi.pdf",who:"樋口季一郎",era:"大正〜昭和・北の海",d:"国境の雪の駅で凍える難民に道を開き、霧の島の守備隊には玉砕を求める電報を打った将軍。救った命と救えなかった命を一つの秤に載せたまま、戦後は毎朝、小さなアッツ島の絵に頭を下げ続けた。"}
+ {t:"霧の祈り",cover:"files/covers-higuchi.jpg",pdf:"files/pdf-higuchi.pdf",who:"樋口季一郎",era:"大正〜昭和・北の海",d:"国境の雪の駅で凍える難民に道を開き、霧の島の守備隊には玉砕を求める電報を打った将軍。救った命と救えなかった命を一つの秤に載せたまま、戦後は毎朝、小さなアッツ島の絵に頭を下げ続けた。"},
+ {t:"奔馬の空",cover:"files/covers-mutsu.jpg",pdf:"files/pdf-mutsu.pdf",who:"陸奥宗光",era:"幕末〜明治・回想",d:"三国干渉の夜、舞子の浜の病床で外務大臣は羅針盤を握る。嘘つきの小次郎と呼ばれた日々、龍馬と海援隊、天満屋の闇。「おまんの北はどこじゃ」"}
 ];
 let state;
 try{state=window.SITE_STATE}catch(e){state={photos:[],youtube:{name:"",url:"",videos:[]}}}
