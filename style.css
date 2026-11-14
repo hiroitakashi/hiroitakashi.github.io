@@ -581,3 +581,12 @@ html[data-page="top"] .greet~nav.rooms.marquee~.counter{margin-top:0}
   #hero .slide:nth-of-type(5) img{transform:translateY(5%) scale(1.12)}
   #hero .slide:nth-of-type(5).on img{transform:translateY(-3%) scale(1.16)}
 }
+/* 4枚目（江の島・台風の後の夜の海と月）：スマホの縦長画面では月（写真の左上）が切れるので、
+   写真を左上寄せにして月を枠に入れ、海に寄った所から段々広角に引いて最後に月が出てくる（本人の希望、2026-11-14） */
+@media (orientation:portrait){
+  #hero .slide:nth-of-type(4) img{object-position:20% 0%}
+}
+@media (orientation:portrait) and (prefers-reduced-motion:no-preference){
+  #hero .slide:nth-of-type(4) img{transform-origin:55% 78%;transform:scale(1.55);transition:transform 6.2s cubic-bezier(.33,.05,.25,1)}
+  #hero .slide:nth-of-type(4).on img{transform:scale(1)}
+}
