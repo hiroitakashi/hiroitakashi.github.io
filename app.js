@@ -135,9 +135,19 @@ if(window.FILE_PAGE==="top"){
   const slides=[...document.querySelectorAll("#hero .slide")];const dots=$("#dots");if(slides.length<2)return;
   let cur=0,timer=null;
   const btns=slides.map((_,i)=>{const b=el("button",{type:"button","aria-label":(i+1)+"枚目の写真"});b.addEventListener("click",()=>{show(i);restart()});dots.append(b);return b});
-  function show(i){slides[cur].classList.remove("on");btns[cur].setAttribute("aria-current","false");cur=(i+slides.length)%slides.length;slides[cur].classList.add("on");btns[cur].setAttribute("aria-current","true")}
+  /* 出ていく写真は、その時の位置・ぼかしのまま止めてフェードさせる（逆戻りして見えないように）。見えなくなってから元の位置へ */
+  function freeze(s){const im=s.querySelector("img");if(!im)return;const cs=getComputedStyle(im),tf=cs.transform,fl=cs.filter;
+    im.style.transition="none";im.style.transform=tf;im.style.filter=fl;
+    clearTimeout(im._t);im._t=setTimeout(()=>{im.style.transform="";im.style.filter="";void im.offsetWidth;im.style.transition=""},3000)}
+  function show(i){freeze(slides[cur]);slides[cur].classList.remove("on");btns[cur].setAttribute("aria-current","false");cur=(i+slides.length)%slides.length;
+    const im=slides[cur].querySelector("img");if(im&&im._t){clearTimeout(im._t);im._t=0;im.style.transform="";im.style.filter="";void im.offsetWidth;im.style.transition="";void im.offsetWidth}
+    slides[cur].classList.add("on");btns[cur].setAttribute("aria-current","true")}
   function restart(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&document.documentElement.dataset.page!=="works"&&getComputedStyle($("#top")).display!=="none")show(cur+1)},6000)}
-  btns[0].setAttribute("aria-current","true");restart();
+  btns[0].setAttribute("aria-current","true");
+  /* 最初の1枚も、開いたときから動き出すように */
+  {const s=slides[0],im=s.querySelector("img");s.style.transition="none";if(im)im.style.transition="none";s.classList.remove("on");void s.offsetWidth;
+   if(im)im.style.transition="";s.classList.add("on");void s.offsetWidth;s.style.transition=""}
+  restart();
 })();
 
 /* スマホでのダウンロード：押したあとに何をすればよいかを画面に出す。LINEなどのアプリ内ブラウザは保存できないことが多いので、ふつうのブラウザで開き直す */

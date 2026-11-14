@@ -561,3 +561,22 @@ html[data-page="top"] .greet~nav.rooms.marquee~.counter{margin-top:0}
 .greet .orn{display:block;margin:.2em auto 0;width:min(120px,29vw);height:1px;background:linear-gradient(to right,transparent,#a8865a,transparent);position:relative}
 .greet .orn::after{content:"◆";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-size:.48rem;color:#a8865a;background:var(--paper);padding:0 .5em}
 @media (prefers-reduced-motion:no-preference){.greet p{animation:gin 2.4s ease-out both}.greet .sub{animation-delay:.8s}@keyframes gin{from{opacity:0;transform:translateY(6px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}}
+/* トップの写真：1枚ずつ違う動きで切り替える（本人の希望、2026-11-14）。
+   1枚目＝右から左へゆっくり流れる／2枚目＝ぼわっと光りながら浮かび、段々大きく／3枚目＝左から右へ／
+   4枚目＝大きい所からゆっくり引いていく／5枚目＝下から上へ持ち上がりながら少し寄る。
+   切り替わりの最中に動きが逆戻りしないよう、app.js が出ていく写真の位置をその場で止める */
+@media (prefers-reduced-motion:no-preference){
+  #hero .slide img{transition:transform 8.5s cubic-bezier(.3,.1,.5,1),filter 2.4s ease-out;will-change:transform}
+  #hero .slide:nth-of-type(1) img{transform:translateX(5%) scale(1.12)}
+  #hero .slide:nth-of-type(1).on img{transform:translateX(-5%) scale(1.12)}
+  #hero .slide:nth-of-type(2){transition:opacity 2.6s ease}
+  #hero .slide:nth-of-type(2) img{transform:scale(1);filter:blur(12px) brightness(1.45) saturate(1.2)}
+  #hero .slide:nth-of-type(2).on img{transform:scale(1.16);filter:none}
+  #hero .slide:nth-of-type(3) img{transform:translateX(-5%) scale(1.12)}
+  #hero .slide:nth-of-type(3).on img{transform:translateX(5%) scale(1.12)}
+  #hero .slide:nth-of-type(4){transition:opacity 2s ease}
+  #hero .slide:nth-of-type(4) img{transform:scale(1.22)}
+  #hero .slide:nth-of-type(4).on img{transform:scale(1)}
+  #hero .slide:nth-of-type(5) img{transform:translateY(5%) scale(1.12)}
+  #hero .slide:nth-of-type(5).on img{transform:translateY(-3%) scale(1.16)}
+}

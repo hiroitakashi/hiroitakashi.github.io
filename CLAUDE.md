@@ -28,7 +28,7 @@
 | files/ | PDF・表紙・曲（MP3）・トップ写真。名前は `pdf-xxx.pdf`, `covers-xxx.jpg`, `music-<分類>-<番号>.mp3` |
 
 - 写真集（photos.html）はフォルダの目次。フォルダを押すと全画面（画面いっぱい）のスライドショー：写真はゆっくり動き（ケン・バーンズ風）、重なり合いながら切り替わる。BGMは作曲のインストゥルメンタルからランダムに1曲（アルバムに `bgm`＝曲名 があればその曲に固定。鶴見線 国道駅は "Darkness"、浅草三社祭は "午後の紅茶" に固定＝本人の指示）。全体を約1分半（app.js の SHOW_TOTAL）とし、その間に写真がちょうど一周、曲は最後の10秒で音量を下げて消え、画面が暗くなって目次へ戻る（繰り返さない。本人の指示）。
-- トップのスライドショーの写真は各HTMLの `<div class="hero">` 内の `<figure class="slide">`（6ファイルとも同じ）。画像は files/img-hero-*.jpg と files/img-top.jpg。6秒ごとにフェードで切り替わる（app.js）。
+- トップのスライドショーの写真は各HTMLの `<div class="hero">` 内の `<figure class="slide">`（6ファイルとも同じ）。画像は files/img-hero-*.jpg と files/img-top.jpg。6秒ごとにフェードで切り替わる（app.js）。1枚ずつ動きが違う（本人の希望、2026-11-14。style.css の末尾で nth-of-type ごとに指定：1枚目＝右から左へ流れる、2枚目＝ぼわっと光りながら浮かんで段々大きく、3枚目＝左から右へ、4枚目＝大きい所から引く、5枚目＝下から上へ。写真を足したり並べ替えたら、ここも合わせる）。出ていく写真は app.js の freeze() がその場の位置で止めてからフェードする。
 - **小説を追加・差し替えたら本文データと大きな表紙も作る**：`python3 tools/pdf_to_text.py files/pdf-<id>.pdf files/text-<id>.json`（PDFから章・段落・ルビ・場面の区切りを取り出す。全部やり直すなら `--all`）と `pdftoppm -f 1 -l 1 -jpeg -jpegopt quality=84 -scale-to-y 1500 -scale-to-x -1 files/pdf-<id>.pdf files/cover-hd-<id>`（できたファイルを files/cover-hd-<id>.jpg に改名）。<id> は pdf-<id>.pdf の部分。
 - 小説はすべて縦書き（本人の指示、2026-11-07）。横書きの原稿が来たら `python3 tools/yoko_to_tate.py 入力.pdf 出力.pdf` で縦書きA5に組み直す（Chromium＋Noto Serif CJK JP。目次リンク・しおり・算用数字のノンブル込み。「波頭」はこれで組み直した）。
 - 小説を追加したら、各HTMLの小説欄の見出し「○○作。」の数も直す（6ファイルとも同じ文）。
