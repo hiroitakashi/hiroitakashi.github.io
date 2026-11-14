@@ -556,8 +556,8 @@ html[data-page="top"] nav.rooms.marquee~.counter{order:1;margin:auto 0 8px}
 .greet{display:none}
 html[data-page="top"] .greet{display:block;order:0;margin:auto 0;align-self:center;text-align:center;padding:0 8px}
 html[data-page="top"] .greet~nav.rooms.marquee~.counter{margin-top:0}
-.greet p{margin:0;font-family:"Yuji Boku",var(--f-display);color:#3a2a1c;font-size:clamp(.66rem,.58rem + .45vw,.88rem);line-height:1.25;letter-spacing:0}
-.greet .sub{margin-top:.15em;font-family:var(--f-display);font-size:clamp(.5rem,.46rem + .15vw,.56rem);color:#6b5842;letter-spacing:.04em}
-.greet .orn{display:block;margin:.2em auto 0;width:min(100px,24vw);height:1px;background:linear-gradient(to right,transparent,#a8865a,transparent);position:relative}
-.greet .orn::after{content:"◆";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-size:.4rem;color:#a8865a;background:var(--paper);padding:0 .5em}
+.greet p{margin:0;font-family:"Yuji Boku",var(--f-display);color:#3a2a1c;font-size:clamp(.8rem,.7rem + .54vw,1.06rem);line-height:1.25;letter-spacing:0}
+.greet .sub{margin-top:.45em;font-family:var(--f-display);font-size:clamp(.6rem,.55rem + .18vw,.67rem);color:#6b5842;letter-spacing:.04em}
+.greet .orn{display:block;margin:.2em auto 0;width:min(120px,29vw);height:1px;background:linear-gradient(to right,transparent,#a8865a,transparent);position:relative}
+.greet .orn::after{content:"◆";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-size:.48rem;color:#a8865a;background:var(--paper);padding:0 .5em}
 @media (prefers-reduced-motion:no-preference){.greet p{animation:gin 2.4s ease-out both}.greet .sub{animation-delay:.8s}@keyframes gin{from{opacity:0;transform:translateY(6px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}}
