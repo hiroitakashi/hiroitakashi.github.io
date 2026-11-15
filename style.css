@@ -590,3 +590,7 @@ html[data-page="top"] .greet~nav.rooms.marquee~.counter{margin-top:0}
   #hero .slide:nth-of-type(4) img{transform-origin:55% 78%;transform:scale(1.55);transition:transform 6.2s cubic-bezier(.33,.05,.25,1)}
   #hero .slide:nth-of-type(4).on img{transform:scale(1)}
 }
+/* トップの写真の上端：iPhone の Safari は画面のいちばん上（時計の帯）に紙の色をかぶせ、その下を少しぼかして写真になじませるため、
+   写真の上部に吹き付けたような「かすみ」がかかる。写真をそのぼかしの下まで下げて、上端までくっきり見せる（本人の希望、2026-11-15）。
+   パソコンなど上の余白がない端末では何も変わらない */
+html[data-page="top"] .hero{margin-top:calc(env(safe-area-inset-top,0px)*1.5);height:calc(var(--app-h,100svh)*.6 - env(safe-area-inset-top,0px)*1.5)}
