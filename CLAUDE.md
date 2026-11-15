@@ -69,3 +69,9 @@ Claude 上のアーティファクト https://claude.ai/artifact/DkeozbbydYfNz8M
 ## アイコン（スマホのホーム画面・ブラウザのタブ）（2026-11-06）
 - 濃い茶の地に金色の「Y」・アールデコの放射線・菱形の飾り・「ROOM」。files/icon-180.png（iPhone）、icon-192/512.png・icon-maskable-512.png（Android、manifest.webmanifest）、icon-32.png と favicon.ico（タブ）。
 - 各HTMLの `<head>` と tools/build_blog.py のテンプレートに読み込みタグを入れてある。ホーム画面の名前は「Yellowman」。
+
+## 連載「鶴見川物語」（2026-11-15〜）
+- 毎回読み切りの短編を1話ずつ足していく1冊の本（files/pdf-tsurumi.pdf、id は tsurumi）。原稿は tools/tsurumi/epNN.txt（書式は tools/tsurumi/build.py の先頭）。
+- 新しい話を足したら：epNN.txt を置く → `python3 tools/tsurumi/build.py`（表紙・目次・しおり・奥付ごと作り直す）→ 表紙 jpg 2つと `python3 tools/pdf_to_text.py files/pdf-tsurumi.pdf files/text-tsurumi.json` を作り直す。作品数・WORKS は増やさない（1冊のまま）。
+- 作品の方針（本人の指示）：江戸後期、東海道の間の宿・鶴見で、茶屋の体裁で隠れて人を泊める「さだ屋」の女将おせんが主人公。川崎宿・神奈川宿にない間の宿ならではの話を、山本周五郎賞を狙う水準の人情ばなしで。1話およそ8000字。亭主貞吉（天明6年の大水で鶴見橋が流された時に行方不明）の話は連載の中程まで出さない。登場人物の家の事情などはおせんとの会話で深く描く。一般的でない漢字（盥など）は平仮名に。読点は多すぎず少なすぎず。
+- これまでの人物：おせん（生麦の漁師の娘、11歳で神奈川宿の旅籠に飯炊き奉公）、吾平（裏に住む、もと六郷の渡しの船頭）、庄助（川崎宿の問屋場の手代。見て見ぬふりをする）、通いの娘（名はまだない）。第一話は寛政元年秋。
