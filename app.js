@@ -32,7 +32,7 @@ const WORKS=[
  {t:"釣り竿担いで",cover:"files/covers-nemoto.jpg",pdf:"files/pdf-nemoto.pdf",who:"根本博",era:"昭和・台湾海峡",d:"家族に「釣りに行ってくる」とだけ告げ、竿を担いで小舟で台湾へ。張家口で4万の同胞を逃がし、恩人・蔣介石のために金門島の砂を掘った陸軍中将は、褒賞を断り、釣り竿を担いで帰ってきた。"},
  {t:"霧の祈り",cover:"files/covers-higuchi.jpg",pdf:"files/pdf-higuchi.pdf",who:"樋口季一郎",era:"大正〜昭和・北の海",d:"国境の雪の駅で凍える難民に道を開き、霧の島の守備隊には玉砕を求める電報を打った将軍。救った命と救えなかった命を一つの秤に載せたまま、戦後は毎朝、小さなアッツ島の絵に頭を下げ続けた。"},
  {t:"奔馬の空",cover:"files/covers-mutsu.jpg",pdf:"files/pdf-mutsu.pdf",who:"陸奥宗光",era:"幕末〜明治・回想",d:"三国干渉の夜、舞子の浜の病床で外務大臣は羅針盤を握る。嘘つきの小次郎と呼ばれた日々、龍馬と海援隊、天満屋の闇。「おまんの北はどこじゃ」"},
- {t:"鶴見川物語",v:"20261117i",cover:"files/covers-tsurumi.jpg?v=20261117i",pdf:"files/pdf-tsurumi.pdf?v=20261117i",who:"女将おせん",era:"江戸後期・東海道 鶴見・連載",d:"川崎宿と神奈川宿のあいだ、泊まることを許されない間の宿・鶴見。橋の袂の茶屋「さだ屋」は、雨の夜だけ裏の木戸を開ける。「うちは茶屋でございます」――毎回読み切りの人情ばなし、連載中。"}
+ {t:"鶴見川物語",v:"20261117j",cover:"files/covers-tsurumi.jpg?v=20261117j",pdf:"files/pdf-tsurumi.pdf?v=20261117j",who:"女将おせん",era:"江戸後期・東海道 鶴見・連載",d:"川崎宿と神奈川宿のあいだ、泊まることを許されない間の宿・鶴見。橋の袂の茶屋「さだ屋」は、雨の夜だけ裏の木戸を開ける。「うちは茶屋でございます」――毎回読み切りの人情ばなし、連載中。"}
 ];
 let state;
 try{state=window.SITE_STATE}catch(e){state={photos:[],youtube:{name:"",url:"",videos:[]}}}
