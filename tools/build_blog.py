@@ -29,7 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 POSTS = os.path.join(ROOT, 'blog', 'posts')
 SITE = 'https://hiroitakashi.github.io'
 FONTS = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Poiret+One&display=swap'
-NAV = [('novels.html', '廣居文庫', ''), ('songs.html', '作曲', ''), ('photos.html', '写真', ''),
+NAV = [('novels.html', '廣居文庫', ''), ('songs.html', 'YM MUSIC', ''), ('photos.html', '写真', ''),
        ('comments.html', 'コメント', ''), ('blog.html', 'ブログ', ''),
        ('studio.html', '映像工房', '')]
 

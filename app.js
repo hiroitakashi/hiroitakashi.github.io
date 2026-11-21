@@ -81,7 +81,7 @@ const syncTop=()=>{totop.hidden=scrollY<360};addEventListener("scroll",syncTop,{
 totop.addEventListener("click",()=>scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
 
 /* ページの切り替え（トップ／各カテゴリー） */
-const PAGES={works:"廣居文庫",songs:"作曲",photos:"写真",youtube:"YouTubeチャンネル",comments:"コメント"};
+const PAGES={works:"廣居文庫",songs:"YM MUSIC",photos:"写真",youtube:"YouTubeチャンネル",comments:"コメント"};
 function route(){
   const h=(location.hash||"").slice(1);
   const page=window.FILE_PAGE||(PAGES[h]?h:"top");
@@ -114,7 +114,7 @@ if(window.FILE_PAGE==="top"){
 if(window.FILE_PAGE==="top"){
   const nav=$("nav.rooms");
   if(nav&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
-    const EN={"novels.html":"NOVELS","songs.html":"MUSIC","photos.html":"PHOTOS","comments.html":"COMMENTS","blog.html":"BLOG","studio.html":"STUDIO"};
+    const EN={"novels.html":"NOVELS","songs.html":"SONGS","photos.html":"PHOTOS","comments.html":"COMMENTS","blog.html":"BLOG","studio.html":"STUDIO"};
     const src=[...nav.querySelectorAll("a")].map(a=>({href:a.getAttribute("href"),ja:a.textContent.trim()}));
     const group=hidden=>{const g=el("div",{class:"mq-group"});if(hidden)g.setAttribute("aria-hidden","true");
       for(const s of src){const a=el("a",{href:s.href},[el("span",{class:"mq-ja",text:s.ja}),el("span",{class:"mq-en",text:EN[s.href]||""})]);if(hidden)a.tabIndex=-1;g.append(a)}return g};
