@@ -595,3 +595,28 @@ html[data-page="top"] .greet~nav.rooms.marquee~.counter{margin-top:0}
    画面のいちばん上に写真の上端と同じ暗い色の細い帯を固定して置き、Safari に暗い色を拾わせて写真となじませる（本人の指示、2026-11-15） */
 html[data-page="top"]{background-color:#17110d}
 html[data-page="top"] body::before{content:"";position:fixed;top:0;left:0;right:0;height:3px;background-color:#17110d;z-index:30;pointer-events:none}
+
+/* 廣居文庫の作品一覧は木の本棚（本人の指示、2026-11-21）。白いしっくいの壁に木の棚板、表紙を立てて並べ、押すとその作品のあらすじへ。
+   1段の高さ（--row）をそろえ、棚板は ol の背景のくり返しで描くので、最後の段が欠けても板は端から端まで通る */
+.works-toc{--bh:150px;--bw:calc(var(--bh) * 424 / 600);--top:22px;--plank:16px;--label:48px;--row:calc(var(--top) + var(--bh) + var(--plank) + var(--label))}
+.works-toc .toc-h{margin-bottom:0;padding:12px 16px 10px;text-align:center;color:#3a2412;letter-spacing:.3em;
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 40%,rgba(0,0,0,.18)),linear-gradient(90deg,#d9a566,#e8bd82 30%,#cf9455 55%,#e3b273 80%,#d29a5b);
+  border-radius:4px 4px 0 0;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.works-toc ol{grid-template-columns:repeat(auto-fill,minmax(calc(var(--bw) + 22px),1fr));grid-auto-rows:var(--row);gap:0;padding:0 6px;
+  border-left:12px solid #c98d4f;border-right:12px solid #c98d4f;border-bottom:18px solid #c98d4f;border-radius:0 0 4px 4px;
+  box-shadow:inset 10px 0 14px -8px rgba(0,0,0,.25),inset -10px 0 14px -8px rgba(0,0,0,.25),0 8px 20px -10px rgba(0,0,0,.45);
+  background:
+    repeating-linear-gradient(180deg,transparent 0 calc(var(--top) + var(--bh)),#efc58c calc(var(--top) + var(--bh)),#d9a061 calc(var(--top) + var(--bh) + 5px),#b9783a calc(var(--top) + var(--bh) + var(--plank)),transparent calc(var(--top) + var(--bh) + var(--plank)) var(--row)),
+    repeating-linear-gradient(180deg,transparent 0 calc(var(--top) + var(--bh) + var(--plank)),rgba(60,40,20,.28) calc(var(--top) + var(--bh) + var(--plank)),rgba(60,40,20,0) calc(var(--top) + var(--bh) + var(--plank) + 26px),transparent calc(var(--top) + var(--bh) + var(--plank) + 26px) var(--row)),
+    radial-gradient(ellipse at 30% 20%,#ffffff,#f1efeb 70%);
+  background-color:#f3f1ed}
+.works-toc ol>li{min-width:0}
+.works-toc a{display:flex;flex-direction:column;align-items:center;height:100%;padding:var(--top) 4px 0;background:none;border:0;border-radius:0;gap:0}
+.works-toc a:hover{border:0}
+.works-toc img{width:var(--bw);height:var(--bh);object-fit:cover;flex:none;box-shadow:2px 0 2px rgba(0,0,0,.18),6px 4px 10px -2px rgba(0,0,0,.35);transition:transform .2s,box-shadow .2s;transform-origin:bottom center}
+.works-toc a:hover img,.works-toc a:focus-visible img{transform:translateY(-6px);box-shadow:2px 0 2px rgba(0,0,0,.18),8px 12px 16px -4px rgba(0,0,0,.4)}
+.works-toc .tt{margin-top:calc(var(--plank) + 6px);max-width:100%;font-size:.8rem;line-height:1.35;text-align:center;color:#3a2a1c;letter-spacing:.02em;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;align-self:auto}
+.works-toc .te{display:none}
+@media (max-width:520px){.works-toc{--bh:128px;--top:18px;--label:36px}.works-toc ol{grid-template-columns:repeat(auto-fill,minmax(calc(var(--bw) + 14px),1fr));padding:0 2px;border-left-width:8px;border-right-width:8px}.works-toc .tt{font-size:.74rem}}
+@media (min-width:900px){.works-toc{--bh:180px}}
