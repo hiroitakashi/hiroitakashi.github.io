@@ -108,7 +108,8 @@ def convert(src):
     for i in range(1, len(d)):
         links = [l for l in d[i].get_links() if l.get('kind') in (fitz.LINK_GOTO, fitz.LINK_NAMED)]
         txt = ''.join(c['c'] for c in pages[i])
-        if len(links) >= 3 or re.match(r'^\s*目\s*次', txt):
+        # 目次が次のページへ続くときは、リンクが少なくても目次のページとみなす
+        if len(links) >= 3 or re.match(r'^\s*目\s*次', txt) or (links and i - 1 in toc_pages):
             toc_pages.add(i)
     blocks, stat = [], collections.Counter()
     prev = None                     # 直前の本文の列

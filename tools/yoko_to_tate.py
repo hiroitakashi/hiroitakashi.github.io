@@ -81,7 +81,7 @@ p.i{text-indent:1em}
 .blank{break-after:page;block-size:1px}
 .toc{break-after:page}
 .toc h1{font-size:14pt;letter-spacing:.6em;margin:0 0 0 1.4em;font-weight:700}
-.toc a{display:flex;align-items:center;color:inherit;text-decoration:none;font-size:9.6pt;line-height:1;block-size:2.05em;overflow:hidden}
+.toc a{display:flex;align-items:center;color:inherit;text-decoration:none;font-size:9.6pt;line-height:1;block-size:2.05em;overflow:hidden;break-inside:avoid}
 .toc a>span{line-height:1}
 .toc .lab{inline-size:5em}
 .toc .ld{flex:1;overflow:hidden;white-space:nowrap;margin:0 .5em;color:#888;letter-spacing:.1em}
@@ -149,8 +149,15 @@ def render(items, pages, out):
 
 
 def chapter_pages(pdf):
+    # 目次が2ページ以上にわたるときは、続くページのリンクも拾う
     d = fitz.open(pdf)
-    return [l['page'] + 1 for l in d[1].get_links() if l.get('kind') in (fitz.LINK_GOTO, fitz.LINK_NAMED) and l.get('page', -1) >= 0]
+    out = []
+    for i in range(1, len(d)):
+        ls = [l['page'] + 1 for l in d[i].get_links() if l.get('kind') in (fitz.LINK_GOTO, fitz.LINK_NAMED) and l.get('page', -1) >= 0]
+        if not ls:
+            break
+        out += ls
+    return out
 
 
 def main(src, dst):
