@@ -34,6 +34,7 @@ const WORKS=[
  {t:"奔馬の空",cover:"files/covers-mutsu.jpg",pdf:"files/pdf-mutsu.pdf",who:"陸奥宗光",era:"幕末〜明治・回想",d:"三国干渉の夜、舞子の浜の病床で外務大臣は羅針盤を握る。嘘つきの小次郎と呼ばれた日々、龍馬と海援隊、天満屋の闇。「おまんの北はどこじゃ」"},
  {t:"鶴見川物語",v:"20261128b",cover:"files/covers-tsurumi.jpg?v=20261128b",pdf:"files/pdf-tsurumi.pdf?v=20261128b",who:"女将おせん",era:"江戸後期・東海道 鶴見・連載",d:"川崎宿と神奈川宿のあいだ、泊まることを許されない間の宿・鶴見。橋の袂の茶屋「さだ屋」は、雨の夜だけ裏の木戸を開ける。「うちは茶屋でございます」――毎回読み切りの人情ばなし、連載中。"}
 ];
+window.WORKS=WORKS; /* seo.js が作品一覧の構造化データを作るのに使う（2026-11-28） */
 let state;
 try{state=window.SITE_STATE}catch(e){state={photos:[],youtube:{name:"",url:"",videos:[]}}}
 state.photos=state.photos||[];state.albums=(state.albums||[]).filter(a=>a&&((a.photos&&a.photos.length)||a.video));state.songs=state.songs||[];state.comments=state.comments||[];state.youtube=Object.assign({name:"",url:"",videos:[]},state.youtube||{});
@@ -86,7 +87,7 @@ function route(){
   const h=(location.hash||"").slice(1);
   const page=window.FILE_PAGE||(PAGES[h]?h:"top");
   document.documentElement.dataset.page=page;
-  document.title=(PAGES[page]?PAGES[page]+" | ":"")+"Yellowman's Room";
+  if(!window.FILE_PAGE)document.title=(PAGES[page]?PAGES[page]+" | ":"")+"Yellowman's Room"; /* ページごとのHTMLは <title> の検索向けの題名をそのまま使う（2026-11-28） */
   document.querySelectorAll(".subnav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.p===page));
   worksView();
   scrollTo(0,0);

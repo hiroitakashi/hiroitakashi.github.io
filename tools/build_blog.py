@@ -23,7 +23,8 @@ sources:
 
 本文（Markdown の一部：## 見出し / ### 小見出し / 段落 / - 箇条書き / 1. 番号付き / > 引用 / | 表 |（2行目に |---|---| を入れると1行目が見出し）/ **太字** / [リンク](URL)）
 """
-import html, os, re, sys, glob, datetime
+import html, os, re, sys, glob, datetime, json
+from email.utils import format_datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 POSTS = os.path.join(ROOT, 'blog', 'posts')
@@ -135,8 +136,16 @@ def parse(path):
     meta['body'] = m.group(2).strip()
     return meta
 
-def page(title, desc, body, prefix, canonical, current='blog', og_type='website', banner=''):
-    nav = ''.join(f'<a href="{prefix}{h}" data-p="{h[:-5]}"{" class=" + chr(34) + c + chr(34) if c else ""}{" aria-current=" + chr(34) + "page" + chr(34) if h == current + ".html" else ""}>{t}</a>' for h, t, c in NAV)
+def jsonld(o):
+    # </script> が中に入っても壊れないよう < をエスケープ
+    return '<script type="application/ld+json">' + json.dumps(o, ensure_ascii=False).replace('<', '\\u003c') + '</script>'
+
+def crumbs(items):
+    return {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': u} for i, (n, u) in enumerate(items)]}
+
+def page(title, desc, body, prefix, canonical, current='blog', og_type='website', banner='', image=f'{SITE}/files/img-top.jpg', extra=''):
+    # extra: 記事ごとの article:published_time や JSON-LD など、head に足すタグ（2026-11-28 検索向けに追加）
+    nav =''.join(f'<a href="{prefix}{h}" data-p="{h[:-5]}"{" class=" + chr(34) + c + chr(34) if c else ""}{" aria-current=" + chr(34) + "page" + chr(34) if h == current + ".html" else ""}>{t}</a>' for h, t, c in NAV)
     return f'''<!doctype html>
 <html lang="ja" data-page="blog">
 <head>
@@ -147,7 +156,12 @@ def page(title, desc, body, prefix, canonical, current='blog', og_type='website'
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{canonical}">
-<meta property="og:type" content="{og_type}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canonical}"><meta property="og:site_name" content="Yellowman&#39;s Room">
+<meta property="og:type" content="{og_type}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canonical}"><meta property="og:image" content="{image}"><meta property="og:site_name" content="Yellowman&#39;s Room"><meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{esc(title)}"><meta name="twitter:description" content="{esc(desc)}"><meta name="twitter:image" content="{image}">
+<meta name="author" content="廣居隆史">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="alternate" type="application/rss+xml" title="Yellowman&#39;s Room ブログ" href="{SITE}/feed.xml">
+{extra}
 <style>body{{margin:0}}img{{max-width:100%}}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="{FONTS}">
@@ -217,7 +231,23 @@ def build():
 </article>
 {nav}'''
         fn = os.path.join(ROOT, 'blog', p['slug'] + '.html'); keep.add(fn)
-        open(fn, 'w', encoding='utf-8').write(page(f'{p["title"]} | Yellowman\'s Room', p.get('description', ''), body, '../', f'{SITE}/blog/{p["slug"]}.html', og_type='article', banner=hero('../', 'thin', '', pick=sum(map(ord, p['slug'])))))
+        url = f'{SITE}/blog/{p["slug"]}.html'
+        pick = sum(map(ord, p['slug']))
+        ph = slides()
+        img = f'{SITE}/{ph[pick % len(ph)][0]}' if ph else f'{SITE}/files/img-top.jpg'
+        when = p['date'] + 'T06:00:00+09:00'
+        extra = (f'<meta property="article:published_time" content="{when}"><meta property="article:author" content="廣居隆史"><meta property="article:section" content="{esc(p["category"])}">'
+                 + ''.join(f'<meta property="article:tag" content="{esc(t)}">' for t in p['tags']) + '\n'
+                 + jsonld({'@context': 'https://schema.org', '@graph': [
+                     {'@type': 'BlogPosting', '@id': url + '#article', 'mainEntityOfPage': url, 'url': url,
+                      'headline': p['title'][:110], 'description': p.get('description', ''), 'image': img,
+                      'datePublished': when, 'dateModified': when, 'inLanguage': 'ja',
+                      'articleSection': p['category'], **({'keywords': ', '.join(p['tags'])} if p['tags'] else {}),
+                      'author': {'@type': 'Person', '@id': f'{SITE}/#person', 'name': '廣居隆史', 'url': f'{SITE}/'},
+                      'publisher': {'@type': 'Person', '@id': f'{SITE}/#person', 'name': '廣居隆史'},
+                      'isPartOf': {'@id': f'{SITE}/blog.html#blog'}},
+                     crumbs([("Yellowman's Room", f'{SITE}/'), ('ブログ', f'{SITE}/blog.html'), (p['title'], url)])]}))
+        open(fn, 'w', encoding='utf-8').write(page(f'{p["title"]} | Yellowman\'s Room', p.get('description', ''), body, '../', url, og_type='article', banner=hero('../', 'thin', '', pick=pick), image=img, extra=extra))
     # 消した記事のページを片付ける
     for fn in glob.glob(os.path.join(ROOT, 'blog', '*.html')):
         if fn not in keep: os.remove(fn)
@@ -226,7 +256,19 @@ def build():
     body = f'''<div class="backrow"><a class="back" href="index.html"><span aria-hidden="true">‹</span> トップへ戻る</a></div>
 <div class="blog-head"><h1>ブログ<span class="kana">BLOG</span></h1><p>毎朝、いま話題のことを取り上げて書いています。{'東京湾の最新の釣り情報も毎日お届けします。' if any(p['category'] == '釣り' for p in posts) else ''}{'政治・経済についての意見も載せています。' if any(p['category'] == '政治・経済' for p in posts) else ''}</p></div>
 {tb[0]}<ul class="posts">{items or '<li><p>記事は準備中です。</p></li>'}</ul>{tb[1]}'''
-    open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page("ブログ | Yellowman's Room", 'Yellowman\'s Room のブログ。毎朝、いま話題のことを取り上げて書いています。', body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG')))
+    btitle = "ブログ｜毎朝の話題・東京湾の釣り情報・政治経済 | Yellowman's Room"
+    bdesc = '廣居隆史のブログ。毎朝、いま話題のこと、東京湾（本牧・大黒・磯子の海釣り施設や船宿）の最新の釣果、政治・経済についての意見を書いています。'
+    bextra = jsonld({'@context': 'https://schema.org', '@graph': [
+        {'@type': 'Blog', '@id': f'{SITE}/blog.html#blog', 'url': f'{SITE}/blog.html', 'name': "Yellowman's Room ブログ", 'description': bdesc, 'inLanguage': 'ja',
+         'author': {'@id': f'{SITE}/#person'}, 'isPartOf': {'@id': f'{SITE}/#website'},
+         'blogPost': [{'@type': 'BlogPosting', 'headline': p['title'][:110], 'url': f'{SITE}/blog/{p["slug"]}.html', 'datePublished': p['date'] + 'T06:00:00+09:00'} for p in posts[:20]]},
+        crumbs([("Yellowman's Room", f'{SITE}/'), ('ブログ', f'{SITE}/blog.html')])]})
+    open(os.path.join(ROOT, 'blog.html'), 'w', encoding='utf-8').write(page(btitle, bdesc, body, '', f'{SITE}/blog.html', banner=hero('', 'short', 'BLOG'), extra=bextra))
+    # RSS（新しい記事を検索エンジンやフィードリーダーに早く知らせる。2026-11-28）
+    def rss_date(d): return format_datetime(datetime.datetime.fromisoformat(d + 'T06:00:00+09:00'))
+    items_rss = ''.join(f'<item><title>{esc(p["title"])}</title><link>{SITE}/blog/{p["slug"]}.html</link><guid>{SITE}/blog/{p["slug"]}.html</guid><pubDate>{rss_date(p["date"])}</pubDate><category>{esc(p["category"])}</category><description>{esc(p.get("description", ""))}</description></item>\n' for p in posts[:30])
+    rss = f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Yellowman&#39;s Room ブログ</title><link>{SITE}/blog.html</link><atom:link href="{SITE}/feed.xml" rel="self" type="application/rss+xml"/><description>{esc(bdesc)}</description><language>ja</language>\n{items_rss}</channel></rss>\n'
+    open(os.path.join(ROOT, 'feed.xml'), 'w', encoding='utf-8').write(rss)
     urls = ['', 'novels.html', 'songs.html', 'photos.html', 'comments.html', 'blog.html', 'studio.html'] + [f'blog/{p["slug"]}.html' for p in posts]
     today = datetime.date.today().isoformat()
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{SITE}/{u}</loc><lastmod>{(posts[[f"blog/{x["slug"]}.html" for x in posts].index(u)]["date"] if u.startswith("blog/") else today)}</lastmod></url>\n' for u in urls) + '</urlset>\n'

@@ -55,6 +55,7 @@
 - アフィリエイトのリンクは blog/affiliate.json に登録されたものだけを使い、使った記事は `pr: true`（記事の先頭に「PR」表記が出る）。
 
 - 検索エンジン向けのメタタグ（2026-11-06）：各HTMLの `<head>` にページごとの description・canonical・OGP（og:image は files/img-top.jpg）・twitter:card を入れている。index.html には構造化データ（WebSite と Person）もある。説明文に作品数や曲数を書くと古くなるので書かない。
+- 検索向けの強化（2026-11-28、本人の依頼「ホームページが検索エンジンにかかる様にメタタグ等書いて下さい」）：各ページの title に「廣居隆史」と中身の言葉を入れ（例「廣居文庫｜廣居隆史の歴史小説を縦書きで読む | Yellowman's Room」）、twitter:title/description/image と、ページの JSON-LD（CollectionPage など＋パンくず BreadcrumbList、id="ld-page"）を head に。app.js は FILE_PAGE のあるページでは document.title を書きかえない（書きかえると検索向けの題名が消える）。作品・曲・写真の一覧の構造化データ（Book の ItemList、MusicPlaylist、写真の CollectionPage）は seo.js が app.js の window.WORKS と data.js から自動で作るので、作品や曲を足しても直さなくてよい。ブログは build_blog.py が記事ごとに og:image・twitter・article:published_time・JSON-LD（BlogPosting＋パンくず）、一覧に Blog、RSS の feed.xml を作る。studio.html の title・description は毎日のスケジュール済みタスクが見直すので、ほかの作業では触らない。
 - `google6642eb6d4ee4a7ad.html` は Google Search Console の所有権確認ファイル。消さないこと。
 
 ## アクセス数（2026-11-09）
