@@ -83,7 +83,7 @@ p.i{text-indent:1em}
 .toc h1{font-size:14pt;letter-spacing:.6em;margin:0 0 0 1.4em;font-weight:700}
 .toc a{display:flex;align-items:center;color:inherit;text-decoration:none;font-size:9.6pt;line-height:1;block-size:2.05em;overflow:hidden;break-inside:avoid}
 .toc a>span{line-height:1}
-.toc .lab{inline-size:5em}
+.toc .lab{inline-size:6em;flex:none}
 .toc .ld{flex:1;overflow:hidden;white-space:nowrap;margin:0 .5em;color:#888;letter-spacing:.1em}
 .toc .ld::after{content:"・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・"}
 .tcy{text-combine-upright:all;-webkit-text-combine:horizontal}
